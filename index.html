@@ -4,10 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Florian Schulz</title>
-  <meta name="description" content="Platform Engineer building AI-native infrastructure. 93 Rust crates, 8 AI agents, bare-metal Kubernetes.">
+  <meta name="description" content="Platform Engineer focused on Rust, Kubernetes, and AI-native infrastructure. Production systems, automation, and self-hosted platforms.">
   <meta property="og:title" content="Florian Schulz — Platform Engineer">
-  <meta property="og:description" content="I build the kind of platform most companies outsource to three vendors.">
-  <meta property="og:image" content="https://securanido.com/forge-dashboard.png">
+  <meta property="og:description" content="Platform Engineer focused on Rust, Kubernetes, and AI-native infrastructure.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://securanido.com">
   <meta name="color-scheme" content="dark light">
@@ -46,7 +45,7 @@
     a { color: var(--blue); text-decoration: none; transition: color 0.15s; }
     a:hover { color: var(--teal); }
     a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 2px; }
-    .wrap { max-width: 680px; margin: 0 auto; padding: 0 24px; }
+    .wrap { max-width: 760px; margin: 0 auto; padding: 0 28px; }
     .skip-link { position: absolute; top: -40px; left: 0; background: var(--blue); color: #fff; padding: 8px 16px; z-index: 100; font-size: 13px; }
     .skip-link:focus { top: 0; }
     .gradient-bar { height: 2px; background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 50%, var(--amber) 100%); opacity: 0.6; }
@@ -54,39 +53,34 @@
     .topbar button { background: var(--toggle-bg); border: 1px solid var(--border); color: var(--mono); padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
     .topbar button:hover { border-color: var(--border-accent); color: var(--bright); }
     .topbar button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
-    .hero { padding: 64px 0 48px; }
-    .hero .name { font-size: 13px; font-weight: 500; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
-    .hero h1 { font-size: 34px; font-weight: 700; color: var(--bright); line-height: 1.2; margin-bottom: 20px; max-width: 580px; text-wrap: balance; }
-    .hero .lead { font-size: 16px; color: var(--text); max-width: 500px; margin-bottom: 28px; }
+    .hero { padding: 76px 0 56px; }
+    .hero .name { font-size: 12px; font-weight: 600; color: var(--blue); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 14px; }
+    .hero h1 { font-size: 38px; font-weight: 700; color: var(--bright); line-height: 1.14; margin-bottom: 18px; max-width: 620px; text-wrap: balance; }
+    .hero .lead { font-size: 16px; color: var(--text); max-width: 560px; margin-bottom: 14px; }
+    .hero .sublead { font-size: 14px; color: var(--dim); max-width: 560px; margin-bottom: 30px; }
     .hero .meta { display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--dim); }
-    .hero .available { color: var(--teal); }
-    .hero .available::before { content: ""; display: inline-block; width: 6px; height: 6px; background: var(--teal); border-radius: 50%; margin-right: 6px; vertical-align: middle; animation: pulse 2s ease-in-out infinite; }
-    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
     .links { display: flex; gap: 20px; padding: 18px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
     .links a { font-size: 13px; font-weight: 500; color: var(--mono); }
     .links a:hover { color: var(--bright); }
-    .section { padding: 48px 0; border-bottom: 1px solid var(--border); }
+    .section { padding: 54px 0; border-bottom: 1px solid var(--border); }
     .section:last-of-type { border-bottom: none; }
     .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
     .section-header h2 { font-size: 13px; font-weight: 600; color: var(--dim); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
     .section-header .line { flex: 1; height: 1px; background: var(--border); }
-    .numbers { display: flex; gap: 32px; flex-wrap: wrap; margin-bottom: 32px; padding: 20px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
-    .num-item .val { font-size: 26px; font-weight: 700; color: var(--bright); font-variant-numeric: tabular-nums; line-height: 1; }
+    .numbers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin-bottom: 32px; padding: 20px 24px; background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%); border: 1px solid var(--border); border-radius: 10px; }
+    .num-item .val { font-size: 24px; font-weight: 700; color: var(--bright); font-variant-numeric: tabular-nums; line-height: 1; }
     .num-item:nth-child(1) .val { color: var(--blue); }
     .num-item:nth-child(4) .val { color: var(--teal); }
-    .num-item .lbl { font-size: 11px; color: var(--dim); margin-top: 4px; }
-    .prose { font-size: 15px; color: var(--text); line-height: 1.75; max-width: 580px; }
+    .num-item .lbl { font-size: 11px; color: var(--dim); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+    .prose { font-size: 15px; color: var(--text); line-height: 1.78; max-width: 620px; }
     .prose + .prose { margin-top: 14px; }
     .prose strong { color: var(--bright); font-weight: 600; }
-    .preview { margin-top: 32px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-accent); background: var(--surface); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
-    .preview img { width: 100%; height: auto; display: block; opacity: 0.92; transition: opacity 0.3s; }
-    .preview:hover img { opacity: 1; }
-    .preview-caption { font-size: 12px; color: var(--dim); margin-top: 12px; }
+    .note { margin-top: 14px; font-size: 12px; color: var(--dim); font-family: 'JetBrains Mono', monospace; }
     .project-list { display: flex; flex-direction: column; }
-    .project-row { display: flex; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--border); gap: 16px; }
+    .project-row { display: flex; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--border); gap: 16px; }
     .project-row:last-child { border-bottom: none; }
     .project-row a { font-size: 15px; font-weight: 600; color: var(--bright); white-space: nowrap; }
-    .project-row .desc { font-size: 13px; color: var(--dim); flex: 1; }
+    .project-row .desc { font-size: 13px; color: var(--dim); flex: 1; line-height: 1.65; }
     .project-row .tag { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--mono); padding: 2px 8px; background: var(--surface); border-radius: 4px; border: 1px solid var(--border); }
     .stack-grid { display: flex; flex-wrap: wrap; gap: 6px; }
     .stack-chip { font-size: 12px; padding: 5px 12px; border-radius: 4px; color: var(--mono); border: 1px solid var(--border); background: var(--surface); transition: border-color 0.15s; }
@@ -108,9 +102,9 @@
     .legal-page p { font-size: 14px; color: var(--text); line-height: 1.7; margin-bottom: 10px; }
     .legal-page .back { font-size: 13px; margin-bottom: 24px; display: inline-block; }
     @media (max-width: 520px) {
-      .hero { padding: 48px 0 32px; }
-      .hero h1 { font-size: 26px; }
-      .numbers { gap: 20px; padding: 16px; }
+      .hero { padding: 52px 0 36px; }
+      .hero h1 { font-size: 30px; }
+      .numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 16px; }
       .num-item .val { font-size: 20px; }
       .project-row { flex-wrap: wrap; }
     }
@@ -131,14 +125,16 @@
     <div id="portfolio">
       <section class="hero">
         <div class="name">Florian Schulz</div>
-        <h1 id="hero-en" class="i18n-en">I build the platform most companies outsource to three vendors.</h1>
-        <h1 id="hero-de" class="i18n-de" style="display:none">Ich baue die Plattform, die andere an drei Dienstleister vergeben.</h1>
-        <p class="lead i18n-en">Platform engineer in Göttingen, Germany. 14 years shipping infrastructure. One person, bare metal to production UI. Every layer owned, every line in Git.</p>
-        <p class="lead i18n-de" style="display:none">Platform Engineer in Göttingen. 14 Jahre Infrastruktur. Eine Person, vom Bare Metal bis zur Produktions-UI. Jede Schicht unter Kontrolle, jede Zeile in Git.</p>
+        <h1 id="hero-en" class="i18n-en">Platform Engineer focused on Rust, Kubernetes, and AI-native infrastructure.</h1>
+        <h1 id="hero-de" class="i18n-de" style="display:none">Platform Engineer mit Fokus auf Rust, Kubernetes und KI-native Infrastruktur.</h1>
+        <p class="lead i18n-en">I build and operate production systems from platform foundations to user-facing tools, with a focus on reliability, automation, and self-hosted infrastructure.</p>
+        <p class="lead i18n-de" style="display:none">Ich entwickle und betreibe Produktionssysteme von der Plattform-Basis bis zu nutzerseitigen Tools, mit Fokus auf Zuverlässigkeit, Automatisierung und selbst gehostete Infrastruktur.</p>
+        <p class="sublead i18n-en">Based in Göttingen, Germany. Product-minded platform work across infrastructure, developer tooling, and AI-enabled systems.</p>
+        <p class="sublead i18n-de" style="display:none">Ansässig in Göttingen. Produktorientierte Plattformarbeit an Infrastruktur, Developer Tooling und KI-gestützten Systemen.</p>
         <div class="meta">
           <span>Göttingen, DE</span>
-          <span class="i18n-en">14+ years</span><span class="i18n-de" style="display:none">14+ Jahre</span>
-          <span class="available i18n-en">Open to opportunities</span><span class="available i18n-de" style="display:none">Offen für Neues</span>
+          <span class="i18n-en">14+ years experience</span><span class="i18n-de" style="display:none">14+ Jahre Erfahrung</span>
+          <span class="i18n-en">Platform · Infrastructure · AI Systems</span><span class="i18n-de" style="display:none">Plattform · Infrastruktur · KI-Systeme</span>
         </div>
       </section>
 
@@ -150,25 +146,17 @@
       </nav>
 
       <section class="section">
-        <div class="section-header"><h2>Forge Platform</h2><div class="line"></div></div>
+        <div class="section-header"><h2 class="i18n-en">Selected Platform Work</h2><h2 class="i18n-de" style="display:none">Ausgewählte Plattformarbeit</h2><div class="line"></div></div>
         <div class="numbers" role="list">
-          <div class="num-item" role="listitem"><div class="val">94</div><div class="lbl i18n-en">Rust crates</div><div class="lbl i18n-de" style="display:none">Rust Crates</div></div>
-          <div class="num-item" role="listitem"><div class="val">186</div><div class="lbl i18n-en">Dashboard pages</div><div class="lbl i18n-de" style="display:none">Dashboard-Seiten</div></div>
-          <div class="num-item" role="listitem"><div class="val">267</div><div class="lbl">K8s Pods</div></div>
-          <div class="num-item" role="listitem"><div class="val">8</div><div class="lbl i18n-en">AI agents</div><div class="lbl i18n-de" style="display:none">KI-Agenten</div></div>
-          <div class="num-item" role="listitem"><div class="val">36K+</div><div class="lbl">Tests</div></div>
+          <div class="num-item" role="listitem"><div class="val">Rust</div><div class="lbl i18n-en">systems engineering</div><div class="lbl i18n-de" style="display:none">Systementwicklung</div></div>
+          <div class="num-item" role="listitem"><div class="val">K8s</div><div class="lbl i18n-en">self-hosted operations</div><div class="lbl i18n-de" style="display:none">Self-Hosted Betrieb</div></div>
+          <div class="num-item" role="listitem"><div class="val">AI</div><div class="lbl i18n-en">agent workflows</div><div class="lbl i18n-de" style="display:none">Agenten-Workflows</div></div>
+          <div class="num-item" role="listitem"><div class="val">UI</div><div class="lbl i18n-en">operator tooling</div><div class="lbl i18n-de" style="display:none">Operator-Tools</div></div>
         </div>
-        <p class="prose i18n-en">A self-hosted operating platform running on bare-metal Kubernetes. <strong>93 Rust crates</strong> that each work as both a CLI tool on my laptop and a microservice in production. Same code, two runtimes.</p>
-        <p class="prose i18n-de" style="display:none">Eine selbst gehostete Plattform auf Bare-Metal Kubernetes. <strong>93 Rust Crates</strong>, die jeweils als CLI-Tool auf meinem Laptop und als Microservice in Produktion laufen. Gleicher Code, zwei Laufzeiten.</p>
-        <p class="prose i18n-en">The AI agents don't just answer questions. They operate infrastructure, analyze code, monitor markets, and coordinate through a custom agent bus. Multi-model: Claude, Gemini, Ollama. Protocol-native: MCP, ACP, A2A.</p>
-        <p class="prose i18n-de" style="display:none">Die KI-Agenten beantworten nicht nur Fragen. Sie betreiben Infrastruktur, analysieren Code, beobachten Märkte und koordinieren sich über einen eigenen Agent Bus. Multi-Modell: Claude, Gemini, Ollama. Protokoll-nativ: MCP, ACP, A2A.</p>
-        <p class="prose i18n-en">The dashboard is <strong>SvelteKit 2 + Svelte 5</strong>, 126K lines, 2600+ i18n keys. Real-time WebSocket, 85 API integrations, GitOps visibility.</p>
-        <p class="prose i18n-de" style="display:none">Das Dashboard ist <strong>SvelteKit 2 + Svelte 5</strong>, 75K Zeilen, 2600+ i18n-Keys. Echtzeit-WebSocket, 85 API-Integrationen, GitOps-Übersicht.</p>
-        <div class="preview">
-          <img src="forge-dashboard.png" alt="Forge Platform Dashboard showing daily briefing, service health, fleet status, and quick actions" loading="lazy" width="1400" height="1198">
-        </div>
-        <p class="preview-caption i18n-en">Live dashboard running on bare-metal Kubernetes. 186 pages, all self-hosted.</p>
-        <p class="preview-caption i18n-de" style="display:none">Live-Dashboard auf Bare-Metal Kubernetes. 106 Seiten, komplett selbst gehostet.</p>
+        <p class="prose i18n-en">I build platform systems that connect infrastructure, automation, and developer-facing tools into one operational workflow. The work spans backend services, deployment pipelines, internal products, and the interfaces people use to run them.</p>
+        <p class="prose i18n-de" style="display:none">Ich entwickle Plattformsysteme, die Infrastruktur, Automatisierung und Entwickler-Tools in einem operativen Workflow verbinden. Die Arbeit reicht von Backend-Services über Deployment-Pipelines bis zu internen Produkten und den Oberflächen, mit denen sie betrieben werden.</p>
+        <p class="prose i18n-en">My focus is long-term maintainability: systems that are observable, operable, and understandable by design. That includes self-hosted infrastructure, Git-based delivery, and AI-enabled workflows where they provide real leverage.</p>
+        <p class="prose i18n-de" style="display:none">Mein Fokus liegt auf langfristiger Wartbarkeit: Systeme, die von Anfang an beobachtbar, betreibbar und verständlich sind. Dazu gehören selbst gehostete Infrastruktur, Git-basierte Auslieferung und KI-gestützte Workflows dort, wo sie echten Nutzen bringen.</p>
       </section>
 
       <section class="section">
@@ -176,20 +164,20 @@
         <div class="project-list">
           <div class="project-row">
             <a href="https://github.com/nash87/parkhub-rust">ParkHub</a>
-            <span class="desc i18n-en">Self-hosted parking management. Single binary, 10 languages, GDPR.</span>
-            <span class="desc i18n-de" style="display:none">Selbst gehostete Parkplatzverwaltung. Ein Binary, 10 Sprachen, DSGVO.</span>
+            <span class="desc i18n-en">A self-hosted parking platform built for reliability, portability, and straightforward operations.</span>
+            <span class="desc i18n-de" style="display:none">Eine selbst gehostete Parkplatzplattform mit Fokus auf Zuverlässigkeit, Portabilität und einfachem Betrieb.</span>
             <span class="tag">Rust</span>
           </div>
           <div class="project-row">
             <a href="https://github.com/nash87/parkhub-php">ParkHub PHP</a>
-            <span class="desc i18n-en">Same product for shared hosting. Laravel 12.</span>
-            <span class="desc i18n-de" style="display:none">Gleiches Produkt für Shared Hosting. Laravel 12.</span>
+            <span class="desc i18n-en">A shared-hosting-friendly edition with the same product intent in a more accessible deployment model.</span>
+            <span class="desc i18n-de" style="display:none">Eine Shared-Hosting-fähige Edition mit derselben Produktidee in einem zugänglicheren Betriebsmodell.</span>
             <span class="tag">PHP</span>
           </div>
           <div class="project-row">
             <a href="https://github.com/nash87/infracraft-demos">infracraft</a>
-            <span class="desc i18n-en">Both editions running side by side, live.</span>
-            <span class="desc i18n-de" style="display:none">Beide Editionen live nebeneinander.</span>
+            <span class="desc i18n-en">Live demos and public-facing product surfaces used to communicate technical work more clearly.</span>
+            <span class="desc i18n-de" style="display:none">Live-Demos und öffentliche Produktflächen, um technische Arbeit klarer zu vermitteln.</span>
             <span class="tag">Astro</span>
           </div>
         </div>
@@ -218,16 +206,13 @@
       </section>
 
       <section class="section">
-        <div class="section-header"><h2 class="i18n-en">Infrastructure</h2><h2 class="i18n-de" style="display:none">Infrastruktur</h2><div class="line"></div></div>
+        <div class="section-header"><h2 class="i18n-en">Focus Areas</h2><h2 class="i18n-de" style="display:none">Schwerpunkte</h2><div class="line"></div></div>
         <table class="infra-table">
-          <tr><td>Compute</td><td>3-node kubeadm, bare metal</td></tr>
-          <tr><td>GitOps</td><td class="i18n-en">Flux CD, every change via Git</td><td class="i18n-de" style="display:none">Flux CD, jede Änderung über Git</td></tr>
-          <tr><td class="i18n-en">Network</td><td class="i18n-de" style="display:none">Netzwerk</td><td>Cilium eBPF + Hubble</td></tr>
-          <tr><td>Secrets</td><td>Vault HA + ESO</td></tr>
-          <tr><td>Policy</td><td>Kyverno</td></tr>
-          <tr><td>VPN</td><td>Defguard WireGuard</td></tr>
-          <tr><td>Registry</td><td>Zot OCI</td></tr>
-          <tr><td>AI</td><td>MCP + ACP + A2A</td></tr>
+          <tr><td class="i18n-en">Platforms</td><td class="i18n-de" style="display:none">Plattformen</td><td class="i18n-en">Self-hosted infrastructure, internal tooling, and production operations</td><td class="i18n-de" style="display:none">Selbst gehostete Infrastruktur, interne Tools und Produktionsbetrieb</td></tr>
+          <tr><td>Backend</td><td class="i18n-en">Rust services, APIs, automation, and systems integration</td><td class="i18n-de" style="display:none">Rust-Services, APIs, Automatisierung und Systemintegration</td></tr>
+          <tr><td>Frontend</td><td class="i18n-en">Operational interfaces built with modern web stacks</td><td class="i18n-de" style="display:none">Operative Oberflächen mit modernen Web-Stacks</td></tr>
+          <tr><td>Delivery</td><td class="i18n-en">Git-based workflows, deployment automation, and maintainable release processes</td><td class="i18n-de" style="display:none">Git-basierte Workflows, Deployment-Automatisierung und wartbare Release-Prozesse</td></tr>
+          <tr><td>AI</td><td class="i18n-en">Practical agent workflows and model integrations for real operational use</td><td class="i18n-de" style="display:none">Praktische Agenten-Workflows und Modell-Integrationen für echten operativen Nutzen</td></tr>
         </table>
       </section>
     </div>
