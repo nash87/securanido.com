@@ -1,476 +1,320 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-theme="dark">
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Florian Schulz</title>
-  <meta name="description" content="Platform Engineer building AI-native infrastructure. 93 Rust crates, 8 AI agents, bare-metal Kubernetes. Göttingen, Germany.">
+  <meta name="description" content="Platform Engineer building AI-native infrastructure. 93 Rust crates, 8 AI agents, bare-metal Kubernetes.">
   <meta property="og:title" content="Florian Schulz — Platform Engineer">
-  <meta property="og:description" content="I build the kind of platform most companies outsource to three vendors and a consulting firm.">
+  <meta property="og:description" content="I build the kind of platform most companies outsource to three vendors.">
+  <meta property="og:image" content="https://securanido.com/forge-dashboard.png">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://securanido.com">
-  <meta property="og:image" content="https://securanido.com/forge-dashboard.png">
+  <meta name="color-scheme" content="dark light">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --bg: #08080c;
-      --surface: #0f0f15;
-      --surface-2: #15151e;
-      --border: rgba(255,255,255,0.06);
-      --border-accent: rgba(147,197,253,0.12);
-      --text: #c4c4cc;
-      --bright: #f0f0f4;
-      --dim: #5a5a68;
-      --mono: #8888a0;
-      --blue: #7cacf8;
-      --blue-dim: rgba(124,172,248,0.08);
-      --teal: #5eead4;
-      --teal-dim: rgba(94,234,212,0.06);
-      --amber: #fbbf24;
+    [data-theme="dark"] {
+      --bg: #08080c; --surface: #0f0f15; --surface-2: #15151e;
+      --border: rgba(255,255,255,0.06); --border-accent: rgba(147,197,253,0.12);
+      --text: #c4c4cc; --bright: #f0f0f4; --dim: #5a5a68; --mono: #8888a0;
+      --blue: #7cacf8; --blue-dim: rgba(124,172,248,0.08);
+      --teal: #5eead4; --amber: #fbbf24; --toggle-bg: #1e1e2e;
     }
-
+    [data-theme="light"] {
+      --bg: #fafafa; --surface: #ffffff; --surface-2: #f4f4f5;
+      --border: rgba(0,0,0,0.08); --border-accent: rgba(37,99,235,0.15);
+      --text: #3f3f46; --bright: #18181b; --dim: #71717a; --mono: #52525b;
+      --blue: #2563eb; --blue-dim: rgba(37,99,235,0.06);
+      --teal: #0d9488; --amber: #d97706; --toggle-bg: #e4e4e7;
+    }
+    [data-theme="high-contrast"] {
+      --bg: #000; --surface: #111; --surface-2: #1a1a1a;
+      --border: rgba(255,255,255,0.2); --border-accent: rgba(255,255,100,0.3);
+      --text: #fff; --bright: #fff; --dim: #bbb; --mono: #ddd;
+      --blue: #6eb5ff; --blue-dim: rgba(110,181,255,0.12);
+      --teal: #5eead4; --amber: #fbbf24; --toggle-bg: #333;
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+    }
     html { scroll-behavior: smooth; }
-
-    body {
-      font-family: 'Space Grotesk', system-ui, sans-serif;
-      background: var(--bg);
-      color: var(--text);
-      line-height: 1.65;
-      -webkit-font-smoothing: antialiased;
-      font-size: 15px;
-    }
-
-    ::selection { background: rgba(124,172,248,0.2); color: var(--bright); }
-
+    body { font-family: 'Space Grotesk', system-ui, sans-serif; background: var(--bg); color: var(--text); line-height: 1.65; -webkit-font-smoothing: antialiased; font-size: 15px; transition: background 0.2s, color 0.2s; }
+    ::selection { background: rgba(124,172,248,0.25); color: var(--bright); }
     a { color: var(--blue); text-decoration: none; transition: color 0.15s; }
     a:hover { color: var(--teal); }
-    code, .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; }
-
+    a:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; border-radius: 2px; }
     .wrap { max-width: 680px; margin: 0 auto; padding: 0 24px; }
-
-    /* Subtle top gradient */
-    .gradient-bar {
-      height: 2px;
-      background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 50%, var(--amber) 100%);
-      opacity: 0.6;
-    }
-
-    /* Hero */
-    .hero {
-      padding: 80px 0 56px;
-    }
-    .hero .name {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--blue);
-      letter-spacing: 0.1em;
-      text-transform: uppercase;
-      margin-bottom: 16px;
-    }
-    .hero h1 {
-      font-size: 34px;
-      font-weight: 700;
-      color: var(--bright);
-      line-height: 1.2;
-      margin-bottom: 20px;
-      max-width: 580px;
-      text-wrap: balance;
-    }
-    .hero .lead {
-      font-size: 16px;
-      color: var(--text);
-      max-width: 500px;
-      margin-bottom: 28px;
-    }
-    .hero .meta {
-      display: flex;
-      gap: 20px;
-      flex-wrap: wrap;
-      font-size: 13px;
-      color: var(--dim);
-    }
-    .hero .meta .available {
-      color: var(--teal);
-    }
-    .hero .meta .available::before {
-      content: "";
-      display: inline-block;
-      width: 6px; height: 6px;
-      background: var(--teal);
-      border-radius: 50%;
-      margin-right: 6px;
-      vertical-align: middle;
-      animation: pulse 2s ease-in-out infinite;
-    }
-    @keyframes pulse {
-      0%, 100% { opacity: 1; }
-      50% { opacity: 0.3; }
-    }
-
-    /* Links */
-    .links {
-      display: flex;
-      gap: 20px;
-      padding: 18px 0;
-      border-top: 1px solid var(--border);
-      border-bottom: 1px solid var(--border);
-    }
-    .links a {
-      font-size: 13px;
-      font-weight: 500;
-      color: var(--mono);
-      transition: color 0.15s;
-    }
+    .skip-link { position: absolute; top: -40px; left: 0; background: var(--blue); color: #fff; padding: 8px 16px; z-index: 100; font-size: 13px; }
+    .skip-link:focus { top: 0; }
+    .gradient-bar { height: 2px; background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 50%, var(--amber) 100%); opacity: 0.6; }
+    .topbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--border); }
+    .topbar button { background: var(--toggle-bg); border: 1px solid var(--border); color: var(--mono); padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .topbar button:hover { border-color: var(--border-accent); color: var(--bright); }
+    .topbar button:focus-visible { outline: 2px solid var(--blue); outline-offset: 2px; }
+    .hero { padding: 64px 0 48px; }
+    .hero .name { font-size: 13px; font-weight: 500; color: var(--blue); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 16px; }
+    .hero h1 { font-size: 34px; font-weight: 700; color: var(--bright); line-height: 1.2; margin-bottom: 20px; max-width: 580px; text-wrap: balance; }
+    .hero .lead { font-size: 16px; color: var(--text); max-width: 500px; margin-bottom: 28px; }
+    .hero .meta { display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--dim); }
+    .hero .available { color: var(--teal); }
+    .hero .available::before { content: ""; display: inline-block; width: 6px; height: 6px; background: var(--teal); border-radius: 50%; margin-right: 6px; vertical-align: middle; animation: pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.3; } }
+    .links { display: flex; gap: 20px; padding: 18px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
+    .links a { font-size: 13px; font-weight: 500; color: var(--mono); }
     .links a:hover { color: var(--bright); }
-
-    /* Section */
-    .section {
-      padding: 48px 0;
-      border-bottom: 1px solid var(--border);
-    }
+    .section { padding: 48px 0; border-bottom: 1px solid var(--border); }
     .section:last-of-type { border-bottom: none; }
-    .section-header {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      margin-bottom: 24px;
-    }
-    .section-header h2 {
-      font-size: 13px;
-      font-weight: 600;
-      color: var(--dim);
-      letter-spacing: 0.08em;
-      text-transform: uppercase;
-    }
-    .section-header .line {
-      flex: 1;
-      height: 1px;
-      background: var(--border);
-    }
-
-    /* Numbers row */
-    .numbers {
-      display: flex;
-      gap: 32px;
-      flex-wrap: wrap;
-      margin-bottom: 32px;
-      padding: 20px 24px;
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-    }
-    .num-item .val {
-      font-size: 26px;
-      font-weight: 700;
-      color: var(--bright);
-      font-variant-numeric: tabular-nums;
-      line-height: 1;
-    }
+    .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
+    .section-header h2 { font-size: 13px; font-weight: 600; color: var(--dim); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
+    .section-header .line { flex: 1; height: 1px; background: var(--border); }
+    .numbers { display: flex; gap: 32px; flex-wrap: wrap; margin-bottom: 32px; padding: 20px 24px; background: var(--surface); border: 1px solid var(--border); border-radius: 8px; }
+    .num-item .val { font-size: 26px; font-weight: 700; color: var(--bright); font-variant-numeric: tabular-nums; line-height: 1; }
     .num-item:nth-child(1) .val { color: var(--blue); }
     .num-item:nth-child(4) .val { color: var(--teal); }
-    .num-item .lbl {
-      font-size: 11px;
-      color: var(--dim);
-      margin-top: 4px;
-      letter-spacing: 0.02em;
-    }
-
-    /* Prose */
-    .prose {
-      font-size: 15px;
-      color: var(--text);
-      line-height: 1.75;
-      max-width: 580px;
-    }
+    .num-item .lbl { font-size: 11px; color: var(--dim); margin-top: 4px; }
+    .prose { font-size: 15px; color: var(--text); line-height: 1.75; max-width: 580px; }
     .prose + .prose { margin-top: 14px; }
     .prose strong { color: var(--bright); font-weight: 600; }
-    .prose .hl { color: var(--blue); font-weight: 500; }
-
-    /* Preview */
-    .preview {
-      margin-top: 32px;
-      position: relative;
-      border-radius: 8px;
-      overflow: hidden;
-      border: 1px solid var(--border-accent);
-      background: var(--surface);
-      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(124,172,248,0.05);
-    }
-    .preview img {
-      width: 100%;
-      height: auto;
-      display: block;
-      opacity: 0.9;
-      transition: opacity 0.3s;
-    }
+    .preview { margin-top: 32px; border-radius: 8px; overflow: hidden; border: 1px solid var(--border-accent); background: var(--surface); box-shadow: 0 8px 32px rgba(0,0,0,0.3); }
+    .preview img { width: 100%; height: auto; display: block; opacity: 0.92; transition: opacity 0.3s; }
     .preview:hover img { opacity: 1; }
-    .preview-bar {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 14px;
-      background: var(--surface-2);
-      border-bottom: 1px solid var(--border);
-      font-size: 11px;
-      color: var(--dim);
-    }
-    .preview-bar .dots {
-      display: flex;
-      gap: 5px;
-    }
-    .preview-bar .dot {
-      width: 8px; height: 8px;
-      border-radius: 50%;
-      background: var(--border);
-    }
-    .preview-bar .dot:nth-child(1) { background: #ef4444; opacity: 0.5; }
-    .preview-bar .dot:nth-child(2) { background: #eab308; opacity: 0.5; }
-    .preview-bar .dot:nth-child(3) { background: #22c55e; opacity: 0.5; }
-    .preview-label {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--mono);
-    }
-    .preview-caption {
-      font-size: 12px;
-      color: var(--dim);
-      margin-top: 12px;
-    }
-
-    /* Projects */
+    .preview-caption { font-size: 12px; color: var(--dim); margin-top: 12px; }
     .project-list { display: flex; flex-direction: column; }
-    .project-row {
-      display: flex;
-      align-items: baseline;
-      padding: 14px 0;
-      border-bottom: 1px solid var(--border);
-      gap: 16px;
-    }
+    .project-row { display: flex; align-items: baseline; padding: 14px 0; border-bottom: 1px solid var(--border); gap: 16px; }
     .project-row:last-child { border-bottom: none; }
-    .project-row a {
-      font-size: 15px;
-      font-weight: 600;
-      color: var(--bright);
-      white-space: nowrap;
-    }
-    .project-row .desc {
-      font-size: 13px;
-      color: var(--dim);
-      flex: 1;
-    }
-    .project-row .tag {
-      font-size: 11px;
-      font-family: 'JetBrains Mono', monospace;
-      color: var(--mono);
-      padding: 2px 8px;
-      background: var(--surface);
-      border-radius: 4px;
-      border: 1px solid var(--border);
-      white-space: nowrap;
-    }
-
-    /* Stack */
-    .stack-grid {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
-    }
-    .stack-chip {
-      font-size: 12px;
-      padding: 5px 12px;
-      border-radius: 4px;
-      color: var(--mono);
-      border: 1px solid var(--border);
-      background: var(--surface);
-      transition: border-color 0.15s, color 0.15s;
-    }
+    .project-row a { font-size: 15px; font-weight: 600; color: var(--bright); white-space: nowrap; }
+    .project-row .desc { font-size: 13px; color: var(--dim); flex: 1; }
+    .project-row .tag { font-size: 11px; font-family: 'JetBrains Mono', monospace; color: var(--mono); padding: 2px 8px; background: var(--surface); border-radius: 4px; border: 1px solid var(--border); }
+    .stack-grid { display: flex; flex-wrap: wrap; gap: 6px; }
+    .stack-chip { font-size: 12px; padding: 5px 12px; border-radius: 4px; color: var(--mono); border: 1px solid var(--border); background: var(--surface); transition: border-color 0.15s; }
     .stack-chip:hover { border-color: var(--border-accent); color: var(--text); }
     .stack-chip.primary { color: var(--blue); border-color: rgba(124,172,248,0.15); background: var(--blue-dim); }
-
-    /* Infra table */
-    .infra-table {
-      width: 100%;
-      font-size: 13px;
-      border-collapse: collapse;
-    }
-    .infra-table td {
-      padding: 10px 0;
-      border-bottom: 1px solid var(--border);
-      vertical-align: top;
-    }
-    .infra-table td:first-child {
-      color: var(--mono);
-      width: 110px;
-      font-weight: 500;
-      font-size: 12px;
-      text-transform: uppercase;
-      letter-spacing: 0.04em;
-    }
+    .infra-table { width: 100%; font-size: 13px; border-collapse: collapse; }
+    .infra-table td { padding: 10px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
+    .infra-table td:first-child { color: var(--mono); width: 110px; font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
     .infra-table td:last-child { color: var(--text); }
     .infra-table tr:last-child td { border-bottom: none; }
-
-    /* Footer */
-    .footer {
-      padding: 40px 0;
-      font-size: 12px;
-      color: var(--dim);
-      border-top: 1px solid var(--border);
-    }
-
-    /* Mobile */
+    .legal { padding: 40px 0; font-size: 12px; color: var(--dim); border-top: 1px solid var(--border); }
+    .legal-links { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 12px; }
+    .legal-links a { color: var(--mono); font-size: 12px; }
+    .legal-links a:hover { color: var(--bright); }
+    .legal-page { display: none; padding: 48px 0; }
+    .legal-page.active { display: block; }
+    .legal-page h2 { font-size: 20px; font-weight: 700; color: var(--bright); margin-bottom: 16px; }
+    .legal-page h3 { font-size: 15px; font-weight: 600; color: var(--bright); margin: 20px 0 8px; }
+    .legal-page p { font-size: 14px; color: var(--text); line-height: 1.7; margin-bottom: 10px; }
+    .legal-page .back { font-size: 13px; margin-bottom: 24px; display: inline-block; }
     @media (max-width: 520px) {
-      .hero { padding: 56px 0 40px; }
+      .hero { padding: 48px 0 32px; }
       .hero h1 { font-size: 26px; }
       .numbers { gap: 20px; padding: 16px; }
       .num-item .val { font-size: 20px; }
       .project-row { flex-wrap: wrap; }
-      .stack-grid { gap: 4px; }
     }
   </style>
 </head>
 <body>
 
+<a href="#main" class="skip-link">Skip to content</a>
 <div class="gradient-bar"></div>
 
 <div class="wrap">
+  <nav class="topbar" aria-label="Site controls">
+    <button onclick="toggleLang()" id="langBtn" aria-label="Switch language">EN</button>
+    <button onclick="cycleTheme()" id="themeBtn" aria-label="Toggle color theme">Dark</button>
+  </nav>
 
-  <section class="hero">
-    <div class="name">Florian Schulz</div>
-    <h1>I build the platform most companies outsource to three vendors.</h1>
-    <p class="lead">
-      Platform engineer in Göttingen, Germany. 14 years shipping infrastructure.
-      One person, bare metal to production UI. Every layer owned, every line in Git.
-    </p>
-    <div class="meta">
-      <span>Göttingen, DE</span>
-      <span>14+ years</span>
-      <span class="available">Open to opportunities</span>
+  <main id="main">
+    <div id="portfolio">
+      <section class="hero">
+        <div class="name">Florian Schulz</div>
+        <h1 id="hero-en" class="i18n-en">I build the platform most companies outsource to three vendors.</h1>
+        <h1 id="hero-de" class="i18n-de" style="display:none">Ich baue die Plattform, die andere an drei Dienstleister vergeben.</h1>
+        <p class="lead i18n-en">Platform engineer in Göttingen, Germany. 14 years shipping infrastructure. One person, bare metal to production UI. Every layer owned, every line in Git.</p>
+        <p class="lead i18n-de" style="display:none">Platform Engineer in Göttingen. 14 Jahre Infrastruktur. Eine Person, vom Bare Metal bis zur Produktions-UI. Jede Schicht unter Kontrolle, jede Zeile in Git.</p>
+        <div class="meta">
+          <span>Göttingen, DE</span>
+          <span class="i18n-en">14+ years</span><span class="i18n-de" style="display:none">14+ Jahre</span>
+          <span class="available i18n-en">Open to opportunities</span><span class="available i18n-de" style="display:none">Offen für Neues</span>
+        </div>
+      </section>
+
+      <nav class="links" aria-label="External links">
+        <a href="https://github.com/nash87" rel="noopener">GitHub</a>
+        <a href="https://www.linkedin.com/in/florian-schulz-a312bb137" rel="noopener">LinkedIn</a>
+        <a href="mailto:fschulz0787@gmail.com">Email</a>
+        <a href="https://nash87.github.io/infracraft-demos" rel="noopener">Demos</a>
+      </nav>
+
+      <section class="section">
+        <div class="section-header"><h2>Forge Platform</h2><div class="line"></div></div>
+        <div class="numbers" role="list">
+          <div class="num-item" role="listitem"><div class="val">93</div><div class="lbl i18n-en">Rust crates</div><div class="lbl i18n-de" style="display:none">Rust Crates</div></div>
+          <div class="num-item" role="listitem"><div class="val">106</div><div class="lbl i18n-en">Dashboard pages</div><div class="lbl i18n-de" style="display:none">Dashboard-Seiten</div></div>
+          <div class="num-item" role="listitem"><div class="val">267</div><div class="lbl">K8s Pods</div></div>
+          <div class="num-item" role="listitem"><div class="val">8</div><div class="lbl i18n-en">AI agents</div><div class="lbl i18n-de" style="display:none">KI-Agenten</div></div>
+          <div class="num-item" role="listitem"><div class="val">36K+</div><div class="lbl">Tests</div></div>
+        </div>
+        <p class="prose i18n-en">A self-hosted operating platform running on bare-metal Kubernetes. <strong>93 Rust crates</strong> that each work as both a CLI tool on my laptop and a microservice in production. Same code, two runtimes.</p>
+        <p class="prose i18n-de" style="display:none">Eine selbst gehostete Plattform auf Bare-Metal Kubernetes. <strong>93 Rust Crates</strong>, die jeweils als CLI-Tool auf meinem Laptop und als Microservice in Produktion laufen. Gleicher Code, zwei Laufzeiten.</p>
+        <p class="prose i18n-en">The AI agents don't just answer questions. They operate infrastructure, analyze code, monitor markets, and coordinate through a custom agent bus. Multi-model: Claude, Gemini, Ollama. Protocol-native: MCP, ACP, A2A.</p>
+        <p class="prose i18n-de" style="display:none">Die KI-Agenten beantworten nicht nur Fragen. Sie betreiben Infrastruktur, analysieren Code, beobachten Märkte und koordinieren sich über einen eigenen Agent Bus. Multi-Modell: Claude, Gemini, Ollama. Protokoll-nativ: MCP, ACP, A2A.</p>
+        <p class="prose i18n-en">The dashboard is <strong>SvelteKit 2 + Svelte 5</strong>, 75K lines, 1000+ i18n keys. Real-time WebSocket, 85 API integrations, GitOps visibility.</p>
+        <p class="prose i18n-de" style="display:none">Das Dashboard ist <strong>SvelteKit 2 + Svelte 5</strong>, 75K Zeilen, 1000+ i18n-Keys. Echtzeit-WebSocket, 85 API-Integrationen, GitOps-Übersicht.</p>
+        <div class="preview">
+          <img src="forge-dashboard.png" alt="Forge Platform Dashboard showing daily briefing, service health, fleet status, and quick actions" loading="lazy" width="1400" height="1191">
+        </div>
+        <p class="preview-caption i18n-en">Live dashboard running on bare-metal Kubernetes. 106 pages, all self-hosted.</p>
+        <p class="preview-caption i18n-de" style="display:none">Live-Dashboard auf Bare-Metal Kubernetes. 106 Seiten, komplett selbst gehostet.</p>
+      </section>
+
+      <section class="section">
+        <div class="section-header"><h2>Open Source</h2><div class="line"></div></div>
+        <div class="project-list">
+          <div class="project-row">
+            <a href="https://github.com/nash87/parkhub-rust">ParkHub</a>
+            <span class="desc i18n-en">Self-hosted parking management. Single binary, 10 languages, GDPR.</span>
+            <span class="desc i18n-de" style="display:none">Selbst gehostete Parkplatzverwaltung. Ein Binary, 10 Sprachen, DSGVO.</span>
+            <span class="tag">Rust</span>
+          </div>
+          <div class="project-row">
+            <a href="https://github.com/nash87/parkhub-php">ParkHub PHP</a>
+            <span class="desc i18n-en">Same product for shared hosting. Laravel 12.</span>
+            <span class="desc i18n-de" style="display:none">Gleiches Produkt für Shared Hosting. Laravel 12.</span>
+            <span class="tag">PHP</span>
+          </div>
+          <div class="project-row">
+            <a href="https://github.com/nash87/infracraft-demos">infracraft</a>
+            <span class="desc i18n-en">Both editions running side by side, live.</span>
+            <span class="desc i18n-de" style="display:none">Beide Editionen live nebeneinander.</span>
+            <span class="tag">Astro</span>
+          </div>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header"><h2>Stack</h2><div class="line"></div></div>
+        <div class="stack-grid" role="list">
+          <span class="stack-chip primary" role="listitem">Rust</span>
+          <span class="stack-chip primary" role="listitem">TypeScript</span>
+          <span class="stack-chip primary" role="listitem">Svelte 5</span>
+          <span class="stack-chip primary" role="listitem">Kubernetes</span>
+          <span class="stack-chip" role="listitem">Cilium</span>
+          <span class="stack-chip" role="listitem">Flux CD</span>
+          <span class="stack-chip" role="listitem">PostgreSQL</span>
+          <span class="stack-chip" role="listitem">SurrealDB</span>
+          <span class="stack-chip" role="listitem">Qdrant</span>
+          <span class="stack-chip" role="listitem">Ollama</span>
+          <span class="stack-chip" role="listitem">Claude API</span>
+          <span class="stack-chip" role="listitem">Gemini</span>
+          <span class="stack-chip" role="listitem">WireGuard</span>
+          <span class="stack-chip" role="listitem">Vault</span>
+          <span class="stack-chip" role="listitem">Podman</span>
+          <span class="stack-chip" role="listitem">MCP</span>
+        </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header"><h2 class="i18n-en">Infrastructure</h2><h2 class="i18n-de" style="display:none">Infrastruktur</h2><div class="line"></div></div>
+        <table class="infra-table">
+          <tr><td>Compute</td><td>3-node kubeadm, bare metal</td></tr>
+          <tr><td>GitOps</td><td class="i18n-en">Flux CD, every change via Git</td><td class="i18n-de" style="display:none">Flux CD, jede Änderung über Git</td></tr>
+          <tr><td class="i18n-en">Network</td><td class="i18n-de" style="display:none">Netzwerk</td><td>Cilium eBPF + Hubble</td></tr>
+          <tr><td>Secrets</td><td>Vault HA + ESO</td></tr>
+          <tr><td>Policy</td><td>Kyverno</td></tr>
+          <tr><td>VPN</td><td>Defguard WireGuard</td></tr>
+          <tr><td>Registry</td><td>Zot OCI</td></tr>
+          <tr><td>AI</td><td>MCP + ACP + A2A</td></tr>
+        </table>
+      </section>
     </div>
-  </section>
 
-  <div class="links">
-    <a href="https://github.com/nash87">GitHub</a>
-    <a href="https://www.linkedin.com/in/florian-schulz-a312bb137">LinkedIn</a>
-    <a href="mailto:fschulz0787@gmail.com">Email</a>
-    <a href="https://nash87.github.io/infracraft-demos">Demos</a>
-  </div>
-
-  <section class="section">
-    <div class="section-header">
-      <h2>Forge Platform</h2>
-      <div class="line"></div>
+    <div id="impressum" class="legal-page">
+      <a href="#" class="back" onclick="showPortfolio(); return false;">&larr; Back</a>
+      <h2>Impressum</h2>
+      <h3>Angaben gemäß § 5 TMG</h3>
+      <p>Florian Schulz<br>Göttingen, Deutschland</p>
+      <h3>Kontakt</h3>
+      <p>E-Mail: fschulz0787@gmail.com</p>
+      <h3>Verantwortlich für den Inhalt nach § 55 Abs. 2 RStV</h3>
+      <p>Florian Schulz, Göttingen</p>
     </div>
 
-    <div class="numbers">
-      <div class="num-item"><div class="val">93</div><div class="lbl">Rust crates</div></div>
-      <div class="num-item"><div class="val">106</div><div class="lbl">Dashboard pages</div></div>
-      <div class="num-item"><div class="val">267</div><div class="lbl">K8s pods</div></div>
-      <div class="num-item"><div class="val">8</div><div class="lbl">AI agents</div></div>
-      <div class="num-item"><div class="val">36K+</div><div class="lbl">Tests</div></div>
+    <div id="privacy" class="legal-page">
+      <a href="#" class="back" onclick="showPortfolio(); return false;">&larr; Back</a>
+      <h2 class="i18n-en">Privacy Policy</h2>
+      <h2 class="i18n-de" style="display:none">Datenschutzerklärung</h2>
+      <h3 class="i18n-en">1. Data Controller</h3><h3 class="i18n-de" style="display:none">1. Verantwortlicher</h3>
+      <p>Florian Schulz, Göttingen. E-Mail: fschulz0787@gmail.com</p>
+      <h3 class="i18n-en">2. Hosting</h3><h3 class="i18n-de" style="display:none">2. Hosting</h3>
+      <p class="i18n-en">This website is hosted on GitHub Pages (GitHub Inc., USA). GitHub may collect IP addresses in server logs.</p>
+      <p class="i18n-de" style="display:none">Diese Website wird auf GitHub Pages gehostet (GitHub Inc., USA). GitHub kann IP-Adressen in Server-Logs erfassen.</p>
+      <h3 class="i18n-en">3. Cookies &amp; Storage</h3><h3 class="i18n-de" style="display:none">3. Cookies &amp; Speicher</h3>
+      <p class="i18n-en">This site uses localStorage for language and theme preferences only. No tracking, no analytics, no third-party scripts.</p>
+      <p class="i18n-de" style="display:none">Diese Seite nutzt localStorage nur für Sprach- und Design-Einstellungen. Kein Tracking, keine Analyse, keine Drittanbieter.</p>
+      <h3 class="i18n-en">4. Your Rights (GDPR Art. 15-21)</h3><h3 class="i18n-de" style="display:none">4. Ihre Rechte (DSGVO Art. 15-21)</h3>
+      <p class="i18n-en">Right to access, rectification, erasure, restriction, portability, and objection. Contact: fschulz0787@gmail.com</p>
+      <p class="i18n-de" style="display:none">Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch. Kontakt: fschulz0787@gmail.com</p>
+      <h3 class="i18n-en">5. External Services</h3><h3 class="i18n-de" style="display:none">5. Externe Dienste</h3>
+      <p class="i18n-en">Google Fonts, GitHub, LinkedIn. Each has its own privacy policy.</p>
+      <p class="i18n-de" style="display:none">Google Fonts, GitHub, LinkedIn. Jeder Dienst hat eigene Datenschutzrichtlinien.</p>
     </div>
+  </main>
 
-    <p class="prose">
-      A self-hosted operating platform running on bare-metal Kubernetes.
-      <strong>93 Rust crates</strong> that each work as both a <span class="hl">CLI tool</span> on my laptop
-      and a <span class="hl">microservice</span> in production. Same code, two runtimes.
-    </p>
-    <p class="prose">
-      The AI agents don't just answer questions. They operate infrastructure, analyze code,
-      monitor markets, and coordinate through a custom agent bus.
-      Multi-model: Claude, Gemini, Ollama. Protocol-native: MCP, ACP, A2A.
-    </p>
-    <p class="prose">
-      The dashboard is <strong>SvelteKit 2 + Svelte 5</strong>, 75K lines,
-      1000+ i18n keys. Real-time WebSocket, 85 API integrations, GitOps visibility.
-    </p>
-
-    <div class="preview">
-      <div class="preview-bar">
-        <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
-        <span class="preview-label">homelab.test</span>
-      </div>
-      <img src="forge-dashboard.png" alt="Forge Platform Dashboard" loading="lazy" width="1920" height="1080">
+  <footer class="legal">
+    <div class="legal-links">
+      <a href="#" onclick="showPage('impressum'); return false;">Impressum</a>
+      <a href="#" onclick="showPage('privacy'); return false;" class="i18n-en">Privacy</a>
+      <a href="#" onclick="showPage('privacy'); return false;" class="i18n-de" style="display:none">Datenschutz</a>
+      <a href="https://nash87.github.io/legal/" rel="noopener" class="i18n-en">Full Legal</a>
+      <a href="https://nash87.github.io/legal/" rel="noopener" class="i18n-de" style="display:none">Rechtliches</a>
     </div>
-    <p class="preview-caption">Live dashboard. Bare-metal Kubernetes, WireGuard VPN, 106 pages, all self-hosted.</p>
-  </section>
-
-  <section class="section">
-    <div class="section-header">
-      <h2>Open Source</h2>
-      <div class="line"></div>
-    </div>
-    <div class="project-list">
-      <div class="project-row">
-        <a href="https://github.com/nash87/parkhub-rust">ParkHub</a>
-        <span class="desc">Self-hosted parking management. Single binary, 10 languages, GDPR.</span>
-        <span class="tag">Rust</span>
-      </div>
-      <div class="project-row">
-        <a href="https://github.com/nash87/parkhub-php">ParkHub PHP</a>
-        <span class="desc">Same product for shared hosting. Laravel 12, MySQL/SQLite.</span>
-        <span class="tag">PHP</span>
-      </div>
-      <div class="project-row">
-        <a href="https://github.com/nash87/infracraft-demos">infracraft</a>
-        <span class="desc">Both editions running side by side, live.</span>
-        <span class="tag">Astro</span>
-      </div>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-header">
-      <h2>Stack</h2>
-      <div class="line"></div>
-    </div>
-    <div class="stack-grid">
-      <span class="stack-chip primary">Rust</span>
-      <span class="stack-chip primary">TypeScript</span>
-      <span class="stack-chip primary">Svelte 5</span>
-      <span class="stack-chip primary">Kubernetes</span>
-      <span class="stack-chip">Cilium</span>
-      <span class="stack-chip">Flux CD</span>
-      <span class="stack-chip">PostgreSQL</span>
-      <span class="stack-chip">SurrealDB</span>
-      <span class="stack-chip">Qdrant</span>
-      <span class="stack-chip">Ollama</span>
-      <span class="stack-chip">Claude API</span>
-      <span class="stack-chip">Gemini</span>
-      <span class="stack-chip">WireGuard</span>
-      <span class="stack-chip">Vault</span>
-      <span class="stack-chip">Podman</span>
-      <span class="stack-chip">Kyverno</span>
-      <span class="stack-chip">MCP</span>
-      <span class="stack-chip">ACP</span>
-    </div>
-  </section>
-
-  <section class="section">
-    <div class="section-header">
-      <h2>Infrastructure</h2>
-      <div class="line"></div>
-    </div>
-    <table class="infra-table">
-      <tr><td>Compute</td><td>3-node kubeadm cluster, bare metal</td></tr>
-      <tr><td>GitOps</td><td>Flux CD, every change via Git</td></tr>
-      <tr><td>Network</td><td>Cilium eBPF + Hubble observability</td></tr>
-      <tr><td>Secrets</td><td>Vault HA + External Secrets Operator</td></tr>
-      <tr><td>Policy</td><td>Kyverno admission control</td></tr>
-      <tr><td>VPN</td><td>Defguard WireGuard, mobile access</td></tr>
-      <tr><td>Registry</td><td>Zot OCI, self-hosted images</td></tr>
-      <tr><td>AI</td><td>MCP + ACP + A2A agent protocols</td></tr>
-    </table>
-  </section>
-
-  <footer class="footer">
-    <p>&copy; 2026 Florian Schulz · Göttingen, Germany</p>
+    <p>&copy; 2026 Florian Schulz · Göttingen</p>
   </footer>
-
 </div>
+
+<script>
+  var lang = localStorage.getItem('lang') || (navigator.language.startsWith('de') ? 'de' : 'en');
+  function setLang(l) {
+    lang = l;
+    localStorage.setItem('lang', l);
+    document.documentElement.lang = l;
+    document.getElementById('langBtn').textContent = l.toUpperCase();
+    var enEls = document.querySelectorAll('.i18n-en');
+    var deEls = document.querySelectorAll('.i18n-de');
+    for (var i = 0; i < enEls.length; i++) enEls[i].style.display = l === 'en' ? '' : 'none';
+    for (var i = 0; i < deEls.length; i++) deEls[i].style.display = l === 'de' ? '' : 'none';
+  }
+  function toggleLang() { setLang(lang === 'en' ? 'de' : 'en'); }
+  var themes = ['dark', 'light', 'high-contrast'];
+  var themeLabels = { dark: 'Dark', light: 'Light', 'high-contrast': 'A11y' };
+  var themeIdx = themes.indexOf(localStorage.getItem('theme') || 'dark');
+  if (themeIdx < 0) themeIdx = 0;
+  function setTheme(t) {
+    document.documentElement.setAttribute('data-theme', t);
+    localStorage.setItem('theme', t);
+    document.getElementById('themeBtn').textContent = themeLabels[t];
+  }
+  function cycleTheme() { themeIdx = (themeIdx + 1) % themes.length; setTheme(themes[themeIdx]); }
+  function showPage(id) {
+    document.getElementById('portfolio').style.display = 'none';
+    var pages = document.querySelectorAll('.legal-page');
+    for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
+    document.getElementById(id).classList.add('active');
+    window.scrollTo(0, 0);
+  }
+  function showPortfolio() {
+    var pages = document.querySelectorAll('.legal-page');
+    for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
+    document.getElementById('portfolio').style.display = '';
+    window.scrollTo(0, 0);
+  }
+  setLang(lang);
+  setTheme(themes[themeIdx]);
+</script>
 
 </body>
 </html>
