@@ -9,6 +9,7 @@
   <meta property="og:description" content="I build the kind of platform most companies outsource to three vendors and a consulting firm.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://securanido.com">
+  <meta property="og:image" content="https://securanido.com/forge-dashboard.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
@@ -16,15 +17,20 @@
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg: #090909;
-      --surface: #111;
+      --bg: #08080c;
+      --surface: #0f0f15;
+      --surface-2: #15151e;
       --border: rgba(255,255,255,0.06);
-      --text: #d4d4d8;
-      --bright: #fafafa;
-      --dim: #52525b;
-      --mono: #a1a1aa;
-      --accent: #e2e8f0;
-      --link: #93c5fd;
+      --border-accent: rgba(147,197,253,0.12);
+      --text: #c4c4cc;
+      --bright: #f0f0f4;
+      --dim: #5a5a68;
+      --mono: #8888a0;
+      --blue: #7cacf8;
+      --blue-dim: rgba(124,172,248,0.08);
+      --teal: #5eead4;
+      --teal-dim: rgba(94,234,212,0.06);
+      --amber: #fbbf24;
     }
 
     html { scroll-behavior: smooth; }
@@ -38,64 +44,88 @@
       font-size: 15px;
     }
 
-    a { color: var(--link); text-decoration: none; transition: opacity 0.15s; }
-    a:hover { opacity: 0.7; }
+    ::selection { background: rgba(124,172,248,0.2); color: var(--bright); }
+
+    a { color: var(--blue); text-decoration: none; transition: color 0.15s; }
+    a:hover { color: var(--teal); }
     code, .mono { font-family: 'JetBrains Mono', monospace; font-size: 0.85em; }
 
-    /* Layout */
-    .wrap { max-width: 640px; margin: 0 auto; padding: 0 24px; }
+    .wrap { max-width: 680px; margin: 0 auto; padding: 0 24px; }
 
-    /* Hero — left-aligned, editorial */
+    /* Subtle top gradient */
+    .gradient-bar {
+      height: 2px;
+      background: linear-gradient(90deg, var(--blue) 0%, var(--teal) 50%, var(--amber) 100%);
+      opacity: 0.6;
+    }
+
+    /* Hero */
     .hero {
-      padding: 100px 0 64px;
-      border-bottom: 1px solid var(--border);
+      padding: 80px 0 56px;
     }
     .hero .name {
-      font-size: 14px;
+      font-size: 13px;
       font-weight: 500;
-      color: var(--dim);
-      letter-spacing: 0.08em;
+      color: var(--blue);
+      letter-spacing: 0.1em;
       text-transform: uppercase;
-      margin-bottom: 20px;
+      margin-bottom: 16px;
     }
     .hero h1 {
-      font-size: 36px;
+      font-size: 34px;
       font-weight: 700;
       color: var(--bright);
       line-height: 1.2;
       margin-bottom: 20px;
-      max-width: 540px;
+      max-width: 580px;
       text-wrap: balance;
     }
     .hero .lead {
       font-size: 16px;
       color: var(--text);
-      max-width: 480px;
+      max-width: 500px;
       margin-bottom: 28px;
     }
     .hero .meta {
+      display: flex;
+      gap: 20px;
+      flex-wrap: wrap;
       font-size: 13px;
       color: var(--dim);
-      display: flex;
-      gap: 16px;
-      flex-wrap: wrap;
     }
-    .hero .meta span { display: flex; align-items: center; gap: 5px; }
+    .hero .meta .available {
+      color: var(--teal);
+    }
+    .hero .meta .available::before {
+      content: "";
+      display: inline-block;
+      width: 6px; height: 6px;
+      background: var(--teal);
+      border-radius: 50%;
+      margin-right: 6px;
+      vertical-align: middle;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.3; }
+    }
 
-    /* Links row */
+    /* Links */
     .links {
       display: flex;
       gap: 20px;
-      padding: 20px 0;
+      padding: 18px 0;
+      border-top: 1px solid var(--border);
       border-bottom: 1px solid var(--border);
     }
     .links a {
       font-size: 13px;
       font-weight: 500;
       color: var(--mono);
-      letter-spacing: 0.02em;
+      transition: color 0.15s;
     }
-    .links a:hover { color: var(--bright); opacity: 1; }
+    .links a:hover { color: var(--bright); }
 
     /* Section */
     .section {
@@ -103,87 +133,118 @@
       border-bottom: 1px solid var(--border);
     }
     .section:last-of-type { border-bottom: none; }
-    .section h2 {
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 24px;
+    }
+    .section-header h2 {
       font-size: 13px;
       font-weight: 600;
       color: var(--dim);
       letter-spacing: 0.08em;
       text-transform: uppercase;
-      margin-bottom: 24px;
+    }
+    .section-header .line {
+      flex: 1;
+      height: 1px;
+      background: var(--border);
     }
 
-    /* Preview image */
-    .preview {
-      margin-top: 32px;
-      position: relative;
-      border-radius: 6px;
-      overflow: hidden;
-      border: 1px solid var(--border);
-      background: var(--surface);
-    }
-    .preview img {
-      width: 100%;
-      height: auto;
-      display: block;
-      opacity: 0.85;
-      transition: opacity 0.3s;
-    }
-    .preview:hover img { opacity: 1; }
-    .preview-label {
-      position: absolute;
-      bottom: 12px;
-      right: 12px;
-      font-size: 11px;
-      font-weight: 500;
-      color: var(--dim);
-      background: rgba(9,9,9,0.8);
-      padding: 4px 10px;
-      border-radius: 4px;
-      backdrop-filter: blur(8px);
-      letter-spacing: 0.04em;
-    }
-    .preview-caption {
-      font-size: 12px;
-      color: var(--dim);
-      margin-top: 10px;
-      font-style: italic;
-    }
-
-    /* Numbers — horizontal, not grid cards */
+    /* Numbers row */
     .numbers {
       display: flex;
-      gap: 40px;
+      gap: 32px;
       flex-wrap: wrap;
       margin-bottom: 32px;
+      padding: 20px 24px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 8px;
     }
     .num-item .val {
-      font-size: 28px;
+      font-size: 26px;
       font-weight: 700;
       color: var(--bright);
       font-variant-numeric: tabular-nums;
       line-height: 1;
     }
+    .num-item:nth-child(1) .val { color: var(--blue); }
+    .num-item:nth-child(4) .val { color: var(--teal); }
     .num-item .lbl {
-      font-size: 12px;
+      font-size: 11px;
       color: var(--dim);
       margin-top: 4px;
+      letter-spacing: 0.02em;
     }
 
-    /* Text blocks */
+    /* Prose */
     .prose {
       font-size: 15px;
       color: var(--text);
-      line-height: 1.7;
-      max-width: 560px;
+      line-height: 1.75;
+      max-width: 580px;
     }
-    .prose + .prose { margin-top: 16px; }
+    .prose + .prose { margin-top: 14px; }
     .prose strong { color: var(--bright); font-weight: 600; }
+    .prose .hl { color: var(--blue); font-weight: 500; }
 
-    /* Project list — no cards, just clean rows */
-    .project-list { display: flex; flex-direction: column; gap: 0; }
+    /* Preview */
+    .preview {
+      margin-top: 32px;
+      position: relative;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-accent);
+      background: var(--surface);
+      box-shadow: 0 8px 32px rgba(0,0,0,0.4), 0 0 0 1px rgba(124,172,248,0.05);
+    }
+    .preview img {
+      width: 100%;
+      height: auto;
+      display: block;
+      opacity: 0.9;
+      transition: opacity 0.3s;
+    }
+    .preview:hover img { opacity: 1; }
+    .preview-bar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 14px;
+      background: var(--surface-2);
+      border-bottom: 1px solid var(--border);
+      font-size: 11px;
+      color: var(--dim);
+    }
+    .preview-bar .dots {
+      display: flex;
+      gap: 5px;
+    }
+    .preview-bar .dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--border);
+    }
+    .preview-bar .dot:nth-child(1) { background: #ef4444; opacity: 0.5; }
+    .preview-bar .dot:nth-child(2) { background: #eab308; opacity: 0.5; }
+    .preview-bar .dot:nth-child(3) { background: #22c55e; opacity: 0.5; }
+    .preview-label {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--mono);
+    }
+    .preview-caption {
+      font-size: 12px;
+      color: var(--dim);
+      margin-top: 12px;
+    }
+
+    /* Projects */
+    .project-list { display: flex; flex-direction: column; }
     .project-row {
       display: flex;
-      justify-content: space-between;
       align-items: baseline;
       padding: 14px 0;
       border-bottom: 1px solid var(--border);
@@ -194,71 +255,86 @@
       font-size: 15px;
       font-weight: 600;
       color: var(--bright);
+      white-space: nowrap;
     }
     .project-row .desc {
       font-size: 13px;
       color: var(--dim);
       flex: 1;
-      text-align: right;
     }
     .project-row .tag {
       font-size: 11px;
       font-family: 'JetBrains Mono', monospace;
       color: var(--mono);
+      padding: 2px 8px;
+      background: var(--surface);
+      border-radius: 4px;
+      border: 1px solid var(--border);
       white-space: nowrap;
     }
 
-    /* Stack — inline list, not badges */
-    .stack-list {
+    /* Stack */
+    .stack-grid {
       display: flex;
       flex-wrap: wrap;
-      gap: 6px 0;
-      font-size: 13px;
-      color: var(--dim);
-      line-height: 1.8;
+      gap: 6px;
     }
-    .stack-list span::after { content: " · "; color: var(--border); }
-    .stack-list span:last-child::after { content: ""; }
-    .stack-list span { color: var(--mono); }
+    .stack-chip {
+      font-size: 12px;
+      padding: 5px 12px;
+      border-radius: 4px;
+      color: var(--mono);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      transition: border-color 0.15s, color 0.15s;
+    }
+    .stack-chip:hover { border-color: var(--border-accent); color: var(--text); }
+    .stack-chip.primary { color: var(--blue); border-color: rgba(124,172,248,0.15); background: var(--blue-dim); }
 
-    /* Infra table — clean, left-aligned */
+    /* Infra table */
     .infra-table {
       width: 100%;
       font-size: 13px;
       border-collapse: collapse;
     }
     .infra-table td {
-      padding: 8px 0;
+      padding: 10px 0;
       border-bottom: 1px solid var(--border);
       vertical-align: top;
     }
     .infra-table td:first-child {
-      color: var(--dim);
-      width: 120px;
+      color: var(--mono);
+      width: 110px;
       font-weight: 500;
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
     }
-    .infra-table td:last-child { color: var(--mono); }
+    .infra-table td:last-child { color: var(--text); }
     .infra-table tr:last-child td { border-bottom: none; }
 
     /* Footer */
     .footer {
-      padding: 48px 0;
+      padding: 40px 0;
       font-size: 12px;
       color: var(--dim);
+      border-top: 1px solid var(--border);
     }
 
     /* Mobile */
-    @media (max-width: 480px) {
-      .hero { padding: 64px 0 40px; }
-      .hero h1 { font-size: 28px; }
-      .numbers { gap: 24px; }
-      .num-item .val { font-size: 22px; }
-      .project-row { flex-direction: column; gap: 4px; }
-      .project-row .desc { text-align: left; }
+    @media (max-width: 520px) {
+      .hero { padding: 56px 0 40px; }
+      .hero h1 { font-size: 26px; }
+      .numbers { gap: 20px; padding: 16px; }
+      .num-item .val { font-size: 20px; }
+      .project-row { flex-wrap: wrap; }
+      .stack-grid { gap: 4px; }
     }
   </style>
 </head>
 <body>
+
+<div class="gradient-bar"></div>
 
 <div class="wrap">
 
@@ -266,13 +342,13 @@
     <div class="name">Florian Schulz</div>
     <h1>I build the platform most companies outsource to three vendors.</h1>
     <p class="lead">
-      Platform engineer in Göttingen, Germany. 14 years of infrastructure.
+      Platform engineer in Göttingen, Germany. 14 years shipping infrastructure.
       One person, bare metal to production UI. Every layer owned, every line in Git.
     </p>
     <div class="meta">
       <span>Göttingen, DE</span>
       <span>14+ years</span>
-      <span>Open to opportunities</span>
+      <span class="available">Open to opportunities</span>
     </div>
   </section>
 
@@ -284,37 +360,49 @@
   </div>
 
   <section class="section">
-    <h2>Forge Platform</h2>
+    <div class="section-header">
+      <h2>Forge Platform</h2>
+      <div class="line"></div>
+    </div>
+
     <div class="numbers">
       <div class="num-item"><div class="val">93</div><div class="lbl">Rust crates</div></div>
       <div class="num-item"><div class="val">106</div><div class="lbl">Dashboard pages</div></div>
       <div class="num-item"><div class="val">267</div><div class="lbl">K8s pods</div></div>
       <div class="num-item"><div class="val">8</div><div class="lbl">AI agents</div></div>
-      <div class="num-item"><div class="val">36K+</div><div class="lbl">Tests passing</div></div>
+      <div class="num-item"><div class="val">36K+</div><div class="lbl">Tests</div></div>
     </div>
+
     <p class="prose">
-      A self-hosted operating platform running on bare-metal Kubernetes. Not a wrapper around APIs.
-      <strong>93 Rust crates</strong> that each work as both a CLI tool on my laptop and a microservice in production.
-      Same code, two runtimes.
+      A self-hosted operating platform running on bare-metal Kubernetes.
+      <strong>93 Rust crates</strong> that each work as both a <span class="hl">CLI tool</span> on my laptop
+      and a <span class="hl">microservice</span> in production. Same code, two runtimes.
     </p>
     <p class="prose">
-      The AI agents don't just answer questions. They operate infrastructure, analyze code, monitor markets,
-      and coordinate through a custom agent bus. Multi-model: Claude, Gemini, Ollama for local inference.
-      Protocol-native: MCP, ACP, A2A.
+      The AI agents don't just answer questions. They operate infrastructure, analyze code,
+      monitor markets, and coordinate through a custom agent bus.
+      Multi-model: Claude, Gemini, Ollama. Protocol-native: MCP, ACP, A2A.
     </p>
     <p class="prose">
-      The dashboard is <strong>SvelteKit 2 + Svelte 5</strong>, 75K lines, 1000+ i18n keys in German and English.
-      Real-time WebSocket updates, 85 API service integrations, Prometheus monitoring, Flux GitOps visibility.
+      The dashboard is <strong>SvelteKit 2 + Svelte 5</strong>, 75K lines,
+      1000+ i18n keys. Real-time WebSocket, 85 API integrations, GitOps visibility.
     </p>
+
     <div class="preview">
-      <img src="forge-dashboard.png" alt="Forge Platform Dashboard — live briefing, fleet status, service health, AI insights" loading="lazy" width="1920" height="1080">
-      <span class="preview-label">Forge v0.6.23 · homelab.test</span>
+      <div class="preview-bar">
+        <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div>
+        <span class="preview-label">homelab.test</span>
+      </div>
+      <img src="forge-dashboard.png" alt="Forge Platform Dashboard" loading="lazy" width="1920" height="1080">
     </div>
-    <p class="preview-caption">Live dashboard running on bare-metal Kubernetes, accessed via WireGuard VPN.</p>
+    <p class="preview-caption">Live dashboard. Bare-metal Kubernetes, WireGuard VPN, 106 pages, all self-hosted.</p>
   </section>
 
   <section class="section">
-    <h2>Open Source</h2>
+    <div class="section-header">
+      <h2>Open Source</h2>
+      <div class="line"></div>
+    </div>
     <div class="project-list">
       <div class="project-row">
         <a href="https://github.com/nash87/parkhub-rust">ParkHub</a>
@@ -323,52 +411,58 @@
       </div>
       <div class="project-row">
         <a href="https://github.com/nash87/parkhub-php">ParkHub PHP</a>
-        <span class="desc">Same product, shared hosting friendly. Laravel 12.</span>
+        <span class="desc">Same product for shared hosting. Laravel 12, MySQL/SQLite.</span>
         <span class="tag">PHP</span>
       </div>
       <div class="project-row">
         <a href="https://github.com/nash87/infracraft-demos">infracraft</a>
-        <span class="desc">Both editions running side by side.</span>
+        <span class="desc">Both editions running side by side, live.</span>
         <span class="tag">Astro</span>
       </div>
     </div>
   </section>
 
   <section class="section">
-    <h2>Stack</h2>
-    <div class="stack-list">
-      <span>Rust</span>
-      <span>TypeScript</span>
-      <span>Svelte 5</span>
-      <span>Kubernetes</span>
-      <span>Cilium</span>
-      <span>Flux CD</span>
-      <span>PostgreSQL</span>
-      <span>SurrealDB</span>
-      <span>Qdrant</span>
-      <span>Ollama</span>
-      <span>Claude</span>
-      <span>Gemini</span>
-      <span>WireGuard</span>
-      <span>Vault</span>
-      <span>Podman</span>
-      <span>Kyverno</span>
-      <span>MCP</span>
-      <span>ACP</span>
+    <div class="section-header">
+      <h2>Stack</h2>
+      <div class="line"></div>
+    </div>
+    <div class="stack-grid">
+      <span class="stack-chip primary">Rust</span>
+      <span class="stack-chip primary">TypeScript</span>
+      <span class="stack-chip primary">Svelte 5</span>
+      <span class="stack-chip primary">Kubernetes</span>
+      <span class="stack-chip">Cilium</span>
+      <span class="stack-chip">Flux CD</span>
+      <span class="stack-chip">PostgreSQL</span>
+      <span class="stack-chip">SurrealDB</span>
+      <span class="stack-chip">Qdrant</span>
+      <span class="stack-chip">Ollama</span>
+      <span class="stack-chip">Claude API</span>
+      <span class="stack-chip">Gemini</span>
+      <span class="stack-chip">WireGuard</span>
+      <span class="stack-chip">Vault</span>
+      <span class="stack-chip">Podman</span>
+      <span class="stack-chip">Kyverno</span>
+      <span class="stack-chip">MCP</span>
+      <span class="stack-chip">ACP</span>
     </div>
   </section>
 
   <section class="section">
-    <h2>Infrastructure</h2>
+    <div class="section-header">
+      <h2>Infrastructure</h2>
+      <div class="line"></div>
+    </div>
     <table class="infra-table">
       <tr><td>Compute</td><td>3-node kubeadm cluster, bare metal</td></tr>
       <tr><td>GitOps</td><td>Flux CD, every change via Git</td></tr>
-      <tr><td>Network</td><td>Cilium eBPF + Hubble</td></tr>
-      <tr><td>Secrets</td><td>Vault HA + External Secrets</td></tr>
+      <tr><td>Network</td><td>Cilium eBPF + Hubble observability</td></tr>
+      <tr><td>Secrets</td><td>Vault HA + External Secrets Operator</td></tr>
       <tr><td>Policy</td><td>Kyverno admission control</td></tr>
-      <tr><td>VPN</td><td>Defguard WireGuard</td></tr>
-      <tr><td>Registry</td><td>Zot OCI, self-hosted</td></tr>
-      <tr><td>AI</td><td>MCP + ACP + A2A protocols</td></tr>
+      <tr><td>VPN</td><td>Defguard WireGuard, mobile access</td></tr>
+      <tr><td>Registry</td><td>Zot OCI, self-hosted images</td></tr>
+      <tr><td>AI</td><td>MCP + ACP + A2A agent protocols</td></tr>
     </table>
   </section>
 
