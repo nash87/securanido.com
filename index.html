@@ -112,6 +112,43 @@
       margin-bottom: 24px;
     }
 
+    /* Preview image */
+    .preview {
+      margin-top: 32px;
+      position: relative;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: var(--surface);
+    }
+    .preview img {
+      width: 100%;
+      height: auto;
+      display: block;
+      opacity: 0.85;
+      transition: opacity 0.3s;
+    }
+    .preview:hover img { opacity: 1; }
+    .preview-label {
+      position: absolute;
+      bottom: 12px;
+      right: 12px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--dim);
+      background: rgba(9,9,9,0.8);
+      padding: 4px 10px;
+      border-radius: 4px;
+      backdrop-filter: blur(8px);
+      letter-spacing: 0.04em;
+    }
+    .preview-caption {
+      font-size: 12px;
+      color: var(--dim);
+      margin-top: 10px;
+      font-style: italic;
+    }
+
     /* Numbers — horizontal, not grid cards */
     .numbers {
       display: flex;
@@ -269,6 +306,11 @@
       The dashboard is <strong>SvelteKit 2 + Svelte 5</strong>, 75K lines, 1000+ i18n keys in German and English.
       Real-time WebSocket updates, 85 API service integrations, Prometheus monitoring, Flux GitOps visibility.
     </p>
+    <div class="preview">
+      <img src="forge-dashboard.png" alt="Forge Platform Dashboard — live briefing, fleet status, service health, AI insights" loading="lazy" width="1920" height="1080">
+      <span class="preview-label">Forge v0.6.23 · homelab.test</span>
+    </div>
+    <p class="preview-caption">Live dashboard running on bare-metal Kubernetes, accessed via WireGuard VPN.</p>
   </section>
 
   <section class="section">
