@@ -4,9 +4,9 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Florian Schulz</title>
-  <meta name="description" content="Platform Engineer focused on Rust, Kubernetes, and AI-native infrastructure. Production systems, automation, and self-hosted platforms.">
-  <meta property="og:title" content="Florian Schulz — Platform Engineer">
-  <meta property="og:description" content="Platform Engineer focused on Rust, Kubernetes, and AI-native infrastructure.">
+  <meta name="description" content="Self-hosted AI platforms — bare-metal Kubernetes, multi-vendor LLM orchestration, agent protocols. Private home lab and proof-of-concept environment in Germany.">
+  <meta property="og:title" content="Florian Schulz — Self-hosted AI platforms">
+  <meta property="og:description" content="Bare-metal Kubernetes, multi-vendor LLM orchestration, agent protocols. Private home lab in Germany.">
   <meta property="og:type" content="website">
   <meta property="og:url" content="https://securanido.com">
   <meta name="color-scheme" content="dark light">
@@ -86,6 +86,14 @@
     .stack-chip { font-size: 12px; padding: 5px 12px; border-radius: 4px; color: var(--mono); border: 1px solid var(--border); background: var(--surface); transition: border-color 0.15s; }
     .stack-chip:hover { border-color: var(--border-accent); color: var(--text); }
     .stack-chip.primary { color: var(--blue); border-color: rgba(124,172,248,0.15); background: var(--blue-dim); }
+    .lab-list { list-style: none; padding: 0; margin: 24px 0 0; }
+    .lab-list li { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text); line-height: 1.65; align-items: flex-start; }
+    .lab-list li::before { content: '●'; color: var(--blue); flex-shrink: 0; font-size: 9px; line-height: 1; padding-top: 8px; }
+    .lab-list li:last-child { border-bottom: none; }
+    .principles-list { list-style: none; padding: 0; margin: 0; display: grid; grid-template-columns: 1fr; gap: 0; }
+    .principles-list li { padding: 16px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text); line-height: 1.65; }
+    .principles-list li:last-child { border-bottom: none; }
+    .principles-list li strong { display: block; color: var(--bright); font-weight: 600; font-size: 13px; margin-bottom: 4px; letter-spacing: 0.01em; }
     .infra-table { width: 100%; font-size: 13px; border-collapse: collapse; }
     .infra-table td { padding: 10px 0; border-bottom: 1px solid var(--border); vertical-align: top; }
     .infra-table td:first-child { color: var(--mono); width: 110px; font-weight: 500; font-size: 12px; text-transform: uppercase; letter-spacing: 0.04em; }
@@ -125,16 +133,16 @@
     <div id="portfolio">
       <section class="hero">
         <div class="name">Florian Schulz</div>
-        <h1 id="hero-en" class="i18n-en">Platform Engineer focused on Rust, Kubernetes, and AI-native infrastructure.</h1>
-        <h1 id="hero-de" class="i18n-de" style="display:none">Platform Engineer mit Fokus auf Rust, Kubernetes und KI-native Infrastruktur.</h1>
-        <p class="lead i18n-en">I build and operate production systems from platform foundations to user-facing tools, with a focus on reliability, automation, and self-hosted infrastructure.</p>
-        <p class="lead i18n-de" style="display:none">Ich entwickle und betreibe Produktionssysteme von der Plattform-Basis bis zu nutzerseitigen Tools, mit Fokus auf Zuverlässigkeit, Automatisierung und selbst gehostete Infrastruktur.</p>
-        <p class="sublead i18n-en">Based in Göttingen, Germany. Product-minded platform work across infrastructure, developer tooling, and AI-enabled systems.</p>
-        <p class="sublead i18n-de" style="display:none">Ansässig in Göttingen. Produktorientierte Plattformarbeit an Infrastruktur, Developer Tooling und KI-gestützten Systemen.</p>
+        <h1 id="hero-en" class="i18n-en">Self-hosted AI platforms — bare-metal Kubernetes, multi-vendor LLM orchestration, agent protocols.</h1>
+        <h1 id="hero-de" class="i18n-de" style="display:none">Self-hosted KI-Plattformen — bare-metal Kubernetes, Multi-Vendor LLM Orchestration, Agenten-Protokolle.</h1>
+        <p class="lead i18n-en">A private home lab and proof-of-concept environment for self-hosted AI infrastructure. Operated, built, and documented end-to-end — from bare-metal Kubernetes through agent orchestration to operator UIs.</p>
+        <p class="lead i18n-de" style="display:none">Ein privates Home Lab und Proof-of-Concept-Umfeld für self-hosted KI-Infrastruktur. End-to-end betrieben, gebaut und dokumentiert — von bare-metal Kubernetes über Agenten-Orchestrierung bis zu Operator-UIs.</p>
+        <p class="sublead i18n-en">Not a commercial offering. Research and demonstration only.</p>
+        <p class="sublead i18n-de" style="display:none">Kein kommerzielles Angebot. Forschung und Demonstration.</p>
         <div class="meta">
           <span>Göttingen, DE</span>
-          <span class="i18n-en">14+ years experience</span><span class="i18n-de" style="display:none">14+ Jahre Erfahrung</span>
-          <span class="i18n-en">Platform · Infrastructure · AI Systems</span><span class="i18n-de" style="display:none">Plattform · Infrastruktur · KI-Systeme</span>
+          <span class="i18n-en">14+ years operating production systems</span><span class="i18n-de" style="display:none">14+ Jahre Betrieb von Produktivsystemen</span>
+          <span class="i18n-en">Platform · AI Systems · Supply Chain</span><span class="i18n-de" style="display:none">Plattform · KI-Systeme · Supply Chain</span>
         </div>
       </section>
 
@@ -146,38 +154,54 @@
       </nav>
 
       <section class="section">
-        <div class="section-header"><h2 class="i18n-en">Selected Platform Work</h2><h2 class="i18n-de" style="display:none">Ausgewählte Plattformarbeit</h2><div class="line"></div></div>
+        <div class="section-header"><h2 class="i18n-en">Currently in the lab</h2><h2 class="i18n-de" style="display:none">Aktuell im Lab</h2><div class="line"></div></div>
         <div class="numbers" role="list">
-          <div class="num-item" role="listitem"><div class="val">Rust</div><div class="lbl i18n-en">systems engineering</div><div class="lbl i18n-de" style="display:none">Systementwicklung</div></div>
-          <div class="num-item" role="listitem"><div class="val">K8s</div><div class="lbl i18n-en">self-hosted operations</div><div class="lbl i18n-de" style="display:none">Self-Hosted Betrieb</div></div>
-          <div class="num-item" role="listitem"><div class="val">AI</div><div class="lbl i18n-en">agent workflows</div><div class="lbl i18n-de" style="display:none">Agenten-Workflows</div></div>
-          <div class="num-item" role="listitem"><div class="val">UI</div><div class="lbl i18n-en">operator tooling</div><div class="lbl i18n-de" style="display:none">Operator-Tools</div></div>
+          <div class="num-item" role="listitem"><div class="val">200+</div><div class="lbl i18n-en">service crates</div><div class="lbl i18n-de" style="display:none">Service-Crates</div></div>
+          <div class="num-item" role="listitem"><div class="val">~50</div><div class="lbl i18n-en">production services</div><div class="lbl i18n-de" style="display:none">Produktivservices</div></div>
+          <div class="num-item" role="listitem"><div class="val">6+</div><div class="lbl i18n-en">specialized AI bots</div><div class="lbl i18n-de" style="display:none">spezialisierte KI-Bots</div></div>
+          <div class="num-item" role="listitem"><div class="val">100%</div><div class="lbl i18n-en">self-hosted</div><div class="lbl i18n-de" style="display:none">self-hosted</div></div>
         </div>
-        <p class="prose i18n-en">I build platform systems that connect infrastructure, automation, and developer-facing tools into one operational workflow. The work spans backend services, deployment pipelines, internal products, and the interfaces people use to run them.</p>
-        <p class="prose i18n-de" style="display:none">Ich entwickle Plattformsysteme, die Infrastruktur, Automatisierung und Entwickler-Tools in einem operativen Workflow verbinden. Die Arbeit reicht von Backend-Services über Deployment-Pipelines bis zu internen Produkten und den Oberflächen, mit denen sie betrieben werden.</p>
-        <p class="prose i18n-en">My focus is long-term maintainability: systems that are observable, operable, and understandable by design. That includes self-hosted infrastructure, Git-based delivery, and AI-enabled workflows where they provide real leverage.</p>
-        <p class="prose i18n-de" style="display:none">Mein Fokus liegt auf langfristiger Wartbarkeit: Systeme, die von Anfang an beobachtbar, betreibbar und verständlich sind. Dazu gehören selbst gehostete Infrastruktur, Git-basierte Auslieferung und KI-gestützte Workflows dort, wo sie echten Nutzen bringen.</p>
+        <ul class="lab-list" role="list">
+          <li>
+            <span class="i18n-en">A Rust-native platform layer running dual-mode (local CLI + Kubernetes microservices) — 200+ modular service crates, unified through a SvelteKit operator UI.</span>
+            <span class="i18n-de" style="display:none">Ein Rust-natives Platform-Layer, dual-mode betrieben (lokale CLI + Kubernetes-Microservices) — 200+ modulare Service-Crates, vereint über eine SvelteKit-Operator-UI.</span>
+          </li>
+          <li>
+            <span class="i18n-en">An AI-first phone OS prototype on SHIFTphone 8 (postmarketOS + Slint UI) — voice-driven, with on-device local LLM and an experimental agent runtime.</span>
+            <span class="i18n-de" style="display:none">Ein Prototyp eines KI-zentrierten Phone-OS auf SHIFTphone 8 (postmarketOS + Slint UI) — sprachgesteuert, mit on-device Local LLM und experimenteller Agenten-Runtime.</span>
+          </li>
+          <li>
+            <span class="i18n-en">A multi-agent fleet of 6+ specialized AI bots (Claude + Gemini + Haiku + local Ollama on RTX 4070), coordinating over NATS JetStream and A2A v1.0 on bare-metal Kubernetes.</span>
+            <span class="i18n-de" style="display:none">Eine Multi-Agent-Flotte aus 6+ spezialisierten KI-Bots (Claude + Gemini + Haiku + lokales Ollama auf RTX 4070), koordiniert über NATS JetStream und A2A v1.0 auf bare-metal Kubernetes.</span>
+          </li>
+          <li>
+            <span class="i18n-en">End-to-end supply chain — cosign signatures, SBOM attestations, Kyverno PSS, Cilium + SPIRE mTLS, GitOps via Flux 2.4. ~50 platform services on local hardware in Germany.</span>
+            <span class="i18n-de" style="display:none">End-to-end Supply Chain — cosign-Signaturen, SBOM-Attestierungen, Kyverno PSS, Cilium + SPIRE mTLS, GitOps via Flux 2.4. ~50 Plattform-Services auf lokaler Hardware in Deutschland.</span>
+          </li>
+        </ul>
       </section>
 
       <section class="section">
-        <div class="section-header"><h2>Open Source</h2><div class="line"></div></div>
+        <div class="section-header"><h2 class="i18n-en">Open Source (the public slice)</h2><h2 class="i18n-de" style="display:none">Open Source (öffentlicher Anteil)</h2><div class="line"></div></div>
+        <p class="prose i18n-en" style="margin-bottom:18px">Most of the lab work above runs on internal repos. The public open-source slice:</p>
+        <p class="prose i18n-de" style="display:none;margin-bottom:18px">Der Großteil der Lab-Arbeit oben läuft auf internen Repos. Der öffentlich quelloffene Anteil:</p>
         <div class="project-list">
           <div class="project-row">
             <a href="https://github.com/nash87/parkhub-rust">ParkHub</a>
-            <span class="desc i18n-en">A self-hosted parking platform built for reliability, portability, and straightforward operations.</span>
-            <span class="desc i18n-de" style="display:none">Eine selbst gehostete Parkplatzplattform mit Fokus auf Zuverlässigkeit, Portabilität und einfachem Betrieb.</span>
+            <span class="desc i18n-en">Self-hosted parking management — Axum + Astro 6 + React 19 + Tailwind 4. v4.13.0, GDPR-compliant, MIT.</span>
+            <span class="desc i18n-de" style="display:none">Self-hosted Parkraummanagement — Axum + Astro 6 + React 19 + Tailwind 4. v4.13.0, DSGVO-konform, MIT.</span>
             <span class="tag">Rust</span>
           </div>
           <div class="project-row">
             <a href="https://github.com/nash87/parkhub-php">ParkHub PHP</a>
-            <span class="desc i18n-en">A shared-hosting-friendly edition with the same product intent in a more accessible deployment model.</span>
-            <span class="desc i18n-de" style="display:none">Eine Shared-Hosting-fähige Edition mit derselben Produktidee in einem zugänglicheren Betriebsmodell.</span>
+            <span class="desc i18n-en">Same product on Laravel 13 + PHP 8.4 for shared hosting. Same Astro 6 + React 19 frontend.</span>
+            <span class="desc i18n-de" style="display:none">Selbes Produkt auf Laravel 13 + PHP 8.4 für Shared Hosting. Gleiches Astro 6 + React 19 Frontend.</span>
             <span class="tag">PHP</span>
           </div>
           <div class="project-row">
             <a href="https://github.com/nash87/parkhub-site">parkhub-site</a>
-            <span class="desc i18n-en">ParkHub marketing site — Astro 6 + React 19 + Tailwind 4. Public landing page for both editions.</span>
-            <span class="desc i18n-de" style="display:none">ParkHub Marketing-Site — Astro 6 + React 19 + Tailwind 4. Öffentliche Landing Page für beide Editionen.</span>
+            <span class="desc i18n-en">ParkHub marketing site — Astro 6 + React 19 + Tailwind 4 on GitHub Pages.</span>
+            <span class="desc i18n-de" style="display:none">ParkHub Marketing-Site — Astro 6 + React 19 + Tailwind 4 auf GitHub Pages.</span>
             <span class="tag">Astro</span>
           </div>
         </div>
@@ -202,6 +226,36 @@
           <span class="stack-chip" role="listitem">Podman</span>
           <span class="stack-chip" role="listitem">MCP</span>
         </div>
+      </section>
+
+      <section class="section">
+        <div class="section-header"><h2 class="i18n-en">How I work</h2><h2 class="i18n-de" style="display:none">Arbeitsweise</h2><div class="line"></div></div>
+        <ul class="principles-list" role="list">
+          <li>
+            <strong class="i18n-en">Build, don't consume</strong>
+            <strong class="i18n-de" style="display:none">Build, don't consume</strong>
+            <span class="i18n-en">Rust-native implementations over npm-glue and SaaS lock-in.</span>
+            <span class="i18n-de" style="display:none">Rust-native Implementierungen statt npm-Klebstoff und SaaS-Lock-in.</span>
+          </li>
+          <li>
+            <strong class="i18n-en">Self-hosted by default, sovereign by design</strong>
+            <strong class="i18n-de" style="display:none">Self-hosted by default, sovereign by design</strong>
+            <span class="i18n-en">Bare-metal Kubernetes in Germany, GDPR-compliant, no foreign cloud.</span>
+            <span class="i18n-de" style="display:none">Bare-metal Kubernetes in Deutschland, DSGVO-konform, keine ausländische Cloud.</span>
+          </li>
+          <li>
+            <strong class="i18n-en">Production-grade from day one</strong>
+            <strong class="i18n-de" style="display:none">Production-grade ab Tag eins</strong>
+            <span class="i18n-en">Observability, mutual TLS, signed builds, and SBOM attestations are not afterthoughts.</span>
+            <span class="i18n-de" style="display:none">Observability, mutual TLS, signierte Builds und SBOM-Attestierungen sind keine nachgelagerten Themen.</span>
+          </li>
+          <li>
+            <strong class="i18n-en">Multi-vendor AI orchestration</strong>
+            <strong class="i18n-de" style="display:none">Multi-Vendor KI-Orchestrierung</strong>
+            <span class="i18n-en">Anthropic primary, with OpenAI, Google, and local fallback. No single-vendor lockout.</span>
+            <span class="i18n-de" style="display:none">Anthropic primär, mit OpenAI, Google und lokalem Fallback. Kein Single-Vendor-Lockout.</span>
+          </li>
+        </ul>
       </section>
 
       <section class="section">
