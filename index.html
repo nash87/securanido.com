@@ -15,9 +15,28 @@
   <meta property="og:locale" content="en_US">
   <meta property="og:locale:alternate" content="de_DE">
   <meta name="twitter:card" content="summary">
+  <meta name="twitter:title" content="Florian Schulz — Self-hosted AI platforms">
+  <meta name="twitter:description" content="Bare-metal Kubernetes, multi-vendor LLM orchestration, agent protocols. Private home lab in Germany.">
   <meta name="color-scheme" content="dark light">
   <meta name="theme-color" content="#08080c" media="(prefers-color-scheme: dark)">
   <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
+  <!-- Inline theme+lang init: runs before paint to prevent FOUC -->
+  <script>
+    (function () {
+      var saved = localStorage.getItem('theme');
+      var pref = saved;
+      if (!pref) {
+        var mq = window.matchMedia;
+        if (mq && mq('(prefers-contrast: more)').matches) pref = 'high-contrast';
+        else if (mq && mq('(prefers-color-scheme: light)').matches) pref = 'light';
+        else pref = 'dark';
+      }
+      document.documentElement.setAttribute('data-theme', pref);
+      var savedLang = localStorage.getItem('lang');
+      var lang = savedLang || (navigator.language && navigator.language.startsWith('de') ? 'de' : 'en');
+      document.documentElement.lang = lang;
+    })();
+  </script>
   <script type="application/ld+json">
   {
     "@context": "https://schema.org",
@@ -39,7 +58,9 @@
     [data-theme="dark"] {
       --bg: #08080c; --surface: #0f0f15; --surface-2: #15151e;
       --border: rgba(255,255,255,0.06); --border-accent: rgba(147,197,253,0.14);
-      --text: #c4c4cc; --bright: #f0f0f4; --dim: #5a5a68; --mono: #8888a0;
+      --text: #c4c4cc; --bright: #f0f0f4;
+      /* #808090 = 5.15:1 on #08080c; #7a7a8c = 4.74:1 — use #808090 */
+      --dim: #808090; --mono: #8888a0;
       --accent: #7cacf8; --accent-dim: rgba(124,172,248,0.10);
       --teal: #5eead4; --amber: #fbbf24; --toggle-bg: #1e1e2e;
     }
@@ -62,14 +83,26 @@
       [data-theme="dark"]  { --accent: oklch(76% 0.13 250); --teal: oklch(82% 0.13 175); }
       [data-theme="light"] { --accent: oklch(54% 0.18 260); --teal: oklch(56% 0.10 180); }
     }
+    /* Respect prefers-contrast: more by loading high-contrast when no saved choice */
+    @media (prefers-contrast: more) {
+      :root:not([data-theme="light"]):not([data-theme="dark"]) {
+        --bg: #000; --surface: #111; --surface-2: #1a1a1a;
+        --border: rgba(255,255,255,0.22); --border-accent: rgba(255,255,100,0.35);
+        --text: #fff; --bright: #fff; --dim: #bbb; --mono: #ddd;
+        --accent: #6eb5ff; --accent-dim: rgba(110,181,255,0.14);
+        --teal: #5eead4; --amber: #fbbf24; --toggle-bg: #333;
+      }
+    }
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+      html { scroll-behavior: auto; }
     }
     html { scroll-behavior: smooth; }
     body {
       font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
       background: var(--bg); color: var(--text); line-height: 1.65;
-      -webkit-font-smoothing: antialiased; font-size: 15px;
+      -webkit-font-smoothing: antialiased;
+      font-size: clamp(14px, 1vw + 11px, 16px);
       transition: background 0.2s, color 0.2s;
     }
     code, .mono { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; }
@@ -78,17 +111,34 @@
     a:hover { color: var(--teal); }
     a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
     .wrap { max-width: 760px; margin: 0 auto; padding: 0 28px; }
-    .skip-link { position: absolute; top: -40px; left: 0; background: var(--accent); color: #fff; padding: 8px 16px; z-index: 100; font-size: 13px; }
+    .skip-link {
+      position: absolute; top: -40px; left: 0;
+      background: var(--accent); color: #fff; padding: 8px 16px;
+      z-index: 100; font-size: 13px;
+      border-radius: 0 0 4px 0;
+    }
     .skip-link:focus { top: 0; }
+    .skip-link:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
     .gradient-bar { height: 2px; background: linear-gradient(90deg, var(--accent) 0%, var(--teal) 50%, var(--amber) 100%); opacity: 0.55; }
     .topbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--border); }
-    .topbar button { background: var(--toggle-bg); border: 1px solid var(--border); color: var(--mono); padding: 5px 10px; border-radius: 4px; font-size: 12px; cursor: pointer; font-family: inherit; transition: all 0.15s; }
+    .topbar button {
+      background: var(--toggle-bg); border: 1px solid var(--border);
+      color: var(--mono); padding: 6px 12px; border-radius: 4px;
+      font-size: 12px; cursor: pointer; font-family: inherit;
+      transition: all 0.15s;
+      /* Ensure ≥24×24px touch target (WCAG 2.2 SC 2.5.8) */
+      min-width: 44px; min-height: 32px;
+    }
     .topbar button:hover { border-color: var(--border-accent); color: var(--bright); }
     .topbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
     .hero { padding: 76px 0 52px; }
     .hero .name { font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 14px; }
-    .hero h1 { font-size: 38px; font-weight: 700; color: var(--bright); line-height: 1.14; margin-bottom: 18px; max-width: 620px; text-wrap: balance; letter-spacing: -0.01em; }
-    .hero .lead { font-size: 16px; color: var(--text); max-width: 560px; margin-bottom: 14px; }
+    .hero h1 {
+      font-size: clamp(26px, 4vw + 10px, 38px);
+      font-weight: 700; color: var(--bright); line-height: 1.14;
+      margin-bottom: 18px; max-width: 620px; text-wrap: balance; letter-spacing: -0.01em;
+    }
+    .hero .lead { font-size: clamp(15px, 1vw + 12px, 17px); color: var(--text); max-width: 560px; margin-bottom: 14px; }
     .hero .sublead { font-size: 14px; color: var(--dim); max-width: 560px; margin-bottom: 28px; }
     .hero .meta { display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--dim); }
     .links { display: flex; gap: 20px; padding: 18px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
@@ -137,7 +187,6 @@
     .legal-page .back { font-size: 13px; margin-bottom: 22px; display: inline-block; }
     @media (max-width: 520px) {
       .hero { padding: 52px 0 36px; }
-      .hero h1 { font-size: 30px; }
       .project-row { flex-wrap: wrap; }
       .theme h3 { font-size: 16px; }
       .stack-row { flex-direction: column; gap: 6px; }
@@ -145,133 +194,185 @@
     }
     /* View Transitions API — Chrome 111+, Safari 18+, Firefox 132+ */
     ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.25s; }
+    @media (prefers-reduced-motion: reduce) {
+      ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
+    }
+    /* Print styles — legal sections print cleanly */
+    @media print {
+      .topbar, .gradient-bar, .skip-link, .legal-links { display: none !important; }
+      body { background: #fff !important; color: #000 !important; font-size: 12pt; }
+      .wrap { max-width: 100%; padding: 0; }
+      .legal-page { display: block !important; padding: 0; }
+      .legal-page .back { display: none; }
+      a { color: #000 !important; text-decoration: underline; }
+      a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; color: #555; }
+      .hero, .links, .section, footer { display: none !important; }
+      h2, h3 { color: #000 !important; }
+      p { color: #000 !important; }
+    }
   </style>
 </head>
 <body>
 
-<a href="#main" class="skip-link">Skip to content</a>
-<div class="gradient-bar"></div>
+<a href="#main" class="skip-link" id="skipLink">
+  <span class="i18n-en">Skip to content</span>
+  <span class="i18n-de" lang="de" style="display:none">Zum Inhalt springen</span>
+</a>
+<div class="gradient-bar" aria-hidden="true"></div>
 
 <div class="wrap">
   <nav class="topbar" aria-label="Site controls">
-    <button onclick="toggleLang()" id="langBtn" aria-label="Switch language">EN</button>
-    <button onclick="cycleTheme()" id="themeBtn" aria-label="Toggle color theme">Dark</button>
+    <button
+      onclick="toggleLang()"
+      id="langBtn"
+      aria-label="Language: English — switch to German"
+      aria-pressed="false"
+    >EN</button>
+    <button
+      onclick="cycleTheme()"
+      id="themeBtn"
+      aria-label="Color theme: Dark — press to cycle"
+      aria-pressed="false"
+    >Dark</button>
   </nav>
 
-  <main id="main">
+  <main id="main" tabindex="-1">
     <div id="portfolio">
       <section class="hero">
-        <div class="name">Florian Schulz</div>
+        <div class="name" aria-hidden="true">Florian Schulz</div>
         <h1 id="hero-en" class="i18n-en">Self-hosted AI platforms — bare-metal Kubernetes, multi-vendor LLM orchestration, agent protocols.</h1>
-        <h1 id="hero-de" class="i18n-de" style="display:none">Selbstgehostete KI-Plattformen — Bare-Metal Kubernetes, Multi-Vendor-LLM-Orchestrierung, Agent-Protokolle.</h1>
-        <p class="lead i18n-en">A private home lab for self-hosted AI infrastructure — designed, built, and operated end-to-end. Bare metal up to operator UIs.</p>
-        <p class="lead i18n-de" style="display:none">Ein privates Home Lab für selbstgehostete KI-Infrastruktur — End-to-End entworfen, gebaut und betrieben. Vom Bare Metal bis zu den Operator-UIs.</p>
+        <h1 id="hero-de" class="i18n-de" lang="de" style="display:none">Selbstgehostete KI-Plattformen — Bare-Metal Kubernetes, Multi-Vendor-LLM-Orchestrierung, Agent-Protokolle.</h1>
+        <p class="lead i18n-en">I build the platform, not glue around someone else's. One Rust control plane — fop — runs every build, deploy, and AI agent I work with; the same code is a local CLI and a signed Kubernetes service. A private home lab in Germany, research and demonstration, end to end.</p>
+        <p class="lead i18n-de" lang="de" style="display:none">Ich baue die Plattform, nicht Glue-Code um eine fremde. Ein Rust-Control-Plane — fop — steuert jeden Build, jedes Deploy und jeden KI-Agenten; derselbe Code läuft als lokale CLI und als signierter Kubernetes-Service. Ein privates Home Lab in Deutschland, Forschung und Demonstration, von Anfang bis Ende.</p>
         <p class="sublead i18n-en">Research and demonstration environment. Not a commercial offering.</p>
-        <p class="sublead i18n-de" style="display:none">Forschungs- und Demonstrationsumgebung. Kein kommerzielles Angebot.</p>
+        <p class="sublead i18n-de" lang="de" style="display:none">Forschungs- und Demonstrationsumgebung. Kein kommerzielles Angebot.</p>
         <div class="meta">
           <span>Göttingen, DE</span>
-          <span class="i18n-en">14+ years in production systems</span><span class="i18n-de" style="display:none">14+ Jahre Produktionsbetrieb</span>
-          <span class="i18n-en">Platform · AI Systems · Supply Chain</span><span class="i18n-de" style="display:none">Plattform · KI-Systeme · Supply Chain</span>
+          <span class="i18n-en">14+ years in production systems</span><span class="i18n-de" lang="de" style="display:none">14+ Jahre Produktionsbetrieb</span>
+          <span class="i18n-en">Platform · AI Systems · Supply Chain</span><span class="i18n-de" lang="de" style="display:none">Plattform · KI-Systeme · Supply Chain</span>
         </div>
       </section>
 
       <nav class="links" aria-label="External links">
-        <a href="https://github.com/nash87" rel="noopener">GitHub</a>
-        <a href="https://www.linkedin.com/in/florian-schulz-a312bb137" rel="noopener">LinkedIn</a>
-        <a href="mailto:fschulz0787@gmail.com">Email</a>
+        <a href="https://github.com/nash87" rel="noopener me">GitHub</a>
+        <a href="https://www.linkedin.com/in/florian-schulz-a312bb137" rel="noopener me">LinkedIn</a>
+        <a href="mailto:fschulz0787@gmail.com" rel="me">Email</a>
         <a href="https://nash87.github.io/parkhub-site/" rel="noopener">ParkHub</a>
       </nav>
 
       <section class="section">
-        <div class="section-header"><h2 class="i18n-en">Currently in the lab</h2><h2 class="i18n-de" style="display:none">Aktuell im Lab</h2><div class="line"></div></div>
+        <div class="section-header">
+          <h2 class="i18n-en">Currently in the lab</h2>
+          <h2 class="i18n-de" lang="de" style="display:none">Aktuell im Lab</h2>
+          <div class="line" aria-hidden="true"></div>
+        </div>
         <ul class="lab-list" role="list">
           <li>
-            <span class="i18n-en">A Rust-native platform layer running dual-mode — local CLI and Kubernetes microservices, unified through a SvelteKit operator UI.</span>
-            <span class="i18n-de" style="display:none">Eine Rust-native Plattform-Schicht im Dual-Mode — lokale CLI und Kubernetes-Microservices, vereint über eine SvelteKit-Operator-UI.</span>
+            <span class="i18n-en">fop — a Rust control plane where every subcommand is also a signed Kubernetes microservice. One task board, one build queue, one GitOps loop across all of it.</span>
+            <span class="i18n-de" lang="de" style="display:none">fop — ein Rust-Control-Plane, bei dem jeder Subbefehl gleichzeitig ein signierter Kubernetes-Microservice ist. Ein Task-Board, eine Build-Queue, eine GitOps-Schleife für alles.</span>
           </li>
           <li>
-            <span class="i18n-en">An AI-first phone OS prototype on SHIFTphone 8 (postmarketOS + Slint) — voice-driven, on-device LLM, agent runtime.</span>
-            <span class="i18n-de" style="display:none">Ein KI-zentrierter Phone-OS-Prototyp auf dem SHIFTphone 8 (postmarketOS + Slint) — sprachgesteuert, On-Device-LLM, Agent-Runtime.</span>
+            <span class="i18n-en">An AI-first phone OS on a Linux mainline handset — postmarketOS, a Slint-native UI, and an on-device LLM running the same agent runtime as the cluster. The phone is a first-class target of the platform, not a companion app.</span>
+            <span class="i18n-de" lang="de" style="display:none">Ein KI-zentriertes Phone-OS auf einem Linux-Mainline-Gerät — postmarketOS, eine Slint-native UI und ein On-Device-LLM, das dieselbe Agent-Runtime wie der Cluster ausführt. Das Telefon ist ein vollwertiges Plattform-Target, keine Companion-App.</span>
           </li>
           <li>
-            <span class="i18n-en">A multi-agent fleet coordinating over NATS JetStream and A2A v1.0 across Anthropic, Google, and local Ollama on a Kubernetes cluster.</span>
-            <span class="i18n-de" style="display:none">Eine Multi-Agent-Flotte, die über NATS JetStream und A2A v1.0 zwischen Anthropic, Google und lokalem Ollama auf einem Kubernetes-Cluster koordiniert.</span>
+            <span class="i18n-en">A multi-CLI agent harness — Claude, Codex, Kimi and Gemini run as parallel coding agents inside the same control plane, coordinating through one shared task board with worktree isolation and a build queue.</span>
+            <span class="i18n-de" lang="de" style="display:none">Ein Multi-CLI-Agent-Harness — Claude, Codex, Kimi und Gemini laufen als parallele Coding-Agenten im selben Control-Plane, koordiniert über ein gemeinsames Task-Board mit Worktree-Isolation und einer Build-Queue.</span>
           </li>
           <li>
-            <span class="i18n-en">A signed supply chain — cosign, SBOM attestations, Kyverno PSS, Cilium + SPIRE mTLS, GitOps via Flux. Local hardware in Germany.</span>
-            <span class="i18n-de" style="display:none">Eine signierte Supply Chain — cosign, SBOM-Attestierungen, Kyverno PSS, Cilium + SPIRE mTLS, GitOps via Flux. Lokale Hardware in Deutschland.</span>
+            <span class="i18n-en">A supply chain where the cluster refuses any image it can't cryptographically verify — signature and SBOM enforced at admission, not audited after the fact.</span>
+            <span class="i18n-de" lang="de" style="display:none">Eine Supply Chain, bei der der Cluster jedes Image ablehnt, das er nicht kryptografisch verifizieren kann — Signatur und SBOM werden bei der Admission erzwungen, nicht im Nachhinein geprüft.</span>
           </li>
         </ul>
       </section>
 
       <section class="section">
-        <div class="section-header"><h2 class="i18n-en">Platform</h2><h2 class="i18n-de" style="display:none">Plattform</h2><div class="line"></div></div>
+        <div class="section-header">
+          <h2 class="i18n-en">Platform</h2>
+          <h2 class="i18n-de" lang="de" style="display:none">Plattform</h2>
+          <div class="line" aria-hidden="true"></div>
+        </div>
 
         <div class="theme">
-          <h3 class="i18n-en">Production-grade by default</h3>
-          <h3 class="i18n-de" style="display:none">Produktionsreif von Anfang an</h3>
+          <h3 class="i18n-en">Signed, reproducible, self-healing</h3>
+          <h3 class="i18n-de" lang="de" style="display:none">Signiert, reproduzierbar, selbstheilend</h3>
           <p class="i18n-en">Self-hosted Kubernetes with HA, automated recovery, and tested rollback. Every container image is cryptographically signed and ships with a verifiable SBOM — the cluster rejects anything missing either. Production runs the same artifacts that left local development.</p>
-          <p class="i18n-de" style="display:none">Selbstgehostetes Kubernetes mit Hochverfügbarkeit, automatisierter Wiederherstellung und getesteten Rollbacks. Jedes Container-Image ist kryptografisch signiert und führt eine verifizierbare SBOM — fehlt eines, lehnt der Cluster es ab. In Produktion laufen exakt dieselben Artefakte, die das lokale Setup verlassen haben.</p>
+          <p class="i18n-de" lang="de" style="display:none">Selbstgehostetes Kubernetes mit Hochverfügbarkeit, automatisierter Wiederherstellung und getesteten Rollbacks. Jedes Container-Image ist kryptografisch signiert und führt eine verifizierbare SBOM — fehlt eines, lehnt der Cluster es ab. In Produktion laufen exakt dieselben Artefakte, die das lokale Setup verlassen haben.</p>
         </div>
 
         <div class="theme">
           <h3 class="i18n-en">Multi-tenant from the database up</h3>
-          <h3 class="i18n-de" style="display:none">Multi-Tenant ab der Datenbankschicht</h3>
+          <h3 class="i18n-de" lang="de" style="display:none">Multi-Tenant ab der Datenbankschicht</h3>
           <p class="i18n-en">Customer separation enforced at the database layer, not retrofitted in application code. Cross-tenant data leaks aren't a bug class — they're structurally prevented. Roles, permissions, and audit logs are first-class at the trust boundary.</p>
-          <p class="i18n-de" style="display:none">Mandantentrennung wird auf Datenbankebene durchgesetzt, nicht im Anwendungscode nachgerüstet. Cross-Tenant-Datenlecks sind so keine Bug-Kategorie, sondern strukturell ausgeschlossen. Rollen, Berechtigungen und Audit-Logs sind First-Class an der Vertrauensgrenze.</p>
+          <p class="i18n-de" lang="de" style="display:none">Mandantentrennung wird auf Datenbankebene durchgesetzt, nicht im Anwendungscode nachgerüstet. Cross-Tenant-Datenlecks sind so keine Bug-Kategorie, sondern strukturell ausgeschlossen. Rollen, Berechtigungen und Audit-Logs sind First-Class an der Vertrauensgrenze.</p>
         </div>
 
         <div class="theme">
-          <h3 class="i18n-en">Production AI, not prompts</h3>
-          <h3 class="i18n-de" style="display:none">Produktions-KI statt Chat-Features</h3>
-          <p class="i18n-en">Agents have verified identities, run inside controlled execution sandboxes, and leave a complete audit trail. Multiple LLM providers with automatic failover. Token-cost budgets enforced before money is spent.</p>
-          <p class="i18n-de" style="display:none">Agenten haben verifizierte Identitäten, laufen in kontrollierten Ausführungs-Sandboxes und hinterlassen einen lückenlosen Audit-Trail. Mehrere LLM-Anbieter mit automatischem Failover. Token-Kosten-Budgets greifen, bevor Geld ausgegeben wird.</p>
+          <h3 class="i18n-en">AI with identities and budgets</h3>
+          <h3 class="i18n-de" lang="de" style="display:none">KI mit Identitäten und Budgets</h3>
+          <p class="i18n-en">Agents have verified identities, run inside controlled execution sandboxes, and leave a complete audit trail. Inputs pass a runtime validation gate — prompt-injection, PII leakage and loader-hijack are screened before a tool call runs. Multiple LLM providers with automatic failover. Token-cost budgets enforced before money is spent.</p>
+          <p class="i18n-de" lang="de" style="display:none">Agenten haben verifizierte Identitäten, laufen in kontrollierten Ausführungs-Sandboxes und hinterlassen einen lückenlosen Audit-Trail. Eingaben durchlaufen eine Laufzeit-Prüfung — Prompt-Injection, PII-Abfluss und Loader-Hijack werden erkannt, bevor ein Tool-Aufruf ausgeführt wird. Mehrere LLM-Anbieter mit automatischem Failover. Token-Kosten-Budgets greifen, bevor Geld ausgegeben wird.</p>
         </div>
 
         <div class="theme">
           <h3 class="i18n-en">Web, mobile, and tooling — same engineering bar</h3>
-          <h3 class="i18n-de" style="display:none">Web, Mobile und Tooling — derselbe Anspruch</h3>
+          <h3 class="i18n-de" lang="de" style="display:none">Web, Mobile und Tooling — derselbe Anspruch</h3>
           <p class="i18n-en">User-facing applications built to the same standards as the platform beneath them: accessible by default, internationalized, GDPR-compliant out of the gate. The mobile side is a first-class platform target — not a thin wrapper around a website.</p>
-          <p class="i18n-de" style="display:none">Endnutzer-Anwendungen entstehen nach denselben Standards wie die Plattform darunter: barrierefrei, mehrsprachig, DSGVO-konform ab Start. Die Mobile-Seite ist ein vollwertiges Plattform-Target — kein dünner Wrapper um eine Website.</p>
+          <p class="i18n-de" lang="de" style="display:none">Endnutzer-Anwendungen entstehen nach denselben Standards wie die Plattform darunter: barrierefrei, mehrsprachig, DSGVO-konform ab Start. Die Mobile-Seite ist ein vollwertiges Plattform-Target — kein dünner Wrapper um eine Website.</p>
+        </div>
+
+        <div class="theme">
+          <h3 class="i18n-en">One pattern, fifty services</h3>
+          <h3 class="i18n-de" lang="de" style="display:none">Ein Muster, fünfzig Services</h3>
+          <p class="i18n-en">The platform is built from small Rust crates that follow one rule: each is both a <code>fop</code> subcommand locally and a signed Kubernetes microservice in the cluster — same code, two runtimes.</p>
+          <p class="i18n-de" lang="de" style="display:none">Die Plattform besteht aus kleinen Rust-Crates, die einer Regel folgen: Jedes ist sowohl ein lokaler <code>fop</code>-Subbefehl als auch ein signierter Kubernetes-Microservice im Cluster — derselbe Code, zwei Laufzeiten.</p>
         </div>
 
       </section>
 
       <section class="section">
-        <div class="section-header"><h2 class="i18n-en">Public open source</h2><h2 class="i18n-de" style="display:none">Public Open Source</h2><div class="line"></div></div>
+        <div class="section-header">
+          <h2 class="i18n-en">Public open source</h2>
+          <h2 class="i18n-de" lang="de" style="display:none">Public Open Source</h2>
+          <div class="line" aria-hidden="true"></div>
+        </div>
         <div class="project-list">
           <div class="project-row">
             <a href="https://github.com/nash87/parkhub-rust" rel="noopener">ParkHub Rust</a>
             <span class="desc i18n-en">Self-hosted parking management — Axum + Astro 6 + React 19. v5.1.0, GDPR-compliant, MIT.</span>
-            <span class="desc i18n-de" style="display:none">Selbstgehostetes Parkraum-Management — Axum + Astro 6 + React 19. v5.1.0, DSGVO-konform, MIT.</span>
+            <span class="desc i18n-de" lang="de" style="display:none">Selbstgehostetes Parkraum-Management — Axum + Astro 6 + React 19. v5.1.0, DSGVO-konform, MIT.</span>
             <span class="tag">Rust</span>
           </div>
           <div class="project-row">
             <a href="https://github.com/nash87/parkhub-php" rel="noopener">ParkHub PHP</a>
             <span class="desc i18n-en">Same product on Laravel 13 + PHP 8.4 for shared hosting. Identical frontend, deployable anywhere PHP runs.</span>
-            <span class="desc i18n-de" style="display:none">Dasselbe Produkt auf Laravel 13 + PHP 8.4 für Shared Hosting. Identisches Frontend, deploybar überall, wo PHP läuft.</span>
+            <span class="desc i18n-de" lang="de" style="display:none">Dasselbe Produkt auf Laravel 13 + PHP 8.4 für Shared Hosting. Identisches Frontend, deploybar überall, wo PHP läuft.</span>
             <span class="tag">PHP</span>
           </div>
           <div class="project-row">
             <a href="https://nash87.github.io/parkhub-site/" rel="noopener">parkhub-site</a>
             <span class="desc i18n-en">ParkHub marketing site on Astro 6 + GitHub Pages.</span>
-            <span class="desc i18n-de" style="display:none">ParkHub-Marketing-Site auf Astro 6 + GitHub Pages.</span>
+            <span class="desc i18n-de" lang="de" style="display:none">ParkHub-Marketing-Site auf Astro 6 + GitHub Pages.</span>
             <span class="tag">Astro</span>
           </div>
           <div class="project-row">
             <a href="https://nash87.github.io/legal/" rel="noopener">legal</a>
             <span class="desc i18n-en">GDPR-compliant Impressum &amp; Datenschutz pages — the boring infrastructure most projects forget.</span>
-            <span class="desc i18n-de" style="display:none">DSGVO-konforme Impressum- &amp; Datenschutz-Seiten — die langweilige Infrastruktur, an die die meisten nicht denken.</span>
+            <span class="desc i18n-de" lang="de" style="display:none">DSGVO-konforme Impressum- &amp; Datenschutz-Seiten — die langweilige Infrastruktur, an die die meisten nicht denken.</span>
             <span class="tag">HTML</span>
           </div>
         </div>
       </section>
 
       <section class="section">
-        <div class="section-header"><h2>Stack</h2><div class="line"></div></div>
+        <div class="section-header">
+          <h2 class="i18n-en">Stack</h2>
+          <h2 class="i18n-de" lang="de" style="display:none">Stack</h2>
+          <div class="line" aria-hidden="true"></div>
+        </div>
         <div class="stack-group">
           <div class="stack-row">
-            <span class="stack-label i18n-en">Languages</span><span class="stack-label i18n-de" style="display:none">Sprachen</span>
+            <span class="stack-label i18n-en">Languages</span><span class="stack-label i18n-de" lang="de" style="display:none">Sprachen</span>
             <span class="stack-chips">
               <span class="stack-chip primary">Rust</span>
               <span class="stack-chip primary">TypeScript</span>
@@ -279,7 +380,8 @@
             </span>
           </div>
           <div class="stack-row">
-            <span class="stack-label">Frontend</span>
+            <span class="stack-label i18n-en">Frontend</span>
+            <span class="stack-label i18n-de" lang="de" style="display:none">Frontend</span>
             <span class="stack-chips">
               <span class="stack-chip primary">Svelte 5</span>
               <span class="stack-chip">SvelteKit</span>
@@ -289,17 +391,16 @@
             </span>
           </div>
           <div class="stack-row">
-            <span class="stack-label i18n-en">Platform</span><span class="stack-label i18n-de" style="display:none">Plattform</span>
+            <span class="stack-label i18n-en">Platform</span><span class="stack-label i18n-de" lang="de" style="display:none">Plattform</span>
             <span class="stack-chips">
               <span class="stack-chip primary">Kubernetes</span>
               <span class="stack-chip">Cilium</span>
               <span class="stack-chip">Flux CD</span>
-              <span class="stack-chip">Proxmox</span>
               <span class="stack-chip">Wolfi</span>
             </span>
           </div>
           <div class="stack-row">
-            <span class="stack-label i18n-en">Security</span><span class="stack-label i18n-de" style="display:none">Sicherheit</span>
+            <span class="stack-label i18n-en">Security</span><span class="stack-label i18n-de" lang="de" style="display:none">Sicherheit</span>
             <span class="stack-chips">
               <span class="stack-chip">Vault</span>
               <span class="stack-chip">SPIRE</span>
@@ -310,7 +411,7 @@
             </span>
           </div>
           <div class="stack-row">
-            <span class="stack-label i18n-en">Data</span><span class="stack-label i18n-de" style="display:none">Daten</span>
+            <span class="stack-label i18n-en">Data</span><span class="stack-label i18n-de" lang="de" style="display:none">Daten</span>
             <span class="stack-chips">
               <span class="stack-chip primary">PostgreSQL</span>
               <span class="stack-chip">CNPG</span>
@@ -329,7 +430,7 @@
             </span>
           </div>
           <div class="stack-row">
-            <span class="stack-label i18n-en">Observability</span><span class="stack-label i18n-de" style="display:none">Observability</span>
+            <span class="stack-label i18n-en">Observability</span><span class="stack-label i18n-de" lang="de" style="display:none">Observability</span>
             <span class="stack-chips">
               <span class="stack-chip">OpenTelemetry</span>
               <span class="stack-chip">eBPF</span>
@@ -339,93 +440,129 @@
       </section>
 
       <section class="section">
-        <div class="section-header"><h2 class="i18n-en">How I work</h2><h2 class="i18n-de" style="display:none">Arbeitsweise</h2><div class="line"></div></div>
+        <div class="section-header">
+          <h2 class="i18n-en">How I work</h2>
+          <h2 class="i18n-de" lang="de" style="display:none">Arbeitsweise</h2>
+          <div class="line" aria-hidden="true"></div>
+        </div>
         <ul class="principles" role="list">
           <li>
             <strong class="i18n-en">Build, don't consume</strong>
-            <strong class="i18n-de" style="display:none">Bauen, nicht konsumieren</strong>
+            <strong class="i18n-de" lang="de" style="display:none">Bauen, nicht konsumieren</strong>
             <span class="i18n-en">Rust-native implementations over npm-glue and SaaS lock-in.</span>
-            <span class="i18n-de" style="display:none">Rust-native Implementierungen statt npm-Glue und SaaS-Lock-in.</span>
+            <span class="i18n-de" lang="de" style="display:none">Rust-native Implementierungen statt npm-Glue und SaaS-Lock-in.</span>
           </li>
           <li>
             <strong class="i18n-en">Self-hosted by default</strong>
-            <strong class="i18n-de" style="display:none">Selbstgehostet by Default</strong>
+            <strong class="i18n-de" lang="de" style="display:none">Selbstgehostet by Default</strong>
             <span class="i18n-en">Bare-metal Kubernetes in Germany. GDPR-compliant. No foreign cloud.</span>
-            <span class="i18n-de" style="display:none">Bare-Metal Kubernetes in Deutschland. DSGVO-konform. Keine ausländische Cloud.</span>
+            <span class="i18n-de" lang="de" style="display:none">Bare-Metal Kubernetes in Deutschland. DSGVO-konform. Keine ausländische Cloud.</span>
           </li>
           <li>
-            <strong class="i18n-en">Production-grade from day one</strong>
-            <strong class="i18n-de" style="display:none">Produktionsreif ab Tag eins</strong>
+            <strong class="i18n-en">Verifiable supply chain, not assertions</strong>
+            <strong class="i18n-de" lang="de" style="display:none">Verifizierbare Supply Chain, keine Behauptungen</strong>
             <span class="i18n-en">mTLS, signed builds, SBOM attestations — not afterthoughts.</span>
-            <span class="i18n-de" style="display:none">mTLS, signierte Builds, SBOM-Attestierungen — kein Nachgedanke.</span>
+            <span class="i18n-de" lang="de" style="display:none">mTLS, signierte Builds, SBOM-Attestierungen — kein Nachgedanke.</span>
           </li>
           <li>
             <strong class="i18n-en">Multi-vendor AI</strong>
-            <strong class="i18n-de" style="display:none">Multi-Vendor-KI</strong>
+            <strong class="i18n-de" lang="de" style="display:none">Multi-Vendor-KI</strong>
             <span class="i18n-en">Anthropic primary, with OpenAI, Google, and local Ollama fallback. No single-vendor lockout.</span>
-            <span class="i18n-de" style="display:none">Anthropic als Primär-Provider, mit OpenAI, Google und lokalem Ollama-Fallback. Kein Single-Vendor-Lock-in.</span>
+            <span class="i18n-de" lang="de" style="display:none">Anthropic als Primär-Provider, mit OpenAI, Google und lokalem Ollama-Fallback. Kein Single-Vendor-Lock-in.</span>
           </li>
         </ul>
       </section>
     </div>
 
     <div id="impressum" class="legal-page">
-      <a href="#" class="back" onclick="showPortfolio(); return false;">&larr; Back</a>
-      <h2>Impressum</h2>
-      <h3>Angaben gemäß § 5 DDG</h3>
-      <p>Florian Schulz<br>Deutschland</p>
-      <h3>Kontakt</h3>
-      <p>E-Mail: fschulz0787@gmail.com</p>
-      <h3>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
-      <p>Florian Schulz</p>
-      <p style="font-size:12px;color:var(--dim);margin-top:14px">Vollständiges Impressum &amp; Datenschutz: <a href="https://nash87.github.io/legal/" rel="noopener">nash87.github.io/legal</a></p>
+      <a href="#" class="back" onclick="showPortfolio(); return false;">&larr; <span class="i18n-en">Back</span><span class="i18n-de" lang="de" style="display:none">Zurück</span></a>
+      <!-- EN version of Impressum (shown when lang=en) -->
+      <div class="i18n-en">
+        <h2>Legal Notice</h2>
+        <h3>Information pursuant to § 5 DDG</h3>
+        <p>Florian Schulz<br><span class="i18n-en">Florian Schulz<br>Backhausstr. 9<br>37081 Göttingen<br>Germany</span><br>Germany</p>
+        <h3>Contact</h3>
+        <p>E-mail: fschulz0787@gmail.com</p>
+        <h3>Responsible for content pursuant to § 18 para. 2 MStV</h3>
+        <p>Florian Schulz</p>
+        <p style="font-size:12px;color:var(--dim);margin-top:14px">Full legal notice &amp; privacy policy: <a href="https://nash87.github.io/legal/" rel="noopener">nash87.github.io/legal</a></p>
+      </div>
+      <!-- DE version (shown when lang=de) -->
+      <div class="i18n-de" lang="de" style="display:none">
+        <h2>Impressum</h2>
+        <h3>Angaben gemäß § 5 DDG</h3>
+        <p>Florian Schulz<br><span class="i18n-de">Florian Schulz<br>Backhausstr. 9<br>37081 Göttingen<br>Deutschland</span><br>Deutschland</p>
+        <h3>Kontakt</h3>
+        <p>E-Mail: fschulz0787@gmail.com</p>
+        <h3>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
+        <p>Florian Schulz</p>
+        <p style="font-size:12px;color:var(--dim);margin-top:14px">Vollständiges Impressum &amp; Datenschutz: <a href="https://nash87.github.io/legal/" rel="noopener">nash87.github.io/legal</a></p>
+      </div>
     </div>
 
     <div id="privacy" class="legal-page">
-      <a href="#" class="back" onclick="showPortfolio(); return false;">&larr; Back</a>
+      <a href="#" class="back" onclick="showPortfolio(); return false;">&larr; <span class="i18n-en">Back</span><span class="i18n-de" lang="de" style="display:none">Zurück</span></a>
       <h2 class="i18n-en">Privacy Policy</h2>
-      <h2 class="i18n-de" style="display:none">Datenschutzerklärung</h2>
-      <h3 class="i18n-en">1. Data Controller</h3><h3 class="i18n-de" style="display:none">1. Verantwortlicher</h3>
+      <h2 class="i18n-de" lang="de" style="display:none">Datenschutzerklärung</h2>
+      <h3 class="i18n-en">1. Data Controller</h3><h3 class="i18n-de" lang="de" style="display:none">1. Verantwortlicher</h3>
       <p>Florian Schulz, Göttingen. E-Mail: fschulz0787@gmail.com</p>
-      <h3 class="i18n-en">2. Hosting</h3><h3 class="i18n-de" style="display:none">2. Hosting</h3>
+      <h3 class="i18n-en">2. Hosting</h3><h3 class="i18n-de" lang="de" style="display:none">2. Hosting</h3>
       <p class="i18n-en">This site is hosted on GitHub Pages (GitHub Inc., USA). GitHub may collect IP addresses in server logs.</p>
-      <p class="i18n-de" style="display:none">Diese Seite wird auf GitHub Pages gehostet (GitHub Inc., USA). GitHub kann IP-Adressen in Server-Logs erfassen.</p>
-      <h3 class="i18n-en">3. Cookies &amp; Storage</h3><h3 class="i18n-de" style="display:none">3. Cookies &amp; Speicher</h3>
+      <p class="i18n-de" lang="de" style="display:none">Diese Seite wird auf GitHub Pages gehostet (GitHub Inc., USA). GitHub kann IP-Adressen in Server-Logs erfassen.</p>
+      <h3 class="i18n-en">3. Cookies &amp; Storage</h3><h3 class="i18n-de" lang="de" style="display:none">3. Cookies &amp; Speicher</h3>
       <p class="i18n-en">Uses localStorage for language and theme preferences only. No tracking, no analytics, no third-party scripts. No external fonts.</p>
-      <p class="i18n-de" style="display:none">Nutzt localStorage nur für Sprach- und Design-Einstellungen. Kein Tracking, keine Analyse, keine Drittanbieter-Skripte. Keine externen Fonts.</p>
-      <h3 class="i18n-en">4. Your Rights (GDPR Art. 15-21)</h3><h3 class="i18n-de" style="display:none">4. Ihre Rechte (DSGVO Art. 15-21)</h3>
+      <p class="i18n-de" lang="de" style="display:none">Nutzt localStorage nur für Sprach- und Design-Einstellungen. Kein Tracking, keine Analyse, keine Drittanbieter-Skripte. Keine externen Fonts.</p>
+      <h3 class="i18n-en">4. Your Rights (GDPR Art. 15-21)</h3><h3 class="i18n-de" lang="de" style="display:none">4. Ihre Rechte (DSGVO Art. 15-21)</h3>
       <p class="i18n-en">Right to access, rectification, erasure, restriction, portability, and objection. Contact: fschulz0787@gmail.com</p>
-      <p class="i18n-de" style="display:none">Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch. Kontakt: fschulz0787@gmail.com</p>
-      <h3 class="i18n-en">5. External Services</h3><h3 class="i18n-de" style="display:none">5. Externe Dienste</h3>
+      <p class="i18n-de" lang="de" style="display:none">Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch. Kontakt: fschulz0787@gmail.com</p>
+      <h3 class="i18n-en">5. External Services</h3><h3 class="i18n-de" lang="de" style="display:none">5. Externe Dienste</h3>
       <p class="i18n-en">GitHub (hosting), LinkedIn (external link only). Each has its own privacy policy.</p>
-      <p class="i18n-de" style="display:none">GitHub (Hosting), LinkedIn (nur externer Link). Beide haben eigene Datenschutzrichtlinien.</p>
+      <p class="i18n-de" lang="de" style="display:none">GitHub (Hosting), LinkedIn (nur externer Link). Beide haben eigene Datenschutzrichtlinien.</p>
     </div>
   </main>
 
   <footer class="legal">
     <div class="legal-links">
-      <a href="#" onclick="showPage('impressum'); return false;">Impressum</a>
+      <a href="#" onclick="showPage('impressum'); return false;" class="i18n-en">Legal Notice</a>
+      <a href="#" onclick="showPage('impressum'); return false;" class="i18n-de" lang="de" style="display:none">Impressum</a>
       <a href="#" onclick="showPage('privacy'); return false;" class="i18n-en">Privacy</a>
-      <a href="#" onclick="showPage('privacy'); return false;" class="i18n-de" style="display:none">Datenschutz</a>
+      <a href="#" onclick="showPage('privacy'); return false;" class="i18n-de" lang="de" style="display:none">Datenschutz</a>
       <a href="https://nash87.github.io/legal/" rel="noopener" class="i18n-en">Full Legal</a>
-      <a href="https://nash87.github.io/legal/" rel="noopener" class="i18n-de" style="display:none">Rechtliches</a>
+      <a href="https://nash87.github.io/legal/" rel="noopener" class="i18n-de" lang="de" style="display:none">Rechtliches</a>
     </div>
-    <p>&copy; 2026 Florian Schulz · Göttingen</p>
+    <p class="i18n-en">&copy; 2026 Florian Schulz &middot; Göttingen</p>
+    <p class="i18n-de" lang="de" style="display:none">&copy; 2026 Florian Schulz &middot; Göttingen</p>
   </footer>
 </div>
 
+<!-- aria-live region for theme announcements -->
+<div id="themeAnnounce" aria-live="polite" aria-atomic="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;"></div>
+
 <script>
-  // View-Transitions wrapper — graceful fallback when unsupported
+  // View-Transitions wrapper — respects prefers-reduced-motion
   function vt(fn) {
-    if (document.startViewTransition) document.startViewTransition(fn);
-    else fn();
+    if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      document.startViewTransition(fn);
+    } else {
+      fn();
+    }
   }
-  var lang = localStorage.getItem('lang') || (navigator.language.startsWith('de') ? 'de' : 'en');
+
+  // Lang state (also set by inline head script for FOUC prevention)
+  var lang = localStorage.getItem('lang') || (navigator.language && navigator.language.startsWith('de') ? 'de' : 'en');
+
+  var langLabels = {
+    en: { btn: 'EN', aria: 'Language: English — switch to German' },
+    de: { btn: 'DE', aria: 'Sprache: Deutsch — auf Englisch wechseln' }
+  };
+
   function applyLang(l) {
     lang = l;
     localStorage.setItem('lang', l);
     document.documentElement.lang = l;
-    document.getElementById('langBtn').textContent = l.toUpperCase();
+    var btn = document.getElementById('langBtn');
+    btn.textContent = langLabels[l].btn;
+    btn.setAttribute('aria-label', langLabels[l].aria);
     var enEls = document.querySelectorAll('.i18n-en');
     var deEls = document.querySelectorAll('.i18n-de');
     for (var i = 0; i < enEls.length; i++) enEls[i].style.display = l === 'en' ? '' : 'none';
@@ -433,17 +570,41 @@
   }
   function setLang(l) { vt(function () { applyLang(l); }); }
   function toggleLang() { setLang(lang === 'en' ? 'de' : 'en'); }
+
+  // Theme state
   var themes = ['dark', 'light', 'high-contrast'];
-  var themeLabels = { dark: 'Dark', light: 'Light', 'high-contrast': 'A11y' };
-  var themeIdx = themes.indexOf(localStorage.getItem('theme') || 'dark');
+  var themeLabels = {
+    dark:           { btn: 'Dark',  ariaEn: 'Color theme: Dark — press to cycle',         ariaDe: 'Farbschema: Dunkel — zum Wechseln drücken' },
+    light:          { btn: 'Light', ariaEn: 'Color theme: Light — press to cycle',        ariaDe: 'Farbschema: Hell — zum Wechseln drücken' },
+    'high-contrast':{ btn: 'A11y',  ariaEn: 'Color theme: High contrast — press to cycle',ariaDe: 'Farbschema: Hoher Kontrast — zum Wechseln drücken' }
+  };
+  var themeAnnounceEn = { dark: 'Dark theme applied', light: 'Light theme applied', 'high-contrast': 'High contrast theme applied' };
+  var themeAnnounceDe = { dark: 'Dunkles Design aktiviert', light: 'Helles Design aktiviert', 'high-contrast': 'Hochkontrast-Design aktiviert' };
+
+  // Determine initial theme: saved → prefers-contrast → prefers-color-scheme → dark
+  function detectInitialTheme() {
+    var saved = localStorage.getItem('theme');
+    if (saved && themes.indexOf(saved) >= 0) return saved;
+    if (window.matchMedia('(prefers-contrast: more)').matches) return 'high-contrast';
+    if (window.matchMedia('(prefers-color-scheme: light)').matches) return 'light';
+    return 'dark';
+  }
+  var themeIdx = themes.indexOf(detectInitialTheme());
   if (themeIdx < 0) themeIdx = 0;
+
   function applyTheme(t) {
     document.documentElement.setAttribute('data-theme', t);
     localStorage.setItem('theme', t);
-    document.getElementById('themeBtn').textContent = themeLabels[t];
+    var btn = document.getElementById('themeBtn');
+    btn.textContent = themeLabels[t].btn;
+    btn.setAttribute('aria-label', lang === 'de' ? themeLabels[t].ariaDe : themeLabels[t].ariaEn);
+    // Announce to screen readers
+    var msg = lang === 'de' ? themeAnnounceDe[t] : themeAnnounceEn[t];
+    document.getElementById('themeAnnounce').textContent = msg;
   }
   function setTheme(t) { vt(function () { applyTheme(t); }); }
   function cycleTheme() { themeIdx = (themeIdx + 1) % themes.length; setTheme(themes[themeIdx]); }
+
   function showPage(id) {
     vt(function () {
       document.getElementById('portfolio').style.display = 'none';
@@ -461,6 +622,8 @@
       window.scrollTo(0, 0);
     });
   }
+
+  // Init (theme already applied by inline head script; re-apply to sync button labels)
   applyLang(lang);
   applyTheme(themes[themeIdx]);
 </script>
