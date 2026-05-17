@@ -99,11 +99,6 @@
     .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
     .section-header h2 { font-size: 13px; font-weight: 600; color: var(--dim); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
     .section-header .line { flex: 1; height: 1px; background: var(--border); }
-    .numbers { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 18px; margin-bottom: 30px; padding: 20px 24px; background: linear-gradient(180deg, var(--surface) 0%, var(--surface-2) 100%); border: 1px solid var(--border); border-radius: 10px; }
-    .num-item .val { font-size: 24px; font-weight: 700; color: var(--bright); font-variant-numeric: tabular-nums; line-height: 1; }
-    .num-item:nth-child(1) .val { color: var(--accent); }
-    .num-item:nth-child(4) .val { color: var(--teal); }
-    .num-item .lbl { font-size: 11px; color: var(--dim); margin-top: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
     .lab-list { list-style: none; padding: 0; margin: 0; }
     .lab-list li { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text); line-height: 1.65; align-items: flex-start; }
     .lab-list li::before { content: '●'; color: var(--accent); flex-shrink: 0; font-size: 9px; line-height: 1; padding-top: 8px; }
@@ -143,8 +138,6 @@
     @media (max-width: 520px) {
       .hero { padding: 52px 0 36px; }
       .hero h1 { font-size: 30px; }
-      .numbers { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; padding: 16px; }
-      .num-item .val { font-size: 20px; }
       .project-row { flex-wrap: wrap; }
       .theme h3 { font-size: 16px; }
       .stack-row { flex-direction: column; gap: 6px; }
@@ -191,12 +184,6 @@
 
       <section class="section">
         <div class="section-header"><h2 class="i18n-en">Currently in the lab</h2><h2 class="i18n-de" style="display:none">Aktuell im Lab</h2><div class="line"></div></div>
-        <div class="numbers" role="list">
-          <div class="num-item" role="listitem"><div class="val">200+</div><div class="lbl i18n-en">Rust crates</div><div class="lbl i18n-de" style="display:none">Rust-Crates</div></div>
-          <div class="num-item" role="listitem"><div class="val">~50</div><div class="lbl i18n-en">K8s services</div><div class="lbl i18n-de" style="display:none">K8s-Services</div></div>
-          <div class="num-item" role="listitem"><div class="val">6+</div><div class="lbl i18n-en">AI agents in prod</div><div class="lbl i18n-de" style="display:none">KI-Agenten in Produktion</div></div>
-          <div class="num-item" role="listitem"><div class="val">100%</div><div class="lbl i18n-en">self-hosted</div><div class="lbl i18n-de" style="display:none">selbstgehostet</div></div>
-        </div>
         <ul class="lab-list" role="list">
           <li>
             <span class="i18n-en">A Rust-native platform layer running dual-mode — local CLI and Kubernetes microservices, unified through a SvelteKit operator UI.</span>
@@ -211,8 +198,8 @@
             <span class="i18n-de" style="display:none">Eine Multi-Agent-Flotte, die über NATS JetStream und A2A v1.0 zwischen Anthropic, Google und lokalem Ollama auf einem Kubernetes-Cluster koordiniert.</span>
           </li>
           <li>
-            <span class="i18n-en">A signed supply chain — cosign, SBOM attestations, Kyverno PSS, Cilium + SPIRE mTLS, GitOps via Flux. ~50 services on local hardware in Germany.</span>
-            <span class="i18n-de" style="display:none">Eine signierte Supply Chain — cosign, SBOM-Attestierungen, Kyverno PSS, Cilium + SPIRE mTLS, GitOps via Flux. ~50 Services auf lokaler Hardware in Deutschland.</span>
+            <span class="i18n-en">A signed supply chain — cosign, SBOM attestations, Kyverno PSS, Cilium + SPIRE mTLS, GitOps via Flux. Local hardware in Germany.</span>
+            <span class="i18n-de" style="display:none">Eine signierte Supply Chain — cosign, SBOM-Attestierungen, Kyverno PSS, Cilium + SPIRE mTLS, GitOps via Flux. Lokale Hardware in Deutschland.</span>
           </li>
         </ul>
       </section>
@@ -248,12 +235,6 @@
           <p class="i18n-de" style="display:none">Endnutzer-Anwendungen entstehen nach denselben Standards wie die Plattform darunter: barrierefrei, mehrsprachig, DSGVO-konform ab Start. Die Mobile-Seite ist ein vollwertiges Plattform-Target — kein dünner Wrapper um eine Website.</p>
         </div>
 
-        <div class="theme">
-          <h3 class="i18n-en">Built to be operated</h3>
-          <h3 class="i18n-de" style="display:none">Auf den Betrieb hin gebaut</h3>
-          <p class="i18n-en">Resource-aware build orchestration, isolation between concurrent work-streams, AI agents wired in as collaborators rather than autocomplete, and full eBPF-level visibility into what the system actually does — not what it was supposed to do.</p>
-          <p class="i18n-de" style="display:none">Ressourcenbewusste Build-Orchestrierung, Isolation paralleler Workstreams, KI-Agenten als echte Mitarbeitende statt Autocomplete und vollständige eBPF-Einsicht in das, was das System tatsächlich tut — nicht in das, was es tun sollte.</p>
-        </div>
       </section>
 
       <section class="section">
@@ -261,8 +242,8 @@
         <div class="project-list">
           <div class="project-row">
             <a href="https://github.com/nash87/parkhub-rust" rel="noopener">ParkHub Rust</a>
-            <span class="desc i18n-en">Self-hosted parking management — Axum + Astro 6 + React 19. v4.13.0, GDPR-compliant, MIT.</span>
-            <span class="desc i18n-de" style="display:none">Selbstgehostetes Parkraum-Management — Axum + Astro 6 + React 19. v4.13.0, DSGVO-konform, MIT.</span>
+            <span class="desc i18n-en">Self-hosted parking management — Axum + Astro 6 + React 19. v5.1.0, GDPR-compliant, MIT.</span>
+            <span class="desc i18n-de" style="display:none">Selbstgehostetes Parkraum-Management — Axum + Astro 6 + React 19. v5.1.0, DSGVO-konform, MIT.</span>
             <span class="tag">Rust</span>
           </div>
           <div class="project-row">
