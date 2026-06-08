@@ -1,0 +1,19 @@
+{
+  "name": "Securanido",
+  "short_name": "Securanido",
+  "description": "Open-source, self-hosted AI agent platform — local-first and EU-sovereign.",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0908",
+  "theme_color": "#0a0908",
+  "lang": "en",
+  "icons": [
+    {
+      "src": "/icon.svg",
+      "type": "image/svg+xml",
+      "sizes": "any",
+      "purpose": "any"
+    }
+  ]
+}
