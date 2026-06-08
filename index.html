@@ -257,6 +257,30 @@
   .when b { color: var(--gold); font-weight: 500; }
   .when .sep { color: var(--faint); }
 
+  /* ── "What it is": three quiet specifics. A restrained hairline-divided
+     list (no cards, no icons, no boxes) below the date line. The countdown
+     stays the hero; this only adds concrete substance under it. ── */
+  .facts {
+    list-style: none; margin: clamp(20px, 3.4vh, 30px) 0 0; padding: 0;
+    max-width: 60ch;
+  }
+  .facts li {
+    font-family: var(--mono); font-size: clamp(12px, 1.4vw, 13.5px);
+    line-height: 1.65; letter-spacing: 0.01em; color: var(--dim);
+    padding: 11px 0 11px 20px; position: relative;
+    border-top: 1px solid var(--line);
+  }
+  .facts li:first-child { border-top: 0; }
+  /* a single subtle gold hairline marker — not a bullet, not an icon */
+  .facts li::before {
+    content: ""; position: absolute; left: 0; top: 1.05em;
+    width: 9px; height: 1px; background: var(--gold-deep);
+  }
+  [dir="rtl"] .facts li { padding: 11px 20px 11px 0; }
+  [dir="rtl"] .facts li::before { left: auto; right: 0; }
+  .facts li b { color: var(--muted); font-weight: 500; }
+  html[data-state="live"] .facts { display: none; }
+
   .live-panel { display: none; }
   html[data-state="live"] .clock, html[data-state="live"] .tagline, html[data-state="live"] .teaser { display: none; }
   html[data-state="live"] .live-panel {
@@ -366,6 +390,12 @@
         <b data-i18n="releaseDate">Sunday, 28 June&nbsp;&middot;&nbsp;14:00 CEST</b>
       </p>
 
+      <ul class="facts" aria-label="What Securanido is" data-i18n-aria-label="factsLabel">
+        <li data-i18n="fact1" data-i18n-html="1">Runs on your own Kubernetes, laptop, or air-gapped network.</li>
+        <li data-i18n="fact2" data-i18n-html="1">Apache-2.0, no telemetry, no account &mdash; your data stays with you.</li>
+        <li data-i18n="fact3" data-i18n-html="1">Many agents in parallel, governed by one machine-enforced guard.</li>
+      </ul>
+
       <section class="live-panel" aria-hidden="true">
         <p class="live-kicker" data-i18n="liveKicker">Now live</p>
         <p class="live-line" data-i18n="liveLine">The release is underway. Securanido is open.</p>
@@ -430,6 +460,10 @@
                 "seconds": "Seconds",
                 "releaseLabel": "Public release",
                 "releaseDate": "Sunday, 28 June&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "What Securanido is",
+                "fact1": "Runs on your own Kubernetes, laptop, or air-gapped network.",
+                "fact2": "Apache-2.0, no telemetry, no account &mdash; your data stays with you.",
+                "fact3": "Many agents in parallel, governed by one machine-enforced guard.",
                 "liveKicker": "Now live",
                 "liveLine": "The release is underway. Securanido is open.",
                 "back": "Back",
@@ -473,6 +507,10 @@
                 "seconds": "Sekunden",
                 "releaseLabel": "Öffentlicher Release",
                 "releaseDate": "Sonntag, 28. Juni&nbsp;&middot;&nbsp;14:00 MESZ",
+                "factsLabel": "Was Securanido ist",
+                "fact1": "Läuft auf deinem eigenen Kubernetes, Laptop oder abgeschotteten Netz.",
+                "fact2": "Apache-2.0, keine Telemetrie, kein Konto &mdash; deine Daten bleiben bei dir.",
+                "fact3": "Viele Agenten parallel, kontrolliert von einem Guard, der jede Aktion prüft.",
                 "liveKicker": "Jetzt live",
                 "liveLine": "Der Release läuft. Securanido ist jetzt offen für alle.",
                 "back": "Zurück",
@@ -516,6 +554,10 @@
                 "seconds": "Secondes",
                 "releaseLabel": "Sortie publique",
                 "releaseDate": "dimanche 28 juin&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Ce qu’est Securanido",
+                "fact1": "Tourne sur votre propre Kubernetes, votre ordinateur portable ou un réseau isolé.",
+                "fact2": "Apache-2.0, sans télémétrie, sans compte &mdash; vos données restent chez vous.",
+                "fact3": "Plusieurs agents en parallèle, sous le contrôle d’un seul Guard qui vérifie chaque action.",
                 "liveKicker": "En ligne",
                 "liveLine": "La sortie est lancée. Securanido est ouvert.",
                 "back": "Retour",
@@ -559,6 +601,10 @@
                 "seconds": "Segundos",
                 "releaseLabel": "Lanzamiento público",
                 "releaseDate": "domingo, 28 de junio&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Qué es Securanido",
+                "fact1": "Funciona en tu propio Kubernetes, tu portátil o una red aislada.",
+                "fact2": "Apache-2.0, sin telemetría, sin cuenta &mdash; tus datos se quedan contigo.",
+                "fact3": "Varios agentes en paralelo, bajo el control de un único Guard que verifica cada acción.",
                 "liveKicker": "Ya disponible",
                 "liveLine": "El lanzamiento está en marcha. Securanido ya está abierto.",
                 "back": "Volver",
@@ -602,6 +648,10 @@
                 "seconds": "Secondi",
                 "releaseLabel": "Rilascio pubblico",
                 "releaseDate": "domenica 28 giugno&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Cos’è Securanido",
+                "fact1": "Gira sul tuo Kubernetes, sul tuo portatile o su una rete isolata.",
+                "fact2": "Apache-2.0, senza telemetria, senza account &mdash; i tuoi dati restano con te.",
+                "fact3": "Molti agenti in parallelo, sotto il controllo di un solo Guard che verifica ogni azione.",
                 "liveKicker": "Ora online",
                 "liveLine": "Il rilascio è in corso. Securanido è aperto.",
                 "back": "Indietro",
@@ -645,6 +695,10 @@
                 "seconds": "Segundos",
                 "releaseLabel": "Lançamento público",
                 "releaseDate": "domingo, 28 de junho&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "O que é o Securanido",
+                "fact1": "Corre no teu próprio Kubernetes, no teu portátil ou numa rede isolada.",
+                "fact2": "Apache-2.0, sem telemetria, sem conta &mdash; os teus dados ficam contigo.",
+                "fact3": "Vários agentes em paralelo, sob o controlo de um único Guard que verifica cada ação.",
                 "liveKicker": "Já disponível",
                 "liveLine": "O lançamento está a decorrer. O Securanido está aberto.",
                 "back": "Voltar",
@@ -688,6 +742,10 @@
                 "seconds": "Saniye",
                 "releaseLabel": "Genel sürüm",
                 "releaseDate": "28 Haziran Pazar&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Securanido nedir",
+                "fact1": "Kendi Kubernetes’inizde, dizüstü bilgisayarınızda veya yalıtılmış bir ağda çalışır.",
+                "fact2": "Apache-2.0, telemetri yok, hesap yok &mdash; verileriniz sizde kalır.",
+                "fact3": "Paralel çalışan çok sayıda ajan; her eylemi denetleyen tek bir Guard tarafından yönetilir.",
                 "liveKicker": "Şimdi yayında",
                 "liveLine": "Sürüm yayınlanıyor. Securanido artık açık.",
                 "back": "Geri",
@@ -731,6 +789,10 @@
                 "seconds": "Sekundy",
                 "releaseLabel": "Publiczne wydanie",
                 "releaseDate": "niedziela, 28 czerwca&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Czym jest Securanido",
+                "fact1": "Działa na Twoim własnym Kubernetes, laptopie lub w sieci odizolowanej.",
+                "fact2": "Apache-2.0, bez telemetrii, bez konta &mdash; Twoje dane zostają u Ciebie.",
+                "fact3": "Wiele agentów równolegle, nad którymi czuwa jeden Guard sprawdzający każde działanie.",
                 "liveKicker": "Już dostępne",
                 "liveLine": "Wydanie trwa. Securanido jest otwarte.",
                 "back": "Wstecz",
@@ -774,6 +836,10 @@
                 "seconds": "秒",
                 "releaseLabel": "一般公開",
                 "releaseDate": "6月28日（日）&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Securanido とは",
+                "fact1": "自分の Kubernetes、ノートパソコン、あるいは外部から隔離されたネットワークで動きます。",
+                "fact2": "Apache-2.0、テレメトリーなし、アカウント不要 &mdash; データは手元に残ります。",
+                "fact3": "多数のエージェントが並行して動き、すべての操作を検査する一つの Guard が統括します。",
                 "liveKicker": "公開中",
                 "liveLine": "リリースが進行中です。Securanido が公開されました。",
                 "back": "戻る",
@@ -817,6 +883,10 @@
                 "seconds": "秒",
                 "releaseLabel": "正式发布",
                 "releaseDate": "6月28日 星期日&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Securanido 是什么",
+                "fact1": "运行在你自有的 Kubernetes、笔记本电脑或隔离网络上。",
+                "fact2": "Apache-2.0、无遥测、无需账户——数据始终留在你手中。",
+                "fact3": "多个代理并行运行，由一个会核查每一个操作的 Guard 统管。",
                 "liveKicker": "现已上线",
                 "liveLine": "发布正在进行。Securanido 已经开放。",
                 "back": "返回",
