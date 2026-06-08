@@ -4,16 +4,26 @@
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 
-<!-- Pre-paint language init: set <html lang> from storage or navigator before first paint (no FOUC, no layout shift). -->
+<!-- Pre-paint language init: set <html lang> + dir from storage or navigator before first paint (no FOUC, no layout shift). -->
 <script>
   (function () {
-    try {
-      var saved = localStorage.getItem("securanido.lang");
-      var lang = (saved === "de" || saved === "en") ? saved
-        : (navigator.language || "en").toLowerCase().indexOf("de") === 0 ? "de" : "en";
-      document.documentElement.lang = lang;
-      document.documentElement.setAttribute("data-lang", lang);
-    } catch (e) { /* storage blocked — defaults to en in markup */ }
+    var SUPPORTED = ["en", "de", "fr", "es", "it", "pt", "tr", "pl", "ja", "zh"];
+    var RTL = { ar: 1, fa: 1, he: 1, ur: 1 }; // none currently shipped, but the page stays RTL-ready
+    function pick() {
+      try {
+        var saved = localStorage.getItem("securanido.lang");
+        if (SUPPORTED.indexOf(saved) !== -1) return saved;
+      } catch (e) {}
+      var nav = (navigator.language || "en").toLowerCase();
+      var base = nav.split("-")[0];
+      if (SUPPORTED.indexOf(nav) !== -1) return nav;
+      if (SUPPORTED.indexOf(base) !== -1) return base;
+      return "en";
+    }
+    var lang = pick();
+    document.documentElement.lang = lang;
+    document.documentElement.setAttribute("data-lang", lang);
+    document.documentElement.dir = RTL[lang] ? "rtl" : "ltr";
   })();
 </script>
 
@@ -47,6 +57,14 @@
 <meta property="og:image:alt" content="Securanido — open-source, self-hosted AI platform. Countdown to the public release on 28 June 2026." />
 <meta property="og:locale" content="en_GB" />
 <meta property="og:locale:alternate" content="de_DE" />
+<meta property="og:locale:alternate" content="fr_FR" />
+<meta property="og:locale:alternate" content="es_ES" />
+<meta property="og:locale:alternate" content="it_IT" />
+<meta property="og:locale:alternate" content="pt_PT" />
+<meta property="og:locale:alternate" content="tr_TR" />
+<meta property="og:locale:alternate" content="pl_PL" />
+<meta property="og:locale:alternate" content="ja_JP" />
+<meta property="og:locale:alternate" content="zh_CN" />
 
 <!-- Twitter / X card -->
 <meta name="twitter:card" content="summary_large_image" />
@@ -65,7 +83,7 @@
       "@id": "https://securanido.com/#website",
       "url": "https://securanido.com/",
       "name": "Securanido",
-      "inLanguage": ["en", "de"],
+      "inLanguage": ["en", "de", "fr", "es", "it", "pt", "tr", "pl", "ja", "zh"],
       "description": "Open-source, self-hosted AI agent platform — local-first and EU-sovereign."
     },
     {
@@ -154,27 +172,36 @@
   }
   .skip-link:focus-visible { top: 12px; }
 
-  /* ── Top bar: language switcher ───────────────────────────────────── */
+  /* ── Top bar: language switcher (labeled <select>, scales to N locales) ─ */
   .topbar {
     position: relative; z-index: 2;
     width: min(960px, 90vw); margin: 0 auto;
     padding: 22px 0 0; display: flex; justify-content: flex-end;
   }
+  [dir="rtl"] .topbar { justify-content: flex-start; }
   .lang-switch {
-    display: inline-flex; align-items: stretch;
-    border: 1px solid var(--line); border-radius: 999px; overflow: hidden;
-    background: rgba(21, 17, 12, 0.55);
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: rgba(21, 17, 12, 0.55); padding: 5px 6px 5px 14px;
   }
-  .lang-switch button {
-    appearance: none; background: transparent; border: 0; cursor: pointer;
+  .lang-switch .lang-icon {
     font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
-    color: var(--dim); padding: 8px 15px; min-height: 32px; line-height: 1;
-    transition: color 0.18s ease, background 0.18s ease;
+    color: var(--dim); line-height: 1; pointer-events: none;
   }
-  .lang-switch button + button { border-left: 1px solid var(--line); }
-  .lang-switch button:hover { color: var(--ink); }
-  .lang-switch button[aria-pressed="true"] { color: #0a0908; background: var(--gold); }
-  .lang-switch button:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+  .lang-switch select {
+    appearance: none; -webkit-appearance: none;
+    background: transparent; border: 0; cursor: pointer;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em;
+    color: var(--ink); padding: 7px 26px 7px 8px; min-height: 32px; line-height: 1;
+    border-radius: 999px;
+    /* warm chevron, inlined so the page stays self-contained */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23f5c84b' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 9px center;
+  }
+  [dir="rtl"] .lang-switch select { padding: 7px 8px 7px 26px; background-position: left 9px center; }
+  .lang-switch select option { background: var(--bg-2); color: var(--ink); }
+  .lang-switch select:hover { color: var(--gold); }
+  .lang-switch select:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
 
   main {
     position: relative; z-index: 1;
@@ -299,10 +326,22 @@
   <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
 
   <div class="topbar">
-    <nav class="lang-switch" aria-label="Language" data-i18n-aria-label="langNav">
-      <button type="button" data-lang-btn="en" aria-pressed="true" lang="en">EN</button>
-      <button type="button" data-lang-btn="de" aria-pressed="false" lang="de">DE</button>
-    </nav>
+    <div class="lang-switch">
+      <span class="lang-icon" aria-hidden="true">文A</span>
+      <label class="sr-only" for="lang-select" data-i18n="langLabel">Language</label>
+      <select id="lang-select" data-lang-select>
+        <option value="en" lang="en">English</option>
+        <option value="de" lang="de">Deutsch</option>
+        <option value="fr" lang="fr">Français</option>
+        <option value="es" lang="es">Español</option>
+        <option value="it" lang="it">Italiano</option>
+        <option value="pt" lang="pt">Português</option>
+        <option value="tr" lang="tr">Türkçe</option>
+        <option value="pl" lang="pl">Polski</option>
+        <option value="ja" lang="ja">日本語</option>
+        <option value="zh" lang="zh">中文</option>
+      </select>
+    </div>
   </div>
 
   <main id="main" tabindex="-1">
@@ -373,103 +412,467 @@
   <script>
     "use strict";
     (function () {
-      /* ── i18n dictionary — single source of truth for every user-visible string ── */
+      /* ── i18n dictionary — single source of truth for every user-visible string.
+         Locale set + de-slopped key terms mirror the platform's vetted dictionary.
+         Every value is author-controlled static copy — no user input is ever interpolated. ── */
       var DICT = {
-        en: {
-          skip: "Skip to content",
-          langNav: "Language",
-          eyebrow: "Public release",
-          tagline: "A self-hosted AI platform that runs where you live — not in someone else’s cloud.",
-          teaser: "Open-source. A fleet of autonomous AI agents on hardware you own, kept in check by a guard that won’t let them overrun your machine.",
-          clockLabel: "Time remaining until the public release",
-          days: "Days", hours: "Hours", minutes: "Minutes", seconds: "Seconds",
-          releaseLabel: "Public release",
-          releaseDate: "Sunday, 28 June&nbsp;&middot;&nbsp;14:00 CEST",
-          liveKicker: "Now live",
-          liveLine: "The release is underway. Securanido is open.",
-          back: "Back",
-          impressumTitle: "Legal Notice",
-          impressumS5: "Information pursuant to § 5 DDG",
-          country: "Germany",
-          contact: "Contact",
-          emailLabel: "E-mail",
-          impressumS18: "Responsible for content pursuant to § 18 para. 2 MStV",
-          fullLegal: "Full legal notice &amp; privacy policy",
-          privacyTitle: "Privacy Policy",
-          privacyS1: "1. Data Controller",
-          privacyS2: "2. Hosting",
-          privacyHosting: "This site is hosted on GitHub Pages (GitHub Inc., USA). GitHub may collect IP addresses in server logs.",
-          privacyS3: "3. Cookies &amp; Storage",
-          privacyCookies: "No cookies. Your language choice is stored locally on your device only (localStorage). No tracking, no analytics, no third-party scripts. No external fonts — fonts are served from this site. This entry is strictly necessary to deliver the language you selected; no consent is required (§ 25 (2) TTDSG).",
-          privacyS4: "4. Your Rights (GDPR Art. 15–21)",
-          privacyRights: "Right to access, rectification, erasure, restriction, portability, and objection. Contact: fschulz0787@gmail.com",
-          privacyS5: "5. External Services",
-          privacyExternal: "GitHub (hosting) — has its own privacy policy.",
-          footerTag: "Securanido <span class=\"glyph\">&middot;</span> local-first AI platform <span class=\"glyph\">&middot;</span> Made in Germany",
-          impressumLink: "Legal Notice",
-          privacyLink: "Privacy",
-          docTitle: "Securanido — open-source, self-hosted AI agent platform · public release 28 June 2026",
-          srDays: function (d) { return d + (d === 1 ? " day" : " days") + " until the public release on 28 June."; },
-          srSoon: "Less than a day until the public release on 28 June.",
-          srLive: "The public release is live. Securanido is open."
+        "en": {
+                "skip": "Skip to content",
+                "langNav": "Language",
+                "langLabel": "Language",
+                "eyebrow": "Public release",
+                "tagline": "A self-hosted AI platform that runs where you live — not in someone else’s cloud.",
+                "teaser": "Open-source. A fleet of autonomous AI agents on hardware you own, kept in check by a guard that won’t let them overrun your machine.",
+                "clockLabel": "Time remaining until the public release",
+                "days": "Days",
+                "hours": "Hours",
+                "minutes": "Minutes",
+                "seconds": "Seconds",
+                "releaseLabel": "Public release",
+                "releaseDate": "Sunday, 28 June&nbsp;&middot;&nbsp;14:00 CEST",
+                "liveKicker": "Now live",
+                "liveLine": "The release is underway. Securanido is open.",
+                "back": "Back",
+                "impressumTitle": "Legal Notice",
+                "impressumS5": "Information pursuant to § 5 DDG",
+                "country": "Germany",
+                "contact": "Contact",
+                "emailLabel": "E-mail",
+                "impressumS18": "Responsible for content pursuant to § 18 para. 2 MStV",
+                "fullLegal": "Full legal notice &amp; privacy policy",
+                "privacyTitle": "Privacy Policy",
+                "privacyS1": "1. Data Controller",
+                "privacyS2": "2. Hosting",
+                "privacyHosting": "This site is hosted on GitHub Pages (GitHub Inc., USA). GitHub may collect IP addresses in server logs.",
+                "privacyS3": "3. Cookies &amp; Storage",
+                "privacyCookies": "No cookies. Your language choice is stored locally on your device only (localStorage). No tracking, no analytics, no third-party scripts. No external fonts — fonts are served from this site. This entry is strictly necessary to deliver the language you selected; no consent is required (§ 25 (2) TTDSG).",
+                "privacyS4": "4. Your Rights (GDPR Art. 15–21)",
+                "privacyRights": "Right to access, rectification, erasure, restriction, portability, and objection. Contact: fschulz0787@gmail.com",
+                "privacyS5": "5. External Services",
+                "privacyExternal": "GitHub (hosting) — has its own privacy policy.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> local-first AI platform <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Legal Notice",
+                "privacyLink": "Privacy",
+                "docTitle": "Securanido — open-source, self-hosted AI agent platform · public release 28 June 2026",
+                "srDaysOne": "{d} day until the public release on 28 June.",
+                "srDaysMany": "{d} days until the public release on 28 June.",
+                "srSoon": "Less than a day until the public release on 28 June.",
+                "srLive": "The public release is live. Securanido is open."
         },
-        de: {
-          skip: "Zum Inhalt springen",
-          langNav: "Sprache",
-          eyebrow: "Öffentlicher Release",
-          tagline: "Eine selbstgehostete KI-Plattform, die bei dir läuft — nicht in einer fremden Cloud.",
-          teaser: "Open Source. Eine Flotte autonomer KI-Agenten auf deiner eigenen Hardware — in Schach gehalten von einem Guard, der verhindert, dass sie deine Maschine überlasten.",
-          clockLabel: "Verbleibende Zeit bis zum öffentlichen Release",
-          days: "Tage", hours: "Stunden", minutes: "Minuten", seconds: "Sekunden",
-          releaseLabel: "Öffentlicher Release",
-          releaseDate: "Sonntag, 28. Juni&nbsp;&middot;&nbsp;14:00 MESZ",
-          liveKicker: "Jetzt live",
-          liveLine: "Der Release läuft. Securanido ist jetzt offen für alle.",
-          back: "Zurück",
-          impressumTitle: "Impressum",
-          impressumS5: "Angaben gemäß § 5 DDG",
-          country: "Deutschland",
-          contact: "Kontakt",
-          emailLabel: "E-Mail",
-          impressumS18: "Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV",
-          fullLegal: "Vollständiges Impressum &amp; Datenschutz",
-          privacyTitle: "Datenschutzerklärung",
-          privacyS1: "1. Verantwortlicher",
-          privacyS2: "2. Hosting",
-          privacyHosting: "Diese Seite wird auf GitHub Pages gehostet (GitHub Inc., USA). GitHub kann IP-Adressen in Server-Logs erfassen.",
-          privacyS3: "3. Cookies &amp; Speicher",
-          privacyCookies: "Keine Cookies. Deine Sprachwahl wird ausschließlich lokal auf deinem Gerät gespeichert (localStorage). Kein Tracking, keine Analyse, keine Drittanbieter-Skripte. Keine externen Fonts — Schriften werden von dieser Seite ausgeliefert. Dieser Eintrag ist zur Bereitstellung der gewählten Sprache unbedingt erforderlich; eine Einwilligung ist nicht erforderlich (§ 25 Abs. 2 TTDSG).",
-          privacyS4: "4. Deine Rechte (DSGVO Art. 15–21)",
-          privacyRights: "Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch. Kontakt: fschulz0787@gmail.com",
-          privacyS5: "5. Externe Dienste",
-          privacyExternal: "GitHub (Hosting) — hat eine eigene Datenschutzrichtlinie.",
-          footerTag: "Securanido <span class=\"glyph\">&middot;</span> Local-First-KI-Plattform <span class=\"glyph\">&middot;</span> Made in Germany",
-          impressumLink: "Impressum",
-          privacyLink: "Datenschutz",
-          docTitle: "Securanido — quelloffene, selbstgehostete KI-Agenten-Plattform · Release 28. Juni 2026",
-          srDays: function (d) { return d + (d === 1 ? " Tag" : " Tage") + " bis zum öffentlichen Release am 28. Juni."; },
-          srSoon: "Weniger als ein Tag bis zum öffentlichen Release am 28. Juni.",
-          srLive: "Der öffentliche Release ist live. Securanido ist jetzt offen für alle."
+        "de": {
+                "skip": "Zum Inhalt springen",
+                "langNav": "Sprache",
+                "langLabel": "Sprache",
+                "eyebrow": "Öffentlicher Release",
+                "tagline": "Eine selbstgehostete KI-Plattform, die bei dir läuft — nicht in einer fremden Cloud.",
+                "teaser": "Open Source. Eine Flotte autonomer KI-Agenten auf deiner eigenen Hardware — in Schach gehalten von einem Guard, der verhindert, dass sie deine Maschine überlasten.",
+                "clockLabel": "Verbleibende Zeit bis zum öffentlichen Release",
+                "days": "Tage",
+                "hours": "Stunden",
+                "minutes": "Minuten",
+                "seconds": "Sekunden",
+                "releaseLabel": "Öffentlicher Release",
+                "releaseDate": "Sonntag, 28. Juni&nbsp;&middot;&nbsp;14:00 MESZ",
+                "liveKicker": "Jetzt live",
+                "liveLine": "Der Release läuft. Securanido ist jetzt offen für alle.",
+                "back": "Zurück",
+                "impressumTitle": "Impressum",
+                "impressumS5": "Angaben gemäß § 5 DDG",
+                "country": "Deutschland",
+                "contact": "Kontakt",
+                "emailLabel": "E-Mail",
+                "impressumS18": "Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV",
+                "fullLegal": "Vollständiges Impressum &amp; Datenschutz",
+                "privacyTitle": "Datenschutzerklärung",
+                "privacyS1": "1. Verantwortlicher",
+                "privacyS2": "2. Hosting",
+                "privacyHosting": "Diese Seite wird auf GitHub Pages gehostet (GitHub Inc., USA). GitHub kann IP-Adressen in Server-Logs erfassen.",
+                "privacyS3": "3. Cookies &amp; Speicher",
+                "privacyCookies": "Keine Cookies. Deine Sprachwahl wird ausschließlich lokal auf deinem Gerät gespeichert (localStorage). Kein Tracking, keine Analyse, keine Drittanbieter-Skripte. Keine externen Fonts — Schriften werden von dieser Seite ausgeliefert. Dieser Eintrag ist zur Bereitstellung der gewählten Sprache unbedingt erforderlich; eine Einwilligung ist nicht erforderlich (§ 25 Abs. 2 TTDSG).",
+                "privacyS4": "4. Deine Rechte (DSGVO Art. 15–21)",
+                "privacyRights": "Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch. Kontakt: fschulz0787@gmail.com",
+                "privacyS5": "5. Externe Dienste",
+                "privacyExternal": "GitHub (Hosting) — hat eine eigene Datenschutzrichtlinie.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> Local-First-KI-Plattform <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Impressum",
+                "privacyLink": "Datenschutz",
+                "docTitle": "Securanido — quelloffene, selbstgehostete KI-Agenten-Plattform · Release 28. Juni 2026",
+                "srDaysOne": "{d} Tag bis zum öffentlichen Release am 28. Juni.",
+                "srDaysMany": "{d} Tage bis zum öffentlichen Release am 28. Juni.",
+                "srSoon": "Weniger als ein Tag bis zum öffentlichen Release am 28. Juni.",
+                "srLive": "Der öffentliche Release ist live. Securanido ist jetzt offen für alle."
+        },
+        "fr": {
+                "skip": "Aller au contenu",
+                "langNav": "Langue",
+                "langLabel": "Langue",
+                "eyebrow": "Sortie publique",
+                "tagline": "Une plateforme d’IA auto-hébergée qui tourne chez vous — pas dans le cloud d’un autre.",
+                "teaser": "Logiciel libre. Une flotte d’agents d’IA autonomes sur votre propre matériel, tenue en bride par un Guard qui les empêche de saturer votre machine.",
+                "clockLabel": "Temps restant avant la sortie publique",
+                "days": "Jours",
+                "hours": "Heures",
+                "minutes": "Minutes",
+                "seconds": "Secondes",
+                "releaseLabel": "Sortie publique",
+                "releaseDate": "dimanche 28 juin&nbsp;&middot;&nbsp;14:00 CEST",
+                "liveKicker": "En ligne",
+                "liveLine": "La sortie est lancée. Securanido est ouvert.",
+                "back": "Retour",
+                "impressumTitle": "Mentions légales",
+                "impressumS5": "Informations selon l’article 5 DDG",
+                "country": "Allemagne",
+                "contact": "Contact",
+                "emailLabel": "E-mail",
+                "impressumS18": "Responsable du contenu selon l’art. 18 al. 2 MStV",
+                "fullLegal": "Mentions légales &amp; politique de confidentialité complètes",
+                "privacyTitle": "Politique de confidentialité",
+                "privacyS1": "1. Responsable du traitement",
+                "privacyS2": "2. Hébergement",
+                "privacyHosting": "Ce site est hébergé sur GitHub Pages (GitHub Inc., États-Unis). GitHub peut consigner des adresses IP dans ses journaux serveur.",
+                "privacyS3": "3. Cookies &amp; stockage",
+                "privacyCookies": "Aucun cookie. Votre choix de langue est conservé uniquement en local sur votre appareil (localStorage). Aucun suivi, aucune analyse, aucun script tiers. Aucune police externe — les polices sont servies depuis ce site. Cet enregistrement est strictement nécessaire pour fournir la langue que vous avez choisie ; aucun consentement n’est requis (art. 25 § 2 TTDSG).",
+                "privacyS4": "4. Vos droits (RGPD art. 15–21)",
+                "privacyRights": "Droit d’accès, de rectification, d’effacement, de limitation, de portabilité et d’opposition. Contact : fschulz0787@gmail.com",
+                "privacyS5": "5. Services externes",
+                "privacyExternal": "GitHub (hébergement) — dispose de sa propre politique de confidentialité.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> plateforme d’IA local-first <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Mentions légales",
+                "privacyLink": "Confidentialité",
+                "docTitle": "Securanido — plateforme d’agents d’IA libre et auto-hébergée · sortie publique le 28 juin 2026",
+                "srDaysOne": "{d} jour avant la sortie publique du 28 juin.",
+                "srDaysMany": "{d} jours avant la sortie publique du 28 juin.",
+                "srSoon": "Moins d’un jour avant la sortie publique du 28 juin.",
+                "srLive": "La sortie publique est en ligne. Securanido est ouvert."
+        },
+        "es": {
+                "skip": "Saltar al contenido",
+                "langNav": "Idioma",
+                "langLabel": "Idioma",
+                "eyebrow": "Lanzamiento público",
+                "tagline": "Una plataforma de IA autoalojada que se ejecuta donde tú estás — no en la nube de otro.",
+                "teaser": "Software libre. Una flota de agentes de IA autónomos sobre tu propio hardware, contenida por un Guard que no deja que saturen tu máquina.",
+                "clockLabel": "Tiempo restante hasta el lanzamiento público",
+                "days": "Días",
+                "hours": "Horas",
+                "minutes": "Minutos",
+                "seconds": "Segundos",
+                "releaseLabel": "Lanzamiento público",
+                "releaseDate": "domingo, 28 de junio&nbsp;&middot;&nbsp;14:00 CEST",
+                "liveKicker": "Ya disponible",
+                "liveLine": "El lanzamiento está en marcha. Securanido ya está abierto.",
+                "back": "Volver",
+                "impressumTitle": "Aviso legal",
+                "impressumS5": "Datos según el art. 5 DDG",
+                "country": "Alemania",
+                "contact": "Contacto",
+                "emailLabel": "Correo electrónico",
+                "impressumS18": "Responsable del contenido según el art. 18 ap. 2 MStV",
+                "fullLegal": "Aviso legal &amp; política de privacidad completos",
+                "privacyTitle": "Política de privacidad",
+                "privacyS1": "1. Responsable del tratamiento",
+                "privacyS2": "2. Alojamiento",
+                "privacyHosting": "Este sitio está alojado en GitHub Pages (GitHub Inc., EE. UU.). GitHub puede registrar direcciones IP en sus registros de servidor.",
+                "privacyS3": "3. Cookies y almacenamiento",
+                "privacyCookies": "Sin cookies. Tu elección de idioma se guarda únicamente en local en tu dispositivo (localStorage). Sin rastreo, sin analítica, sin scripts de terceros. Sin fuentes externas — las fuentes se sirven desde este sitio. Esta entrada es estrictamente necesaria para ofrecer el idioma que has elegido; no se requiere consentimiento (art. 25 ap. 2 TTDSG).",
+                "privacyS4": "4. Tus derechos (RGPD art. 15–21)",
+                "privacyRights": "Derecho de acceso, rectificación, supresión, limitación, portabilidad y oposición. Contacto: fschulz0787@gmail.com",
+                "privacyS5": "5. Servicios externos",
+                "privacyExternal": "GitHub (alojamiento) — tiene su propia política de privacidad.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> plataforma de IA local-first <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Aviso legal",
+                "privacyLink": "Privacidad",
+                "docTitle": "Securanido — plataforma de agentes de IA libre y autoalojada · lanzamiento público 28 de junio de 2026",
+                "srDaysOne": "{d} día hasta el lanzamiento público del 28 de junio.",
+                "srDaysMany": "{d} días hasta el lanzamiento público del 28 de junio.",
+                "srSoon": "Menos de un día hasta el lanzamiento público del 28 de junio.",
+                "srLive": "El lanzamiento público está disponible. Securanido ya está abierto."
+        },
+        "it": {
+                "skip": "Vai al contenuto",
+                "langNav": "Lingua",
+                "langLabel": "Lingua",
+                "eyebrow": "Rilascio pubblico",
+                "tagline": "Una piattaforma di IA self-hosted che gira dove vivi tu — non nel cloud di qualcun altro.",
+                "teaser": "Software libero. Una flotta di agenti di IA autonomi sul tuo hardware, tenuta a freno da un Guard che impedisce loro di sovraccaricare la macchina.",
+                "clockLabel": "Tempo rimanente al rilascio pubblico",
+                "days": "Giorni",
+                "hours": "Ore",
+                "minutes": "Minuti",
+                "seconds": "Secondi",
+                "releaseLabel": "Rilascio pubblico",
+                "releaseDate": "domenica 28 giugno&nbsp;&middot;&nbsp;14:00 CEST",
+                "liveKicker": "Ora online",
+                "liveLine": "Il rilascio è in corso. Securanido è aperto.",
+                "back": "Indietro",
+                "impressumTitle": "Note legali",
+                "impressumS5": "Informazioni ai sensi del § 5 DDG",
+                "country": "Germania",
+                "contact": "Contatto",
+                "emailLabel": "E-mail",
+                "impressumS18": "Responsabile dei contenuti ai sensi del § 18 c. 2 MStV",
+                "fullLegal": "Note legali &amp; informativa sulla privacy complete",
+                "privacyTitle": "Informativa sulla privacy",
+                "privacyS1": "1. Titolare del trattamento",
+                "privacyS2": "2. Hosting",
+                "privacyHosting": "Questo sito è ospitato su GitHub Pages (GitHub Inc., USA). GitHub può registrare indirizzi IP nei log del server.",
+                "privacyS3": "3. Cookie e archiviazione",
+                "privacyCookies": "Nessun cookie. La tua scelta di lingua viene salvata solo in locale sul tuo dispositivo (localStorage). Nessun tracciamento, nessuna analisi, nessuno script di terze parti. Nessun font esterno — i font sono serviti da questo sito. Questa voce è strettamente necessaria per fornire la lingua che hai scelto; non è richiesto alcun consenso (§ 25 c. 2 TTDSG).",
+                "privacyS4": "4. I tuoi diritti (GDPR art. 15–21)",
+                "privacyRights": "Diritto di accesso, rettifica, cancellazione, limitazione, portabilità e opposizione. Contatto: fschulz0787@gmail.com",
+                "privacyS5": "5. Servizi esterni",
+                "privacyExternal": "GitHub (hosting) — ha una propria informativa sulla privacy.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> piattaforma di IA local-first <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Note legali",
+                "privacyLink": "Privacy",
+                "docTitle": "Securanido — piattaforma di agenti di IA libera e self-hosted · rilascio pubblico 28 giugno 2026",
+                "srDaysOne": "{d} giorno al rilascio pubblico del 28 giugno.",
+                "srDaysMany": "{d} giorni al rilascio pubblico del 28 giugno.",
+                "srSoon": "Meno di un giorno al rilascio pubblico del 28 giugno.",
+                "srLive": "Il rilascio pubblico è online. Securanido è aperto."
+        },
+        "pt": {
+                "skip": "Ir para o conteúdo",
+                "langNav": "Idioma",
+                "langLabel": "Idioma",
+                "eyebrow": "Lançamento público",
+                "tagline": "Uma plataforma de IA auto-hospedada que corre onde tu estás — não na nuvem de outra pessoa.",
+                "teaser": "Software livre. Uma frota de agentes de IA autónomos no teu próprio hardware, mantida sob rédea por um Guard que não os deixa sobrecarregar a máquina.",
+                "clockLabel": "Tempo restante até ao lançamento público",
+                "days": "Dias",
+                "hours": "Horas",
+                "minutes": "Minutos",
+                "seconds": "Segundos",
+                "releaseLabel": "Lançamento público",
+                "releaseDate": "domingo, 28 de junho&nbsp;&middot;&nbsp;14:00 CEST",
+                "liveKicker": "Já disponível",
+                "liveLine": "O lançamento está a decorrer. O Securanido está aberto.",
+                "back": "Voltar",
+                "impressumTitle": "Informação legal",
+                "impressumS5": "Informações nos termos do § 5 DDG",
+                "country": "Alemanha",
+                "contact": "Contacto",
+                "emailLabel": "E-mail",
+                "impressumS18": "Responsável pelo conteúdo nos termos do § 18 n.º 2 MStV",
+                "fullLegal": "Informação legal &amp; política de privacidade completas",
+                "privacyTitle": "Política de privacidade",
+                "privacyS1": "1. Responsável pelo tratamento",
+                "privacyS2": "2. Alojamento",
+                "privacyHosting": "Este site está alojado no GitHub Pages (GitHub Inc., EUA). O GitHub pode registar endereços IP nos registos do servidor.",
+                "privacyS3": "3. Cookies e armazenamento",
+                "privacyCookies": "Sem cookies. A tua escolha de idioma é guardada apenas localmente no teu dispositivo (localStorage). Sem rastreio, sem análise, sem scripts de terceiros. Sem tipos de letra externos — os tipos de letra são servidos a partir deste site. Este registo é estritamente necessário para fornecer o idioma que escolheste; não é exigido consentimento (§ 25 n.º 2 TTDSG).",
+                "privacyS4": "4. Os teus direitos (RGPD art. 15.º–21.º)",
+                "privacyRights": "Direito de acesso, retificação, apagamento, limitação, portabilidade e oposição. Contacto: fschulz0787@gmail.com",
+                "privacyS5": "5. Serviços externos",
+                "privacyExternal": "GitHub (alojamento) — tem a sua própria política de privacidade.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> plataforma de IA local-first <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Informação legal",
+                "privacyLink": "Privacidade",
+                "docTitle": "Securanido — plataforma de agentes de IA livre e auto-hospedada · lançamento público 28 de junho de 2026",
+                "srDaysOne": "{d} dia até ao lançamento público de 28 de junho.",
+                "srDaysMany": "{d} dias até ao lançamento público de 28 de junho.",
+                "srSoon": "Menos de um dia até ao lançamento público de 28 de junho.",
+                "srLive": "O lançamento público está disponível. O Securanido está aberto."
+        },
+        "tr": {
+                "skip": "İçeriğe geç",
+                "langNav": "Dil",
+                "langLabel": "Dil",
+                "eyebrow": "Genel sürüm",
+                "tagline": "Yaşadığınız yerde çalışan, kendi sunucunuzda barındırılan bir yapay zekâ platformu — başkasının bulutunda değil.",
+                "teaser": "Özgür yazılım. Kendi donanımınızda çalışan otonom yapay zekâ ajanlarından oluşan bir filo; makinenizi zorlamalarına izin vermeyen bir Guard ile dizginlenir.",
+                "clockLabel": "Genel sürüme kalan süre",
+                "days": "Gün",
+                "hours": "Saat",
+                "minutes": "Dakika",
+                "seconds": "Saniye",
+                "releaseLabel": "Genel sürüm",
+                "releaseDate": "28 Haziran Pazar&nbsp;&middot;&nbsp;14:00 CEST",
+                "liveKicker": "Şimdi yayında",
+                "liveLine": "Sürüm yayınlanıyor. Securanido artık açık.",
+                "back": "Geri",
+                "impressumTitle": "Künye",
+                "impressumS5": "§ 5 DDG uyarınca bilgiler",
+                "country": "Almanya",
+                "contact": "İletişim",
+                "emailLabel": "E-posta",
+                "impressumS18": "§ 18 fıkra 2 MStV uyarınca içerikten sorumlu",
+                "fullLegal": "Tam künye &amp; gizlilik politikası",
+                "privacyTitle": "Gizlilik politikası",
+                "privacyS1": "1. Veri sorumlusu",
+                "privacyS2": "2. Barındırma",
+                "privacyHosting": "Bu site GitHub Pages üzerinde barındırılır (GitHub Inc., ABD). GitHub, sunucu günlüklerinde IP adreslerini kaydedebilir.",
+                "privacyS3": "3. Çerezler ve depolama",
+                "privacyCookies": "Çerez yok. Dil tercihiniz yalnızca cihazınızda yerel olarak saklanır (localStorage). İzleme yok, analiz yok, üçüncü taraf betiği yok. Harici yazı tipi yok — yazı tipleri bu siteden sunulur. Bu kayıt, seçtiğiniz dili sunmak için kesinlikle gereklidir; onay gerekmez (§ 25 fıkra 2 TTDSG).",
+                "privacyS4": "4. Haklarınız (GDPR md. 15–21)",
+                "privacyRights": "Erişim, düzeltme, silme, kısıtlama, taşınabilirlik ve itiraz hakkı. İletişim: fschulz0787@gmail.com",
+                "privacyS5": "5. Harici hizmetler",
+                "privacyExternal": "GitHub (barındırma) — kendi gizlilik politikasına sahiptir.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> yerel öncelikli yapay zekâ platformu <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Künye",
+                "privacyLink": "Gizlilik",
+                "docTitle": "Securanido — özgür ve kendi sunucunuzda barındırılan yapay zekâ ajan platformu · genel sürüm 28 Haziran 2026",
+                "srDaysOne": "Genel sürüme {d} gün kaldı (28 Haziran).",
+                "srDaysMany": "Genel sürüme {d} gün kaldı (28 Haziran).",
+                "srSoon": "Genel sürüme bir günden az kaldı (28 Haziran).",
+                "srLive": "Genel sürüm yayında. Securanido artık açık."
+        },
+        "pl": {
+                "skip": "Przejdź do treści",
+                "langNav": "Język",
+                "langLabel": "Język",
+                "eyebrow": "Publiczne wydanie",
+                "tagline": "Samodzielnie hostowana platforma AI, która działa tam, gdzie Ty — nie w cudzej chmurze.",
+                "teaser": "Wolne oprogramowanie. Flota autonomicznych agentów AI na Twoim własnym sprzęcie, trzymana w ryzach przez Guard, który nie pozwala im przeciążyć maszyny.",
+                "clockLabel": "Czas pozostały do publicznego wydania",
+                "days": "Dni",
+                "hours": "Godziny",
+                "minutes": "Minuty",
+                "seconds": "Sekundy",
+                "releaseLabel": "Publiczne wydanie",
+                "releaseDate": "niedziela, 28 czerwca&nbsp;&middot;&nbsp;14:00 CEST",
+                "liveKicker": "Już dostępne",
+                "liveLine": "Wydanie trwa. Securanido jest otwarte.",
+                "back": "Wstecz",
+                "impressumTitle": "Nota prawna",
+                "impressumS5": "Informacje zgodnie z § 5 DDG",
+                "country": "Niemcy",
+                "contact": "Kontakt",
+                "emailLabel": "E-mail",
+                "impressumS18": "Odpowiedzialny za treść zgodnie z § 18 ust. 2 MStV",
+                "fullLegal": "Pełna nota prawna &amp; polityka prywatności",
+                "privacyTitle": "Polityka prywatności",
+                "privacyS1": "1. Administrator danych",
+                "privacyS2": "2. Hosting",
+                "privacyHosting": "Ta strona jest hostowana na GitHub Pages (GitHub Inc., USA). GitHub może zapisywać adresy IP w logach serwera.",
+                "privacyS3": "3. Pliki cookie i pamięć",
+                "privacyCookies": "Bez plików cookie. Twój wybór języka jest zapisywany wyłącznie lokalnie na Twoim urządzeniu (localStorage). Bez śledzenia, bez analityki, bez skryptów stron trzecich. Bez zewnętrznych czcionek — czcionki są serwowane z tej strony. Ten wpis jest ściśle niezbędny do udostępnienia wybranego języka; zgoda nie jest wymagana (§ 25 ust. 2 TTDSG).",
+                "privacyS4": "4. Twoje prawa (RODO art. 15–21)",
+                "privacyRights": "Prawo dostępu, sprostowania, usunięcia, ograniczenia, przenoszenia i sprzeciwu. Kontakt: fschulz0787@gmail.com",
+                "privacyS5": "5. Usługi zewnętrzne",
+                "privacyExternal": "GitHub (hosting) — ma własną politykę prywatności.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> platforma AI local-first <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Nota prawna",
+                "privacyLink": "Prywatność",
+                "docTitle": "Securanido — wolna, samodzielnie hostowana platforma agentów AI · publiczne wydanie 28 czerwca 2026",
+                "srDaysOne": "{d} dzień do publicznego wydania 28 czerwca.",
+                "srDaysMany": "{d} dni do publicznego wydania 28 czerwca.",
+                "srSoon": "Mniej niż dzień do publicznego wydania 28 czerwca.",
+                "srLive": "Publiczne wydanie jest dostępne. Securanido jest otwarte."
+        },
+        "ja": {
+                "skip": "コンテンツへ移動",
+                "langNav": "言語",
+                "langLabel": "言語",
+                "eyebrow": "一般公開",
+                "tagline": "あなたの手元で動く、セルフホスト型のAIプラットフォーム。誰かのクラウドの中ではありません。",
+                "teaser": "オープンソース。自律型AIエージェントの群れを、あなた自身のハードウェア上で。マシンを使い尽くさないよう、Guard が手綱を握ります。",
+                "clockLabel": "一般公開までの残り時間",
+                "days": "日",
+                "hours": "時間",
+                "minutes": "分",
+                "seconds": "秒",
+                "releaseLabel": "一般公開",
+                "releaseDate": "6月28日（日）&nbsp;&middot;&nbsp;14:00 CEST",
+                "liveKicker": "公開中",
+                "liveLine": "リリースが進行中です。Securanido が公開されました。",
+                "back": "戻る",
+                "impressumTitle": "法的表記",
+                "impressumS5": "DDG 第5条に基づく情報",
+                "country": "ドイツ",
+                "contact": "連絡先",
+                "emailLabel": "メール",
+                "impressumS18": "MStV 第18条第2項に基づくコンテンツ責任者",
+                "fullLegal": "法的表記 &amp; プライバシーポリシー（全文）",
+                "privacyTitle": "プライバシーポリシー",
+                "privacyS1": "1. データ管理者",
+                "privacyS2": "2. ホスティング",
+                "privacyHosting": "本サイトは GitHub Pages（GitHub Inc.、米国）でホストされています。GitHub はサーバーログにIPアドレスを記録する場合があります。",
+                "privacyS3": "3. Cookie とストレージ",
+                "privacyCookies": "Cookie は使用しません。言語の選択はお使いの端末のローカル（localStorage）にのみ保存されます。トラッキングなし、解析なし、サードパーティのスクリプトなし。外部フォントなし — フォントは本サイトから配信されます。この保存は、選択された言語を提供するために厳密に必要なものであり、同意は不要です（TTDSG 第25条第2項）。",
+                "privacyS4": "4. あなたの権利（GDPR 第15〜21条）",
+                "privacyRights": "アクセス、訂正、消去、制限、ポータビリティ、異議の権利。連絡先: fschulz0787@gmail.com",
+                "privacyS5": "5. 外部サービス",
+                "privacyExternal": "GitHub（ホスティング）— 独自のプライバシーポリシーがあります。",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> ローカルファーストのAIプラットフォーム <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "法的表記",
+                "privacyLink": "プライバシー",
+                "docTitle": "Securanido — オープンソースでセルフホストのAIエージェント基盤 · 一般公開 2026年6月28日",
+                "srDaysOne": "一般公開（6月28日）まであと {d} 日。",
+                "srDaysMany": "一般公開（6月28日）まであと {d} 日。",
+                "srSoon": "一般公開（6月28日）まであと1日を切りました。",
+                "srLive": "一般公開が始まりました。Securanido が公開されました。"
+        },
+        "zh": {
+                "skip": "跳至内容",
+                "langNav": "语言",
+                "langLabel": "语言",
+                "eyebrow": "正式发布",
+                "tagline": "一个自托管的 AI 平台，运行在你身边——而不是别人的云端。",
+                "teaser": "开源。一支自主 AI 代理组成的舰队，运行在你自有的硬件上；由 Guard 牢牢掌控，绝不让它们拖垮你的机器。",
+                "clockLabel": "距正式发布的剩余时间",
+                "days": "天",
+                "hours": "时",
+                "minutes": "分",
+                "seconds": "秒",
+                "releaseLabel": "正式发布",
+                "releaseDate": "6月28日 星期日&nbsp;&middot;&nbsp;14:00 CEST",
+                "liveKicker": "现已上线",
+                "liveLine": "发布正在进行。Securanido 已经开放。",
+                "back": "返回",
+                "impressumTitle": "法律声明",
+                "impressumS5": "依据 DDG 第 5 条的信息",
+                "country": "德国",
+                "contact": "联系方式",
+                "emailLabel": "电子邮件",
+                "impressumS18": "依据 MStV 第 18 条第 2 款的内容负责人",
+                "fullLegal": "完整法律声明与隐私政策",
+                "privacyTitle": "隐私政策",
+                "privacyS1": "1. 数据控制者",
+                "privacyS2": "2. 托管",
+                "privacyHosting": "本站托管于 GitHub Pages（GitHub Inc.，美国）。GitHub 可能在服务器日志中记录 IP 地址。",
+                "privacyS3": "3. Cookie 与存储",
+                "privacyCookies": "无 Cookie。你的语言选择仅保存在你设备的本地（localStorage）。无跟踪、无分析、无第三方脚本。无外部字体——字体由本站提供。此项存储是为提供你所选语言所必需的，无需征得同意（TTDSG 第 25 条第 2 款）。",
+                "privacyS4": "4. 你的权利（GDPR 第 15–21 条）",
+                "privacyRights": "查阅、更正、删除、限制、可携带和反对的权利。联系方式：fschulz0787@gmail.com",
+                "privacyS5": "5. 外部服务",
+                "privacyExternal": "GitHub（托管）——拥有自己的隐私政策。",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> 本地优先的 AI 平台 <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "法律声明",
+                "privacyLink": "隐私",
+                "docTitle": "Securanido — 开源、自托管的 AI 代理平台 · 正式发布 2026 年 6 月 28 日",
+                "srDaysOne": "距 6 月 28 日正式发布还有 {d} 天。",
+                "srDaysMany": "距 6 月 28 日正式发布还有 {d} 天。",
+                "srSoon": "距 6 月 28 日正式发布不到一天。",
+                "srLive": "正式发布已上线。Securanido 已经开放。"
         }
-      };
+};
 
+      var SUPPORTED = ["en", "de", "fr", "es", "it", "pt", "tr", "pl", "ja", "zh"];
+      var RTL = { ar: 1, fa: 1, he: 1, ur: 1 }; // none currently shipped; page stays RTL-ready
       var root = document.documentElement;
-      var LANGS = ["en", "de"];
+
       function readLang() {
         try {
           var s = localStorage.getItem("securanido.lang");
-          if (s === "en" || s === "de") return s;
+          if (SUPPORTED.indexOf(s) !== -1) return s;
         } catch (e) {}
-        return (navigator.language || "en").toLowerCase().indexOf("de") === 0 ? "de" : "en";
+        var nav = (navigator.language || "en").toLowerCase();
+        var base = nav.split("-")[0];
+        if (SUPPORTED.indexOf(nav) !== -1) return nav;
+        if (SUPPORTED.indexOf(base) !== -1) return base;
+        return "en";
       }
-      var lang = root.getAttribute("data-lang") || readLang();
+      var lang = root.getAttribute("data-lang");
+      if (SUPPORTED.indexOf(lang) === -1) lang = readLang();
 
-      // HTML-safe entity strings (releaseDate, footerTag, fullLegal) flow through innerHTML;
+      // HTML-safe entity strings (releaseDate, footerTag, fullLegal, teaser) flow through innerHTML;
       // every value in DICT is author-controlled static copy — no user input is ever interpolated.
       function applyLang(l) {
-        lang = (l === "de") ? "de" : "en";
+        lang = (SUPPORTED.indexOf(l) !== -1) ? l : "en";
         var d = DICT[lang];
         root.lang = lang;
+        root.dir = RTL[lang] ? "rtl" : "ltr";
         root.setAttribute("data-lang", lang);
         try { localStorage.setItem("securanido.lang", lang); } catch (e) {}
         document.title = d.docTitle;
@@ -480,7 +883,6 @@
           var key = nodes[i].getAttribute("data-i18n-key") || nodes[i].getAttribute("data-i18n");
           if (!(key in d)) continue;
           var val = d[key];
-          if (typeof val === "function") continue;
           nodes[i].innerHTML = val; // author-controlled copy only
         }
         // aria-labels
@@ -489,11 +891,9 @@
           var ak = al[j].getAttribute("data-i18n-aria-label");
           if (ak in d) al[j].setAttribute("aria-label", d[ak]);
         }
-        // language switch pressed state
-        var btns = document.querySelectorAll("[data-lang-btn]");
-        for (var k = 0; k < btns.length; k++) {
-          btns[k].setAttribute("aria-pressed", btns[k].getAttribute("data-lang-btn") === lang ? "true" : "false");
-        }
+        // sync the language <select>
+        var sel = document.querySelector("[data-lang-select]");
+        if (sel && sel.value !== lang) sel.value = lang;
         updateClockSummary(true);
       }
 
@@ -509,6 +909,10 @@
       function pad(n) { return (n < 10 ? "0" : "") + n; }
       var lastSummaryDays = null, isLive = false;
 
+      function srDaysText(d, days) {
+        var tpl = (days === 1) ? d.srDaysOne : d.srDaysMany;
+        return tpl.replace("{d}", days);
+      }
       function updateClockSummary(force) {
         var d = DICT[lang];
         if (isLive) { if (summaryEl) summaryEl.textContent = d.srLive; lastSummaryDays = -1; return; }
@@ -516,7 +920,7 @@
         var days = Math.floor(diff / 86400000);
         if (force || days !== lastSummaryDays) {
           lastSummaryDays = days;
-          if (summaryEl) summaryEl.textContent = days >= 1 ? d.srDays(days) : d.srSoon;
+          if (summaryEl) summaryEl.textContent = days >= 1 ? srDaysText(d, days) : d.srSoon;
         }
       }
 
@@ -557,9 +961,8 @@
       }
 
       // ── Wire up events ──
-      document.querySelectorAll("[data-lang-btn]").forEach(function (b) {
-        b.addEventListener("click", function () { applyLang(b.getAttribute("data-lang-btn")); });
-      });
+      var sel = document.querySelector("[data-lang-select]");
+      if (sel) sel.addEventListener("change", function () { applyLang(sel.value); });
       document.querySelectorAll("[data-view-btn]").forEach(function (b) {
         b.addEventListener("click", function () { setView(b.getAttribute("data-view-btn")); });
       });
