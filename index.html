@@ -1,495 +1,196 @@
-<!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<!doctype html>
+<html lang="en" data-state="counting">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Florian Schulz — Self-hosted AI platforms</title>
-  <meta name="description" content="Self-hosted AI platforms. Bare-metal Kubernetes, multi-vendor LLM orchestration, agent protocols. Private home lab in Göttingen, Germany.">
-  <meta name="author" content="Florian Schulz">
-  <meta name="robots" content="index,follow">
-  <link rel="canonical" href="https://securanido.com/">
-  <meta property="og:title" content="Florian Schulz — Self-hosted AI platforms">
-  <meta property="og:description" content="Bare-metal Kubernetes, multi-vendor LLM orchestration, agent protocols. Private home lab in Germany.">
-  <meta property="og:type" content="website">
-  <meta property="og:url" content="https://securanido.com/">
-  <meta property="og:locale" content="en_US">
-  <meta property="og:locale:alternate" content="de_DE">
-  <meta name="twitter:card" content="summary">
-  <meta name="twitter:title" content="Florian Schulz — Self-hosted AI platforms">
-  <meta name="twitter:description" content="Bare-metal Kubernetes, multi-vendor LLM orchestration, agent protocols. Private home lab in Germany.">
-  <meta name="color-scheme" content="dark light">
-  <meta name="theme-color" content="#08080c" media="(prefers-color-scheme: dark)">
-  <meta name="theme-color" content="#fafafa" media="(prefers-color-scheme: light)">
-  <!-- Inline theme+lang init: runs before paint to prevent FOUC -->
-  <script>
-    (function () {
-      var saved = localStorage.getItem('theme');
-      var pref = saved;
-      if (!pref) {
-        var mq = window.matchMedia;
-        if (mq && mq('(prefers-contrast: more)').matches) pref = 'high-contrast';
-        else if (mq && mq('(prefers-color-scheme: light)').matches) pref = 'light';
-        else pref = 'dark';
-      }
-      document.documentElement.setAttribute('data-theme', pref);
-      var savedLang = localStorage.getItem('lang');
-      var lang = savedLang || (navigator.language && navigator.language.startsWith('de') ? 'de' : 'en');
-      document.documentElement.lang = lang;
-    })();
-  </script>
-  <script type="application/ld+json">
-  {
-    "@context": "https://schema.org",
-    "@type": "Person",
-    "name": "Florian Schulz",
-    "url": "https://securanido.com/",
-    "jobTitle": "Platform Engineer",
-    "address": { "@type": "PostalAddress", "addressLocality": "Göttingen", "addressCountry": "DE" },
-    "sameAs": [
-      "https://github.com/nash87",
-      "https://www.linkedin.com/in/florian-schulz-a312bb137"
-    ],
-    "knowsAbout": ["Rust", "Kubernetes", "Self-hosted infrastructure", "Multi-vendor LLM orchestration", "Agent protocols (MCP, ACP, A2A)"]
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Securanido — public release · 9 June, 11:00 CEST</title>
+<meta name="description" content="Securanido — a self-hosted, local-first AI platform. Public release on Tuesday 9 June at 11:00 CEST." />
+<meta name="robots" content="noindex,nofollow" />
+<link rel="canonical" href="https://securanido.com/" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230b0a08'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='22' font-weight='700' text-anchor='middle' fill='%23f5c84b'%3ES%3C/text%3E%3C/svg%3E" />
+<meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#0b0a08" />
+<meta property="og:type" content="website" />
+<meta property="og:url" content="https://securanido.com/" />
+<meta property="og:title" content="Securanido — public release" />
+<meta property="og:description" content="A self-hosted, local-first AI platform. Counting down to the public release: 9 June, 11:00 CEST." />
+<style>
+  /* Self-hosted fonts — no external requests (GDPR: no third-party calls). */
+  @font-face {
+    font-family: "Fraunces"; font-style: normal; font-weight: 400 600;
+    font-display: swap; src: url("/fraunces-roman-latin.woff2") format("woff2");
   }
-  </script>
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-    :root { color-scheme: dark light; }
-    [data-theme="dark"] {
-      --bg: #08080c; --surface: #0f0f15; --surface-2: #15151e;
-      --border: rgba(255,255,255,0.06); --border-accent: rgba(147,197,253,0.14);
-      --text: #c4c4cc; --bright: #f0f0f4;
-      /* #808090 = 5.15:1 on #08080c; #7a7a8c = 4.74:1 — use #808090 */
-      --dim: #808090; --mono: #8888a0;
-      --accent: #7cacf8; --accent-dim: rgba(124,172,248,0.10);
-      --teal: #5eead4; --amber: #fbbf24; --toggle-bg: #1e1e2e;
-    }
-    [data-theme="light"] {
-      --bg: #fafafa; --surface: #ffffff; --surface-2: #f4f4f5;
-      --border: rgba(0,0,0,0.08); --border-accent: rgba(37,99,235,0.18);
-      --text: #3f3f46; --bright: #18181b; --dim: #71717a; --mono: #52525b;
-      --accent: #2563eb; --accent-dim: rgba(37,99,235,0.06);
-      --teal: #0d9488; --amber: #d97706; --toggle-bg: #e4e4e7;
-    }
-    [data-theme="high-contrast"] {
-      --bg: #000; --surface: #111; --surface-2: #1a1a1a;
-      --border: rgba(255,255,255,0.22); --border-accent: rgba(255,255,100,0.35);
-      --text: #fff; --bright: #fff; --dim: #bbb; --mono: #ddd;
-      --accent: #6eb5ff; --accent-dim: rgba(110,181,255,0.14);
-      --teal: #5eead4; --amber: #fbbf24; --toggle-bg: #333;
-    }
-    /* Wide-gamut OKLCH overrides — opt-in on capable displays */
-    @supports (color: oklch(50% 0.2 250)) {
-      [data-theme="dark"]  { --accent: oklch(76% 0.13 250); --teal: oklch(82% 0.13 175); }
-      [data-theme="light"] { --accent: oklch(54% 0.18 260); --teal: oklch(56% 0.10 180); }
-    }
-    /* Respect prefers-contrast: more by loading high-contrast when no saved choice */
-    @media (prefers-contrast: more) {
-      :root:not([data-theme="light"]):not([data-theme="dark"]) {
-        --bg: #000; --surface: #111; --surface-2: #1a1a1a;
-        --border: rgba(255,255,255,0.22); --border-accent: rgba(255,255,100,0.35);
-        --text: #fff; --bright: #fff; --dim: #bbb; --mono: #ddd;
-        --accent: #6eb5ff; --accent-dim: rgba(110,181,255,0.14);
-        --teal: #5eead4; --amber: #fbbf24; --toggle-bg: #333;
-      }
-    }
-    @media (prefers-reduced-motion: reduce) {
-      *, *::before, *::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
-      html { scroll-behavior: auto; }
-    }
-    html { scroll-behavior: smooth; }
-    body {
-      font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
-      background: var(--bg); color: var(--text); line-height: 1.65;
-      -webkit-font-smoothing: antialiased;
-      font-size: clamp(14px, 1vw + 11px, 16px);
-      transition: background 0.2s, color 0.2s;
-    }
-    code, .mono { font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, Consolas, monospace; }
-    ::selection { background: var(--accent-dim); color: var(--bright); }
-    a { color: var(--accent); text-decoration: none; transition: color 0.15s; }
-    a:hover { color: var(--teal); }
-    a:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 2px; }
-    .wrap { max-width: 760px; margin: 0 auto; padding: 0 28px; }
-    .skip-link {
-      position: absolute; top: -40px; left: 0;
-      background: var(--accent); color: #fff; padding: 8px 16px;
-      z-index: 100; font-size: 13px;
-      border-radius: 0 0 4px 0;
-    }
-    .skip-link:focus { top: 0; }
-    .skip-link:focus-visible { outline: 2px solid #fff; outline-offset: -4px; }
-    .gradient-bar { height: 2px; background: linear-gradient(90deg, var(--accent) 0%, var(--teal) 50%, var(--amber) 100%); opacity: 0.55; }
-    .topbar { display: flex; justify-content: flex-end; align-items: center; gap: 8px; padding: 12px 0; border-bottom: 1px solid var(--border); }
-    .topbar button {
-      background: var(--toggle-bg); border: 1px solid var(--border);
-      color: var(--mono); padding: 6px 12px; border-radius: 4px;
-      font-size: 12px; cursor: pointer; font-family: inherit;
-      transition: all 0.15s;
-      /* Ensure ≥24×24px touch target (WCAG 2.2 SC 2.5.8) */
-      min-width: 44px; min-height: 32px;
-    }
-    .topbar button:hover { border-color: var(--border-accent); color: var(--bright); }
-    .topbar button:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-    .hero { padding: 76px 0 52px; }
-    .hero .name { font-size: 12px; font-weight: 600; color: var(--accent); letter-spacing: 0.12em; text-transform: uppercase; margin-bottom: 14px; }
-    .hero h1 {
-      font-size: clamp(26px, 4vw + 10px, 38px);
-      font-weight: 700; color: var(--bright); line-height: 1.14;
-      margin-bottom: 18px; max-width: 620px; text-wrap: balance; letter-spacing: -0.01em;
-    }
-    .hero .lead { font-size: clamp(15px, 1vw + 12px, 17px); color: var(--text); max-width: 560px; margin-bottom: 14px; }
-    .hero .sublead { font-size: 14px; color: var(--dim); max-width: 560px; margin-bottom: 28px; }
-    .hero .meta { display: flex; gap: 20px; flex-wrap: wrap; font-size: 13px; color: var(--dim); }
-    .links { display: flex; gap: 20px; padding: 18px 0; border-top: 1px solid var(--border); border-bottom: 1px solid var(--border); }
-    .links a { font-size: 13px; font-weight: 500; color: var(--mono); }
-    .links a:hover { color: var(--bright); }
-    .section { padding: 52px 0; border-bottom: 1px solid var(--border); }
-    .section:last-of-type { border-bottom: none; }
-    .section-header { display: flex; align-items: center; gap: 10px; margin-bottom: 24px; }
-    .section-header h2 { font-size: 13px; font-weight: 600; color: var(--dim); letter-spacing: 0.08em; text-transform: uppercase; white-space: nowrap; }
-    .section-header .line { flex: 1; height: 1px; background: var(--border); }
-    .lab-list { list-style: none; padding: 0; margin: 0; }
-    .lab-list li { display: flex; gap: 14px; padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text); line-height: 1.65; align-items: flex-start; }
-    .lab-list li::before { content: '●'; color: var(--accent); flex-shrink: 0; font-size: 9px; line-height: 1; padding-top: 8px; }
-    .lab-list li:last-child { border-bottom: none; }
-    .project-list { display: flex; flex-direction: column; }
-    .project-row { display: flex; align-items: baseline; padding: 16px 0; border-bottom: 1px solid var(--border); gap: 16px; }
-    .project-row:last-child { border-bottom: none; }
-    .project-row a { font-size: 15px; font-weight: 600; color: var(--bright); white-space: nowrap; }
-    .project-row .desc { font-size: 13px; color: var(--dim); flex: 1; line-height: 1.65; }
-    .project-row .tag { font-size: 11px; color: var(--mono); padding: 2px 8px; background: var(--surface); border-radius: 4px; border: 1px solid var(--border); }
-    .stack-group { display: flex; flex-direction: column; gap: 14px; }
-    .stack-row { display: flex; align-items: baseline; gap: 16px; padding: 4px 0; }
-    .stack-row .stack-label { font-size: 11px; color: var(--mono); text-transform: uppercase; letter-spacing: 0.06em; min-width: 110px; flex-shrink: 0; font-weight: 600; }
-    .stack-row .stack-chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
-    .stack-chip { font-size: 12px; padding: 4px 10px; border-radius: 4px; color: var(--mono); border: 1px solid var(--border); background: var(--surface); transition: border-color 0.15s; }
-    .stack-chip:hover { border-color: var(--border-accent); color: var(--text); }
-    .stack-chip.primary { color: var(--accent); border-color: var(--border-accent); background: var(--accent-dim); }
-    .theme { padding: 20px 0; border-bottom: 1px dashed var(--border); }
-    .theme:first-of-type { padding-top: 6px; }
-    .theme:last-of-type { border-bottom: none; padding-bottom: 6px; }
-    .theme h3 { font-size: 17px; font-weight: 600; color: var(--bright); margin-bottom: 8px; line-height: 1.3; letter-spacing: -0.005em; }
-    .theme p { font-size: 14.5px; color: var(--text); line-height: 1.7; max-width: 620px; }
-    .principles { list-style: none; padding: 0; margin: 0; }
-    .principles li { padding: 14px 0; border-bottom: 1px solid var(--border); font-size: 14px; color: var(--text); line-height: 1.65; }
-    .principles li:last-child { border-bottom: none; }
-    .principles li strong { display: block; color: var(--bright); font-weight: 600; font-size: 13px; margin-bottom: 4px; }
-    .legal { padding: 36px 0; font-size: 12px; color: var(--dim); border-top: 1px solid var(--border); }
-    .legal-links { display: flex; gap: 16px; flex-wrap: wrap; margin-bottom: 10px; }
-    .legal-links a { color: var(--mono); font-size: 12px; }
-    .legal-links a:hover { color: var(--bright); }
-    .legal-page { display: none; padding: 48px 0; }
-    .legal-page.active { display: block; }
-    .legal-page h2 { font-size: 20px; font-weight: 700; color: var(--bright); margin-bottom: 16px; }
-    .legal-page h3 { font-size: 15px; font-weight: 600; color: var(--bright); margin: 18px 0 6px; }
-    .legal-page p { font-size: 14px; color: var(--text); line-height: 1.7; margin-bottom: 10px; }
-    .legal-page .back { font-size: 13px; margin-bottom: 22px; display: inline-block; }
-    @media (max-width: 520px) {
-      .hero { padding: 52px 0 36px; }
-      .project-row { flex-wrap: wrap; }
-      .theme h3 { font-size: 16px; }
-      .stack-row { flex-direction: column; gap: 6px; }
-      .stack-row .stack-label { min-width: auto; }
-    }
-    /* View Transitions API — Chrome 111+, Safari 18+, Firefox 132+ */
-    ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.25s; }
-    @media (prefers-reduced-motion: reduce) {
-      ::view-transition-old(root), ::view-transition-new(root) { animation: none; }
-    }
-    /* Print styles — legal sections print cleanly */
-    @media print {
-      .topbar, .gradient-bar, .skip-link, .legal-links { display: none !important; }
-      body { background: #fff !important; color: #000 !important; font-size: 12pt; }
-      .wrap { max-width: 100%; padding: 0; }
-      .legal-page { display: block !important; padding: 0; }
-      .legal-page .back { display: none; }
-      a { color: #000 !important; text-decoration: underline; }
-      a[href^="http"]::after { content: " (" attr(href) ")"; font-size: 9pt; color: #555; }
-      .hero, .links, .section, footer { display: none !important; }
-      h2, h3 { color: #000 !important; }
-      p { color: #000 !important; }
-    }
-  </style>
+  @font-face {
+    font-family: "Fraunces"; font-style: italic; font-weight: 400;
+    font-display: swap; src: url("/fraunces-italic-latin.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "JetBrains Mono"; font-style: normal; font-weight: 400 500;
+    font-display: swap; src: url("/jetbrains-mono-latin.woff2") format("woff2");
+  }
+  :root {
+    --bg: #0b0a08;
+    --bg-2: #100d0a;
+    --ink: #efe9df;
+    --muted: #b6ab98;
+    --dim: #8c836f;
+    --faint: #6f6757;
+    --gold: #f5c84b;
+    --gold-deep: #c79a2e;
+    --line: rgba(245, 200, 75, 0.16);
+    --serif: "Fraunces", Georgia, "Times New Roman", serif;
+    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100svh;
+    display: grid;
+    grid-template-rows: 1fr auto;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
+    background:
+      radial-gradient(60vw 48vh at 50% -8%, rgba(245, 200, 75, 0.10), transparent 70%),
+      radial-gradient(40vw 40vh at 92% 108%, rgba(199, 154, 46, 0.06), transparent 72%);
+  }
+  body::after {
+    content: ""; position: fixed; inset: 0; opacity: 0.04; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
+  }
+  main {
+    position: relative; z-index: 1;
+    width: min(960px, 90vw); margin: 0 auto;
+    padding: clamp(48px, 9vh, 120px) 0 40px; align-self: center;
+  }
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.42em;
+    text-transform: uppercase; color: var(--gold); margin: 0 0 26px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .eyebrow::after { content: ""; height: 1px; flex: 1; background: linear-gradient(90deg, var(--line), transparent); }
+  .wordmark {
+    font-family: var(--serif); font-weight: 560;
+    font-size: clamp(46px, 9vw, 104px); line-height: 0.96; letter-spacing: -0.02em;
+    margin: 0; color: var(--ink);
+  }
+  .wordmark .dot { color: var(--gold); }
+  .tagline {
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    font-size: clamp(18px, 2.6vw, 27px); line-height: 1.4; color: var(--muted);
+    margin: 22px 0 0; max-width: 30ch;
+  }
+  .clock { margin: clamp(40px, 7vh, 72px) 0 0; display: flex; gap: clamp(14px, 3.4vw, 40px); flex-wrap: wrap; }
+  .cell { min-width: 64px; }
+  .num {
+    font-family: var(--mono); font-weight: 500; font-size: clamp(40px, 8.2vw, 88px);
+    line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+    color: var(--ink); display: block;
+  }
+  .cell.lead .num { color: var(--gold); }
+  .lbl {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.28em;
+    text-transform: uppercase; color: var(--faint); margin-top: 12px; display: block;
+  }
+  .when {
+    font-family: var(--mono); font-size: clamp(12px, 1.5vw, 14px); letter-spacing: 0.06em;
+    color: var(--muted); margin: clamp(34px, 6vh, 56px) 0 0; padding-top: 22px;
+    border-top: 1px solid var(--line); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  }
+  .when b { color: var(--gold); font-weight: 500; }
+  .when .sep { color: var(--faint); }
+
+  .live-panel { display: none; }
+  html[data-state="live"] .clock, html[data-state="live"] .tagline { display: none; }
+  html[data-state="live"] .live-panel {
+    display: block; margin: clamp(28px, 5vh, 48px) 0 0;
+    animation: rise 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .live-kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--gold); margin: 0 0 16px;
+  }
+  .live-line {
+    font-family: var(--serif); font-style: italic; font-size: clamp(22px, 3.4vw, 38px);
+    line-height: 1.3; color: var(--ink); margin: 0; max-width: 26ch;
+  }
+
+  /* legal pages — hidden until opened from the footer */
+  .legal-page { display: none; max-width: 60ch; }
+  html[data-view="impressum"] #portfolio,
+  html[data-view="privacy"] #portfolio { display: none; }
+  html[data-view="impressum"] #impressum,
+  html[data-view="privacy"] #privacy { display: block; animation: rise 500ms ease both; }
+  .legal-page h2 { font-family: var(--serif); font-weight: 560; color: var(--ink); font-size: clamp(26px,4vw,40px); margin: 8px 0 18px; }
+  .legal-page h3 { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin: 22px 0 6px; }
+  .legal-page p { color: var(--muted); line-height: 1.6; margin: 4px 0; }
+  .legal-page a { color: var(--gold); }
+  .legal-page .back { font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; color: var(--dim); text-decoration: none; display: inline-block; margin-bottom: 18px; }
+  .legal-page .back:hover { color: var(--gold); }
+
+  footer {
+    position: relative; z-index: 1; width: min(960px, 90vw); margin: 0 auto;
+    padding: 26px 0 30px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--faint); display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  }
+  footer a { color: var(--dim); text-decoration: none; }
+  footer a:hover { color: var(--gold); }
+  footer .glyph { color: var(--gold-deep); }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .tick { animation: tick 1s steps(1) infinite; }
+  @keyframes tick { 50% { opacity: 0.55; } }
+  @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; } }
+  :focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; }
+</style>
 </head>
 <body>
-
-<a href="#main" class="skip-link" id="skipLink">
-  <span class="i18n-en">Skip to content</span>
-  <span class="i18n-de" lang="de" style="display:none">Zum Inhalt springen</span>
-</a>
-<div class="gradient-bar" aria-hidden="true"></div>
-
-<div class="wrap">
-  <nav class="topbar" aria-label="Site controls">
-    <button
-      onclick="toggleLang()"
-      id="langBtn"
-      aria-label="Language: English — switch to German"
-    >EN</button>
-    <button
-      onclick="cycleTheme()"
-      id="themeBtn"
-      aria-label="Color theme: Dark — press to cycle"
-    >Dark</button>
-  </nav>
-
   <main id="main" tabindex="-1">
     <div id="portfolio">
-      <section class="hero">
-        <div class="name" aria-hidden="true">Florian Schulz</div>
-        <h1 id="hero-en" class="i18n-en">Self-hosted AI platforms — bare-metal Kubernetes, multi-vendor LLM orchestration, agent protocols.</h1>
-        <h1 id="hero-de" class="i18n-de" lang="de" style="display:none">Selbstgehostete KI-Plattformen — Bare-Metal Kubernetes, Multi-Vendor-LLM-Orchestrierung, Agent-Protokolle.</h1>
-        <p class="lead i18n-en">I build the platform, not glue around someone else's. One Rust control plane — fop — runs every build, deploy, and AI agent I work with; the same code is a local CLI and a signed Kubernetes service. A private home lab in Germany, research and demonstration, end to end.</p>
-        <p class="lead i18n-de" lang="de" style="display:none">Ich baue die Plattform, nicht Glue-Code um eine fremde. Ein Rust-Control-Plane — fop — steuert jeden Build, jedes Deploy und jeden KI-Agenten; derselbe Code läuft als lokale CLI und als signierter Kubernetes-Service. Ein privates Home Lab in Deutschland, Forschung und Demonstration, von Anfang bis Ende.</p>
-        <p class="sublead i18n-en">Research and demonstration environment. Not a commercial offering.</p>
-        <p class="sublead i18n-de" lang="de" style="display:none">Forschungs- und Demonstrationsumgebung. Kein kommerzielles Angebot.</p>
-        <div class="meta">
-          <span>Göttingen, DE</span>
-          <span class="i18n-en">14+ years in production systems</span><span class="i18n-de" lang="de" style="display:none">14+ Jahre Produktionsbetrieb</span>
-          <span class="i18n-en">Platform · AI Systems · Supply Chain</span><span class="i18n-de" lang="de" style="display:none">Plattform · KI-Systeme · Supply Chain</span>
-        </div>
-      </section>
+      <p class="eyebrow">暖居 · Nuanju · Public release</p>
+      <h1 class="wordmark">Securanido<span class="dot">.</span></h1>
+      <p class="tagline">A self-hosted AI platform that runs where you live — not in someone else&rsquo;s cloud.</p>
 
-      <nav class="links" aria-label="External links">
-        <a href="https://github.com/nash87" rel="noopener me">GitHub</a>
-        <a href="https://www.linkedin.com/in/florian-schulz-a312bb137" rel="noopener me">LinkedIn</a>
-        <a href="mailto:fschulz0787@gmail.com" rel="me">Email</a>
-        <a href="https://nash87.github.io/parkhub-site/" rel="noopener">ParkHub</a>
-      </nav>
+      <div class="clock" role="timer" aria-label="Time until the public release">
+        <div class="cell lead"><span class="num" data-days>00</span><span class="lbl">Days</span></div>
+        <div class="cell"><span class="num" data-hours>00</span><span class="lbl">Hours</span></div>
+        <div class="cell"><span class="num" data-mins>00</span><span class="lbl">Minutes</span></div>
+        <div class="cell"><span class="num tick" data-secs>00</span><span class="lbl">Seconds</span></div>
+      </div>
 
-      <section class="section">
-        <div class="section-header">
-          <h2 class="i18n-en">Currently in the lab</h2>
-          <h2 class="i18n-de" lang="de" style="display:none">Aktuell im Lab</h2>
-          <div class="line" aria-hidden="true"></div>
-        </div>
-        <ul class="lab-list" role="list">
-          <li>
-            <span class="i18n-en">fop — a Rust control plane where every subcommand is also a signed Kubernetes microservice. One task board, one build queue, one GitOps loop across all of it.</span>
-            <span class="i18n-de" lang="de" style="display:none">fop — ein Rust-Control-Plane, bei dem jeder Subbefehl gleichzeitig ein signierter Kubernetes-Microservice ist. Ein Task-Board, eine Build-Queue, eine GitOps-Schleife für alles.</span>
-          </li>
-          <li>
-            <span class="i18n-en">An AI-first phone OS on a Linux mainline handset — postmarketOS, a Slint-native UI, and an on-device LLM running the same agent runtime as the cluster. The phone is a first-class target of the platform, not a companion app.</span>
-            <span class="i18n-de" lang="de" style="display:none">Ein KI-zentriertes Phone-OS auf einem Linux-Mainline-Gerät — postmarketOS, eine Slint-native UI und ein On-Device-LLM, das dieselbe Agent-Runtime wie der Cluster ausführt. Das Telefon ist ein vollwertiges Plattform-Target, keine Companion-App.</span>
-          </li>
-          <li>
-            <span class="i18n-en">A multi-CLI agent harness — Claude, Codex, Kimi and Gemini run as parallel coding agents inside the same control plane, coordinating through one shared task board with worktree isolation and a build queue.</span>
-            <span class="i18n-de" lang="de" style="display:none">Ein Multi-CLI-Agent-Harness — Claude, Codex, Kimi und Gemini laufen als parallele Coding-Agenten im selben Control-Plane, koordiniert über ein gemeinsames Task-Board mit Worktree-Isolation und einer Build-Queue.</span>
-          </li>
-          <li>
-            <span class="i18n-en">A supply chain where the cluster refuses any image it can't cryptographically verify — signature and SBOM enforced at admission, not audited after the fact.</span>
-            <span class="i18n-de" lang="de" style="display:none">Eine Supply Chain, bei der der Cluster jedes Image ablehnt, das er nicht kryptografisch verifizieren kann — Signatur und SBOM werden bei der Admission erzwungen, nicht im Nachhinein geprüft.</span>
-          </li>
-        </ul>
-      </section>
+      <p class="when">
+        <span>Public release</span><span class="sep">/</span>
+        <b>Tuesday, 9 June &middot; 11:00 CEST</b>
+      </p>
 
-      <section class="section">
-        <div class="section-header">
-          <h2 class="i18n-en">Platform</h2>
-          <h2 class="i18n-de" lang="de" style="display:none">Plattform</h2>
-          <div class="line" aria-hidden="true"></div>
-        </div>
-
-        <div class="theme">
-          <h3 class="i18n-en">Signed, reproducible, self-healing</h3>
-          <h3 class="i18n-de" lang="de" style="display:none">Signiert, reproduzierbar, selbstheilend</h3>
-          <p class="i18n-en">Self-hosted Kubernetes with HA, automated recovery, and tested rollback. Every container image is cryptographically signed and ships with a verifiable SBOM — the cluster rejects anything missing either. Production runs the same artifacts that left local development.</p>
-          <p class="i18n-de" lang="de" style="display:none">Selbstgehostetes Kubernetes mit Hochverfügbarkeit, automatisierter Wiederherstellung und getesteten Rollbacks. Jedes Container-Image ist kryptografisch signiert und führt eine verifizierbare SBOM — fehlt eines, lehnt der Cluster es ab. In Produktion laufen exakt dieselben Artefakte, die das lokale Setup verlassen haben.</p>
-        </div>
-
-        <div class="theme">
-          <h3 class="i18n-en">Multi-tenant from the database up</h3>
-          <h3 class="i18n-de" lang="de" style="display:none">Multi-Tenant ab der Datenbankschicht</h3>
-          <p class="i18n-en">Customer separation enforced at the database layer, not retrofitted in application code. Cross-tenant data leaks aren't a bug class — they're structurally prevented. Roles, permissions, and audit logs are first-class at the trust boundary.</p>
-          <p class="i18n-de" lang="de" style="display:none">Mandantentrennung wird auf Datenbankebene durchgesetzt, nicht im Anwendungscode nachgerüstet. Cross-Tenant-Datenlecks sind so keine Bug-Kategorie, sondern strukturell ausgeschlossen. Rollen, Berechtigungen und Audit-Logs sind First-Class an der Vertrauensgrenze.</p>
-        </div>
-
-        <div class="theme">
-          <h3 class="i18n-en">AI with identities and budgets</h3>
-          <h3 class="i18n-de" lang="de" style="display:none">KI mit Identitäten und Budgets</h3>
-          <p class="i18n-en">Agents have verified identities, run inside controlled execution sandboxes, and leave a complete audit trail. Inputs pass a runtime validation gate — prompt-injection, PII leakage and loader-hijack are screened before a tool call runs. Multiple LLM providers with automatic failover. Token-cost budgets enforced before money is spent.</p>
-          <p class="i18n-de" lang="de" style="display:none">Agenten haben verifizierte Identitäten, laufen in kontrollierten Ausführungs-Sandboxes und hinterlassen einen lückenlosen Audit-Trail. Eingaben durchlaufen eine Laufzeit-Prüfung — Prompt-Injection, PII-Abfluss und Loader-Hijack werden erkannt, bevor ein Tool-Aufruf ausgeführt wird. Mehrere LLM-Anbieter mit automatischem Failover. Token-Kosten-Budgets greifen, bevor Geld ausgegeben wird.</p>
-        </div>
-
-        <div class="theme">
-          <h3 class="i18n-en">Web, mobile, and tooling — same engineering bar</h3>
-          <h3 class="i18n-de" lang="de" style="display:none">Web, Mobile und Tooling — derselbe Anspruch</h3>
-          <p class="i18n-en">User-facing applications built to the same standards as the platform beneath them: accessible by default, internationalized, GDPR-compliant out of the gate. The mobile side is a first-class platform target — not a thin wrapper around a website.</p>
-          <p class="i18n-de" lang="de" style="display:none">Endnutzer-Anwendungen entstehen nach denselben Standards wie die Plattform darunter: barrierefrei, mehrsprachig, DSGVO-konform ab Start. Die Mobile-Seite ist ein vollwertiges Plattform-Target — kein dünner Wrapper um eine Website.</p>
-        </div>
-
-        <div class="theme">
-          <h3 class="i18n-en">One pattern, ~fifty services</h3>
-          <h3 class="i18n-de" lang="de" style="display:none">Ein Muster, rund fünfzig Services</h3>
-          <p class="i18n-en">The platform is built from small Rust crates that follow one rule: each is both a <code>fop</code> subcommand locally and a signed Kubernetes microservice in the cluster — same code, two runtimes.</p>
-          <p class="i18n-de" lang="de" style="display:none">Die Plattform besteht aus kleinen Rust-Crates, die einer Regel folgen: Jedes ist sowohl ein lokaler <code>fop</code>-Subbefehl als auch ein signierter Kubernetes-Microservice im Cluster — derselbe Code, zwei Laufzeiten.</p>
-        </div>
-
-      </section>
-
-      <section class="section">
-        <div class="section-header">
-          <h2 class="i18n-en">Public open source</h2>
-          <h2 class="i18n-de" lang="de" style="display:none">Public Open Source</h2>
-          <div class="line" aria-hidden="true"></div>
-        </div>
-        <div class="project-list">
-          <div class="project-row">
-            <a href="https://github.com/nash87/parkhub-rust" rel="noopener">ParkHub Rust</a>
-            <span class="desc i18n-en">Self-hosted parking management — Axum + Astro 6 + React 19. v5.1.0, GDPR-compliant, MIT.</span>
-            <span class="desc i18n-de" lang="de" style="display:none">Selbstgehostetes Parkraum-Management — Axum + Astro 6 + React 19. v5.1.0, DSGVO-konform, MIT.</span>
-            <span class="tag">Rust</span>
-          </div>
-          <div class="project-row">
-            <a href="https://github.com/nash87/parkhub-php" rel="noopener">ParkHub PHP</a>
-            <span class="desc i18n-en">Same product on Laravel 13 + PHP 8.4 for shared hosting. Identical frontend, deployable anywhere PHP runs.</span>
-            <span class="desc i18n-de" lang="de" style="display:none">Dasselbe Produkt auf Laravel 13 + PHP 8.4 für Shared Hosting. Identisches Frontend, deploybar überall, wo PHP läuft.</span>
-            <span class="tag">PHP</span>
-          </div>
-          <div class="project-row">
-            <a href="https://nash87.github.io/parkhub-site/" rel="noopener">parkhub-site</a>
-            <span class="desc i18n-en">ParkHub marketing site on Astro 6 + GitHub Pages.</span>
-            <span class="desc i18n-de" lang="de" style="display:none">ParkHub-Marketing-Site auf Astro 6 + GitHub Pages.</span>
-            <span class="tag">Astro</span>
-          </div>
-          <div class="project-row">
-            <a href="https://nash87.github.io/legal/" rel="noopener">legal</a>
-            <span class="desc i18n-en">GDPR-compliant Impressum &amp; Datenschutz pages — the boring infrastructure most projects forget.</span>
-            <span class="desc i18n-de" lang="de" style="display:none">DSGVO-konforme Impressum- &amp; Datenschutz-Seiten — die langweilige Infrastruktur, an die die meisten nicht denken.</span>
-            <span class="tag">HTML</span>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="section-header">
-          <h2 class="i18n-en">Stack</h2>
-          <h2 class="i18n-de" lang="de" style="display:none">Stack</h2>
-          <div class="line" aria-hidden="true"></div>
-        </div>
-        <div class="stack-group">
-          <div class="stack-row">
-            <span class="stack-label i18n-en">Languages</span><span class="stack-label i18n-de" lang="de" style="display:none">Sprachen</span>
-            <span class="stack-chips">
-              <span class="stack-chip primary">Rust</span>
-              <span class="stack-chip primary">TypeScript</span>
-              <span class="stack-chip">PHP</span>
-            </span>
-          </div>
-          <div class="stack-row">
-            <span class="stack-label i18n-en">Frontend</span>
-            <span class="stack-label i18n-de" lang="de" style="display:none">Frontend</span>
-            <span class="stack-chips">
-              <span class="stack-chip primary">Svelte 5</span>
-              <span class="stack-chip">SvelteKit</span>
-              <span class="stack-chip">React 19</span>
-              <span class="stack-chip">Astro 6</span>
-              <span class="stack-chip">Tailwind 4</span>
-            </span>
-          </div>
-          <div class="stack-row">
-            <span class="stack-label i18n-en">Platform</span><span class="stack-label i18n-de" lang="de" style="display:none">Plattform</span>
-            <span class="stack-chips">
-              <span class="stack-chip primary">Kubernetes</span>
-              <span class="stack-chip">Cilium</span>
-              <span class="stack-chip">Flux CD</span>
-              <span class="stack-chip">Wolfi</span>
-            </span>
-          </div>
-          <div class="stack-row">
-            <span class="stack-label i18n-en">Security</span><span class="stack-label i18n-de" lang="de" style="display:none">Sicherheit</span>
-            <span class="stack-chips">
-              <span class="stack-chip">Vault</span>
-              <span class="stack-chip">SPIRE</span>
-              <span class="stack-chip">cosign</span>
-              <span class="stack-chip">Kyverno</span>
-              <span class="stack-chip">Tetragon</span>
-              <span class="stack-chip">Trivy</span>
-            </span>
-          </div>
-          <div class="stack-row">
-            <span class="stack-label i18n-en">Data</span><span class="stack-label i18n-de" lang="de" style="display:none">Daten</span>
-            <span class="stack-chips">
-              <span class="stack-chip primary">PostgreSQL</span>
-              <span class="stack-chip">CNPG</span>
-              <span class="stack-chip">pgvector</span>
-              <span class="stack-chip">S3</span>
-            </span>
-          </div>
-          <div class="stack-row">
-            <span class="stack-label">AI</span>
-            <span class="stack-chips">
-              <span class="stack-chip primary">Anthropic</span>
-              <span class="stack-chip">OpenAI</span>
-              <span class="stack-chip">Google</span>
-              <span class="stack-chip">Ollama</span>
-              <span class="stack-chip">MCP · ACP · A2A</span>
-            </span>
-          </div>
-          <div class="stack-row">
-            <span class="stack-label i18n-en">Observability</span><span class="stack-label i18n-de" lang="de" style="display:none">Observability</span>
-            <span class="stack-chips">
-              <span class="stack-chip">OpenTelemetry</span>
-              <span class="stack-chip">eBPF</span>
-            </span>
-          </div>
-        </div>
-      </section>
-
-      <section class="section">
-        <div class="section-header">
-          <h2 class="i18n-en">How I work</h2>
-          <h2 class="i18n-de" lang="de" style="display:none">Arbeitsweise</h2>
-          <div class="line" aria-hidden="true"></div>
-        </div>
-        <ul class="principles" role="list">
-          <li>
-            <strong class="i18n-en">Build, don't consume</strong>
-            <strong class="i18n-de" lang="de" style="display:none">Bauen, nicht konsumieren</strong>
-            <span class="i18n-en">Rust-native implementations over npm-glue and SaaS lock-in.</span>
-            <span class="i18n-de" lang="de" style="display:none">Rust-native Implementierungen statt npm-Glue und SaaS-Lock-in.</span>
-          </li>
-          <li>
-            <strong class="i18n-en">Self-hosted by default</strong>
-            <strong class="i18n-de" lang="de" style="display:none">Selbstgehostet by Default</strong>
-            <span class="i18n-en">Bare-metal Kubernetes in Germany. GDPR-compliant. No foreign cloud.</span>
-            <span class="i18n-de" lang="de" style="display:none">Bare-Metal Kubernetes in Deutschland. DSGVO-konform. Keine ausländische Cloud.</span>
-          </li>
-          <li>
-            <strong class="i18n-en">Verifiable supply chain, not assertions</strong>
-            <strong class="i18n-de" lang="de" style="display:none">Verifizierbare Supply Chain, keine Behauptungen</strong>
-            <span class="i18n-en">mTLS, signed builds, SBOM attestations — not afterthoughts.</span>
-            <span class="i18n-de" lang="de" style="display:none">mTLS, signierte Builds, SBOM-Attestierungen — kein Nachgedanke.</span>
-          </li>
-          <li>
-            <strong class="i18n-en">Multi-vendor AI</strong>
-            <strong class="i18n-de" lang="de" style="display:none">Multi-Vendor-KI</strong>
-            <span class="i18n-en">Anthropic primary, with OpenAI, Google, and local Ollama fallback. No single-vendor lockout.</span>
-            <span class="i18n-de" lang="de" style="display:none">Anthropic als Primär-Provider, mit OpenAI, Google und lokalem Ollama-Fallback. Kein Single-Vendor-Lock-in.</span>
-          </li>
-        </ul>
+      <section class="live-panel" aria-hidden="true">
+        <p class="live-kicker">Now live</p>
+        <p class="live-line">The release is underway. Securanido is open.</p>
       </section>
     </div>
 
     <div id="impressum" class="legal-page">
-      <a href="#" class="back" onclick="showPortfolio(); return false;">&larr; <span class="i18n-en">Back</span><span class="i18n-de" lang="de" style="display:none">Zurück</span></a>
-      <!-- EN version of Impressum (shown when lang=en) -->
+      <a href="#portfolio" class="back" onclick="showPortfolio(); return false;">&larr; <span class="i18n-en">Back</span><span class="i18n-de" lang="de" style="display:none">Zurück</span></a>
       <div class="i18n-en">
         <h2>Legal Notice</h2>
         <h3>Information pursuant to § 5 DDG</h3>
-        <p><span class="i18n-en">Florian Schulz<br>Backhausstr. 9<br>37081 Göttingen<br>Germany</span></p>
+        <p>Florian Schulz<br>Backhausstr. 9<br>37081 Göttingen<br>Germany</p>
         <h3>Contact</h3>
         <p>E-mail: fschulz0787@gmail.com</p>
         <h3>Responsible for content pursuant to § 18 para. 2 MStV</h3>
         <p>Florian Schulz</p>
         <p style="font-size:12px;color:var(--dim);margin-top:14px">Full legal notice &amp; privacy policy: <a href="https://nash87.github.io/legal/" rel="noopener">nash87.github.io/legal</a></p>
       </div>
-      <!-- DE version (shown when lang=de) -->
       <div class="i18n-de" lang="de" style="display:none">
         <h2>Impressum</h2>
         <h3>Angaben gemäß § 5 DDG</h3>
-        <p><span class="i18n-de" lang="de">Florian Schulz<br>Backhausstr. 9<br>37081 Göttingen<br>Deutschland</span></p>
+        <p>Florian Schulz<br>Backhausstr. 9<br>37081 Göttingen<br>Deutschland</p>
         <h3>Kontakt</h3>
         <p>E-Mail: fschulz0787@gmail.com</p>
         <h3>Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV</h3>
@@ -499,7 +200,7 @@
     </div>
 
     <div id="privacy" class="legal-page">
-      <a href="#" class="back" onclick="showPortfolio(); return false;">&larr; <span class="i18n-en">Back</span><span class="i18n-de" lang="de" style="display:none">Zurück</span></a>
+      <a href="#portfolio" class="back" onclick="showPortfolio(); return false;">&larr; <span class="i18n-en">Back</span><span class="i18n-de" lang="de" style="display:none">Zurück</span></a>
       <h2 class="i18n-en">Privacy Policy</h2>
       <h2 class="i18n-de" lang="de" style="display:none">Datenschutzerklärung</h2>
       <h3 class="i18n-en">1. Data Controller</h3><h3 class="i18n-de" lang="de" style="display:none">1. Verantwortlicher</h3>
@@ -508,123 +209,64 @@
       <p class="i18n-en">This site is hosted on GitHub Pages (GitHub Inc., USA). GitHub may collect IP addresses in server logs.</p>
       <p class="i18n-de" lang="de" style="display:none">Diese Seite wird auf GitHub Pages gehostet (GitHub Inc., USA). GitHub kann IP-Adressen in Server-Logs erfassen.</p>
       <h3 class="i18n-en">3. Cookies &amp; Storage</h3><h3 class="i18n-de" lang="de" style="display:none">3. Cookies &amp; Speicher</h3>
-      <p class="i18n-en">Uses localStorage for language and theme preferences only. No tracking, no analytics, no third-party scripts. No external fonts. These entries are strictly necessary to deliver the requested display settings; no consent is required (§ 25 (2) TTDSG).</p>
-      <p class="i18n-de" lang="de" style="display:none">Nutzt localStorage nur für Sprach- und Design-Einstellungen. Kein Tracking, keine Analyse, keine Drittanbieter-Skripte. Keine externen Fonts. Diese Einträge sind zur Bereitstellung der gewünschten Anzeigeeinstellungen unbedingt erforderlich; eine Einwilligung ist nicht erforderlich (§ 25 Abs. 2 TTDSG).</p>
+      <p class="i18n-en">No cookies. No tracking, no analytics, no third-party scripts. No external fonts (fonts are served from this site).</p>
+      <p class="i18n-de" lang="de" style="display:none">Keine Cookies. Kein Tracking, keine Analyse, keine Drittanbieter-Skripte. Keine externen Fonts (Schriften werden von dieser Seite ausgeliefert).</p>
       <h3 class="i18n-en">4. Your Rights (GDPR Art. 15-21)</h3><h3 class="i18n-de" lang="de" style="display:none">4. Ihre Rechte (DSGVO Art. 15-21)</h3>
       <p class="i18n-en">Right to access, rectification, erasure, restriction, portability, and objection. Contact: fschulz0787@gmail.com</p>
       <p class="i18n-de" lang="de" style="display:none">Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch. Kontakt: fschulz0787@gmail.com</p>
       <h3 class="i18n-en">5. External Services</h3><h3 class="i18n-de" lang="de" style="display:none">5. Externe Dienste</h3>
-      <p class="i18n-en">GitHub (hosting), LinkedIn (external link only). Each has its own privacy policy.</p>
-      <p class="i18n-de" lang="de" style="display:none">GitHub (Hosting), LinkedIn (nur externer Link). Beide haben eigene Datenschutzrichtlinien.</p>
+      <p class="i18n-en">GitHub (hosting). Has its own privacy policy.</p>
+      <p class="i18n-de" lang="de" style="display:none">GitHub (Hosting). Hat eine eigene Datenschutzrichtlinie.</p>
     </div>
   </main>
 
-  <footer class="legal">
-    <div class="legal-links">
-      <a href="#" onclick="showPage('impressum'); return false;" class="i18n-en">Legal Notice</a>
-      <a href="#" onclick="showPage('impressum'); return false;" class="i18n-de" lang="de" style="display:none">Impressum</a>
-      <a href="#" onclick="showPage('privacy'); return false;" class="i18n-en">Privacy</a>
-      <a href="#" onclick="showPage('privacy'); return false;" class="i18n-de" lang="de" style="display:none">Datenschutz</a>
-      <a href="https://nash87.github.io/legal/" rel="noopener" class="i18n-en">Full Legal</a>
-      <a href="https://nash87.github.io/legal/" rel="noopener" class="i18n-de" lang="de" style="display:none">Rechtliches</a>
-    </div>
-    <p class="i18n-en">&copy; 2026 Florian Schulz &middot; Göttingen</p>
-    <p class="i18n-de" lang="de" style="display:none">&copy; 2026 Florian Schulz &middot; Göttingen</p>
+  <footer>
+    <span>Securanido <span class="glyph">&middot;</span> local-first AI platform <span class="glyph">&middot;</span> Made in Germany</span>
+    <span>
+      <a href="#impressum" onclick="showImpressum(); return false;">Impressum</a>
+      <span class="glyph">&middot;</span>
+      <a href="#privacy" onclick="showPrivacy(); return false;">Datenschutz</a>
+    </span>
   </footer>
-</div>
 
-<!-- aria-live region for theme announcements -->
-<div id="themeAnnounce" aria-live="polite" aria-atomic="true" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;"></div>
-
-<script>
-  // View-Transitions wrapper — respects prefers-reduced-motion
-  function vt(fn) {
-    if (document.startViewTransition && !window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
-      document.startViewTransition(fn);
-    } else {
-      fn();
-    }
-  }
-
-  // Lang state (also set by inline head script for FOUC prevention)
-  var lang = localStorage.getItem('lang') || (navigator.language && navigator.language.startsWith('de') ? 'de' : 'en');
-
-  var langLabels = {
-    en: { btn: 'EN', aria: 'Language: English — switch to German' },
-    de: { btn: 'DE', aria: 'Sprache: Deutsch — auf Englisch wechseln' }
-  };
-
-  function applyLang(l) {
-    lang = l;
-    localStorage.setItem('lang', l);
-    document.documentElement.lang = l;
-    var btn = document.getElementById('langBtn');
-    btn.textContent = langLabels[l].btn;
-    btn.setAttribute('aria-label', langLabels[l].aria);
-    var enEls = document.querySelectorAll('.i18n-en');
-    var deEls = document.querySelectorAll('.i18n-de');
-    for (var i = 0; i < enEls.length; i++) enEls[i].style.display = l === 'en' ? '' : 'none';
-    for (var i = 0; i < deEls.length; i++) deEls[i].style.display = l === 'de' ? '' : 'none';
-  }
-  function setLang(l) { vt(function () { applyLang(l); }); }
-  function toggleLang() { setLang(lang === 'en' ? 'de' : 'en'); }
-
-  // Theme state
-  var themes = ['dark', 'light', 'high-contrast'];
-  var themeLabels = {
-    dark:           { btn: 'Dark',  ariaEn: 'Color theme: Dark — press to cycle',         ariaDe: 'Farbschema: Dunkel — zum Wechseln drücken' },
-    light:          { btn: 'Light', ariaEn: 'Color theme: Light — press to cycle',        ariaDe: 'Farbschema: Hell — zum Wechseln drücken' },
-    'high-contrast':{ btn: 'A11y',  ariaEn: 'Color theme: High contrast — press to cycle',ariaDe: 'Farbschema: Hoher Kontrast — zum Wechseln drücken' }
-  };
-  var themeAnnounceEn = { dark: 'Dark theme applied', light: 'Light theme applied', 'high-contrast': 'High contrast theme applied' };
-  var themeAnnounceDe = { dark: 'Dunkles Design aktiviert', light: 'Helles Design aktiviert', 'high-contrast': 'Hochkontrast-Design aktiviert' };
-
-  // Determine initial theme: saved → prefers-contrast → prefers-color-scheme → dark
-  function detectInitialTheme() {
-    var saved = localStorage.getItem('theme');
-    if (saved && themes.indexOf(saved) >= 0) return saved;
-    if (window.matchMedia('(prefers-contrast: more)').matches) return 'high-contrast';
-    if (window.matchMedia('(prefers-color-scheme: light)').matches) return 'light';
-    return 'dark';
-  }
-  var themeIdx = themes.indexOf(detectInitialTheme());
-  if (themeIdx < 0) themeIdx = 0;
-
-  function applyTheme(t) {
-    document.documentElement.setAttribute('data-theme', t);
-    localStorage.setItem('theme', t);
-    var btn = document.getElementById('themeBtn');
-    btn.textContent = themeLabels[t].btn;
-    btn.setAttribute('aria-label', lang === 'de' ? themeLabels[t].ariaDe : themeLabels[t].ariaEn);
-    // Announce to screen readers
-    var msg = lang === 'de' ? themeAnnounceDe[t] : themeAnnounceEn[t];
-    document.getElementById('themeAnnounce').textContent = msg;
-  }
-  function setTheme(t) { vt(function () { applyTheme(t); }); }
-  function cycleTheme() { themeIdx = (themeIdx + 1) % themes.length; setTheme(themes[themeIdx]); }
-
-  function showPage(id) {
-    vt(function () {
-      document.getElementById('portfolio').style.display = 'none';
-      var pages = document.querySelectorAll('.legal-page');
-      for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
-      document.getElementById(id).classList.add('active');
-      window.scrollTo(0, 0);
-    });
-  }
-  function showPortfolio() {
-    vt(function () {
-      var pages = document.querySelectorAll('.legal-page');
-      for (var i = 0; i < pages.length; i++) pages[i].classList.remove('active');
-      document.getElementById('portfolio').style.display = '';
-      window.scrollTo(0, 0);
-    });
-  }
-
-  // Init (theme already applied by inline head script; re-apply to sync button labels)
-  applyLang(lang);
-  applyTheme(themes[themeIdx]);
-</script>
-
+  <script>
+    (function () {
+      "use strict";
+      var TARGET = new Date("2026-06-09T11:00:00+02:00").getTime();
+      var root = document.documentElement;
+      var el = {
+        d: document.querySelector("[data-days]"),
+        h: document.querySelector("[data-hours]"),
+        m: document.querySelector("[data-mins]"),
+        s: document.querySelector("[data-secs]")
+      };
+      function pad(n) { return (n < 10 ? "0" : "") + n; }
+      function render() {
+        var diff = TARGET - Date.now();
+        if (diff <= 0) {
+          root.setAttribute("data-state", "live");
+          var panel = document.querySelector(".live-panel");
+          if (panel) panel.setAttribute("aria-hidden", "false");
+          el.d.textContent = el.h.textContent = el.m.textContent = el.s.textContent = "00";
+          return false;
+        }
+        var sec = Math.floor(diff / 1000);
+        el.d.textContent = pad(Math.floor(sec / 86400));
+        el.h.textContent = pad(Math.floor((sec % 86400) / 3600));
+        el.m.textContent = pad(Math.floor((sec % 3600) / 60));
+        el.s.textContent = pad(sec % 60);
+        return true;
+      }
+      if (render()) {
+        var t = setInterval(function () { if (!render()) clearInterval(t); }, 1000);
+      }
+    })();
+    function showPortfolio() { document.documentElement.removeAttribute("data-view"); history.replaceState(null, "", "/"); window.scrollTo(0, 0); }
+    function showImpressum() { document.documentElement.setAttribute("data-view", "impressum"); window.scrollTo(0, 0); }
+    function showPrivacy() { document.documentElement.setAttribute("data-view", "privacy"); window.scrollTo(0, 0); }
+    // Deep-link support (#impressum / #privacy)
+    if (location.hash === "#impressum") showImpressum();
+    else if (location.hash === "#privacy") showPrivacy();
+  </script>
 </body>
 </html>
