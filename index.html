@@ -14,10 +14,8 @@
         var saved = localStorage.getItem("securanido.lang");
         if (SUPPORTED.indexOf(saved) !== -1) return saved;
       } catch (e) {}
-      var nav = (navigator.language || "en").toLowerCase();
-      var base = nav.split("-")[0];
-      if (SUPPORTED.indexOf(nav) !== -1) return nav;
-      if (SUPPORTED.indexOf(base) !== -1) return base;
+      // English is the deliberate default for the professional release;
+      // visitors switch explicitly and the choice is remembered locally.
       return "en";
     }
     var lang = pick();
@@ -260,6 +258,9 @@
   /* ── "What it is": three quiet specifics. A restrained hairline-divided
      list (no cards, no icons, no boxes) below the date line. The countdown
      stays the hero; this only adds concrete substance under it. ── */
+    .numbers { margin: 1.4rem 0 0; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.78rem; letter-spacing: 0.04em; color: var(--ink-soft, #8a8378); }
+    .numbers .numbers-line { border-top: 1px solid var(--rule, rgba(138,131,120,0.25)); padding-top: 0.9rem; display: inline-block; }
+
   .facts {
     list-style: none; margin: clamp(20px, 3.4vh, 30px) 0 0; padding: 0;
     max-width: 60ch;
@@ -394,7 +395,12 @@
         <li data-i18n="fact1" data-i18n-html="1">Runs on your own Kubernetes, laptop, or air-gapped network.</li>
         <li data-i18n="fact2" data-i18n-html="1">Apache-2.0, no tracking, no account &mdash; your data stays with you.</li>
         <li data-i18n="fact3" data-i18n-html="1">Many agents in parallel, governed by one machine-enforced guard.</li>
+        <li data-i18n="fact4" data-i18n-html="1">Launch day opens the code &mdash; and a proof page where every claim links to the captured command that produced it.</li>
       </ul>
+
+      <p class="numbers" aria-label="Platform figures" data-i18n-aria-label="numbersLabel">
+        <span class="numbers-line" data-i18n="numbersLine" data-i18n-html="1">145+ Rust crates &middot; 84 native MCP tools &middot; 38 live proofs &mdash; measured, not promised.</span>
+      </p>
 
       <section class="live-panel" aria-hidden="true">
         <p class="live-kicker" data-i18n="liveKicker">Now live</p>
@@ -464,6 +470,9 @@
                 "fact1": "Runs on your own Kubernetes, laptop, or air-gapped network.",
                 "fact2": "Apache-2.0, no tracking, no account &mdash; your data stays with you.",
                 "fact3": "Many agents in parallel, governed by one machine-enforced guard.",
+                "fact4": "Launch day opens the code &mdash; and a proof page where every claim links to the captured command that produced it.",
+                "numbersLabel": "Platform figures",
+                "numbersLine": "145+ Rust crates &middot; 84 native MCP tools &middot; 38 live proofs &mdash; measured, not promised.",
                 "liveKicker": "Now live",
                 "liveLine": "The release is underway. Securanido is open.",
                 "back": "Back",
@@ -511,6 +520,9 @@
                 "fact1": "Läuft auf deinem eigenen Kubernetes, Laptop oder abgeschotteten Netz.",
                 "fact2": "Apache-2.0, kein Tracking, kein Konto &mdash; deine Daten bleiben bei dir.",
                 "fact3": "Viele Agenten parallel, kontrolliert von einem Guard, der jede Aktion prüft.",
+                "fact4": "Zum Start wird der Code ge\u00f6ffnet \u2014 und eine Beweis-Seite, auf der jede Aussage auf den echten Befehl verlinkt, der sie belegt.",
+                "numbersLabel": "Plattform in Zahlen",
+                "numbersLine": "145+ Rust-Crates \u00b7 84 native MCP-Tools \u00b7 38 Live-Beweise \u2014 gemessen, nicht versprochen.",
                 "liveKicker": "Jetzt live",
                 "liveLine": "Der Release läuft. Securanido ist jetzt offen für alle.",
                 "back": "Zurück",
