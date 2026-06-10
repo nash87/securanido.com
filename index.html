@@ -258,8 +258,8 @@
   /* ── "What it is": three quiet specifics. A restrained hairline-divided
      list (no cards, no icons, no boxes) below the date line. The countdown
      stays the hero; this only adds concrete substance under it. ── */
-    .numbers { margin: 1.4rem 0 0; font-family: "JetBrains Mono", ui-monospace, monospace; font-size: 0.78rem; letter-spacing: 0.04em; color: var(--ink-soft, #8a8378); }
-    .numbers .numbers-line { border-top: 1px solid var(--rule, rgba(138,131,120,0.25)); padding-top: 0.9rem; display: inline-block; }
+  .numbers { margin: 1.4rem 0 0; font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.04em; color: var(--dim); }
+  .numbers .numbers-line { border-top: 1px solid var(--line); padding-top: 0.9rem; display: inline-block; }
 
   .facts {
     list-style: none; margin: clamp(20px, 3.4vh, 30px) 0 0; padding: 0;
@@ -374,7 +374,7 @@
       <p class="eyebrow"><span aria-hidden="true">暖居 · Nuanju · </span><span data-i18n="eyebrow">Public release</span></p>
       <h1 class="wordmark">Secura<span class="nido">nido</span><span class="dot">.</span></h1>
       <p class="tagline" data-i18n="tagline">A self-hosted AI platform that runs where you live — not in someone else&rsquo;s cloud.</p>
-      <p class="teaser" data-i18n="teaser" data-i18n-html="1">Open-source. A fleet of autonomous AI agents on hardware you own, kept in check by a guard that won&rsquo;t let them overrun your machine.</p>
+      <p class="teaser" data-i18n="teaser">Open-source. A fleet of autonomous AI agents on hardware you own, kept in check by a guard that won&rsquo;t let them overrun your machine.</p>
 
       <div class="clock" role="group" aria-labelledby="clock-label">
         <span id="clock-label" class="sr-only" data-i18n="clockLabel">Time remaining until the public release</span>
@@ -392,14 +392,14 @@
       </p>
 
       <ul class="facts" aria-label="What Securanido is" data-i18n-aria-label="factsLabel">
-        <li data-i18n="fact1" data-i18n-html="1">Runs on your own Kubernetes, laptop, or air-gapped network.</li>
-        <li data-i18n="fact2" data-i18n-html="1">Apache-2.0, no tracking, no account &mdash; your data stays with you.</li>
-        <li data-i18n="fact3" data-i18n-html="1">Many agents in parallel, governed by one machine-enforced guard.</li>
-        <li data-i18n="fact4" data-i18n-html="1">Launch day opens the code &mdash; and a proof page where every claim links to the captured command that produced it.</li>
+        <li data-i18n="fact1">Runs on your own Kubernetes, laptop, or air-gapped network.</li>
+        <li data-i18n="fact2">Apache-2.0, no tracking, no account &mdash; your data stays with you.</li>
+        <li data-i18n="fact3">Many agents in parallel, governed by one machine-enforced guard.</li>
+        <li data-i18n="fact4">Launch day opens the code &mdash; and a proof page where every claim links to the recorded command that backs it.</li>
       </ul>
 
       <p class="numbers" aria-label="Platform figures" data-i18n-aria-label="numbersLabel">
-        <span class="numbers-line" data-i18n="numbersLine" data-i18n-html="1">145+ Rust crates &middot; 84 native MCP tools &middot; 38 live proofs &mdash; measured, not promised.</span>
+        <span class="numbers-line" data-i18n="numbersLine">145+ Rust crates &middot; 86 native MCP tools &middot; 38 live proofs &mdash; measured, not promised.</span>
       </p>
 
       <section class="live-panel" aria-hidden="true">
@@ -470,9 +470,9 @@
                 "fact1": "Runs on your own Kubernetes, laptop, or air-gapped network.",
                 "fact2": "Apache-2.0, no tracking, no account &mdash; your data stays with you.",
                 "fact3": "Many agents in parallel, governed by one machine-enforced guard.",
-                "fact4": "Launch day opens the code &mdash; and a proof page where every claim links to the captured command that produced it.",
+                "fact4": "Launch day opens the code &mdash; and a proof page where every claim links to the recorded command that backs it.",
                 "numbersLabel": "Platform figures",
-                "numbersLine": "145+ Rust crates &middot; 84 native MCP tools &middot; 38 live proofs &mdash; measured, not promised.",
+                "numbersLine": "145+ Rust crates &middot; 86 native MCP tools &middot; 38 live proofs &mdash; measured, not promised.",
                 "liveKicker": "Now live",
                 "liveLine": "The release is underway. Securanido is open.",
                 "back": "Back",
@@ -519,10 +519,10 @@
                 "factsLabel": "Was Securanido ist",
                 "fact1": "Läuft auf deinem eigenen Kubernetes, Laptop oder abgeschotteten Netz.",
                 "fact2": "Apache-2.0, kein Tracking, kein Konto &mdash; deine Daten bleiben bei dir.",
-                "fact3": "Viele Agenten parallel, kontrolliert von einem Guard, der jede Aktion prüft.",
-                "fact4": "Zum Start wird der Code ge\u00f6ffnet \u2014 und eine Beweis-Seite, auf der jede Aussage auf den echten Befehl verlinkt, der sie belegt.",
+                "fact3": "Viele Agenten parallel, geregelt von einem Guard, den die Maschine durchsetzt.",
+                "fact4": "Zum Start wird der Code ge\u00f6ffnet &mdash; dazu eine Beweis-Seite, auf der jede Aussage auf den festgehaltenen Befehl verlinkt, der sie belegt.",
                 "numbersLabel": "Plattform in Zahlen",
-                "numbersLine": "145+ Rust-Crates \u00b7 84 native MCP-Tools \u00b7 38 Live-Beweise \u2014 gemessen, nicht versprochen.",
+                "numbersLine": "145+ Rust-Crates &middot; 86 native MCP-Tools &middot; 38 Live-Beweise &mdash; gemessen, nicht versprochen.",
                 "liveKicker": "Jetzt live",
                 "liveLine": "Der Release läuft. Securanido ist jetzt offen für alle.",
                 "back": "Zurück",
@@ -569,7 +569,10 @@
                 "factsLabel": "Ce qu’est Securanido",
                 "fact1": "Tourne sur votre propre Kubernetes, votre ordinateur portable ou un réseau isolé.",
                 "fact2": "Apache-2.0, aucun suivi, sans compte &mdash; vos données restent chez vous.",
-                "fact3": "Plusieurs agents en parallèle, sous le contrôle d’un seul Guard qui vérifie chaque action.",
+                "fact3": "Plusieurs agents en parallèle, gouvernés par un seul Guard que la machine fait respecter.",
+                "fact4": "Le jour du lancement, le code s’ouvre &mdash; avec une page de preuves où chaque affirmation renvoie à la commande enregistrée qui l’étaye.",
+                "numbersLabel": "La plateforme en chiffres",
+                "numbersLine": "145+ crates Rust &middot; 86 outils MCP natifs &middot; 38 preuves en direct &mdash; mesuré, pas promis.",
                 "liveKicker": "En ligne",
                 "liveLine": "La sortie est lancée. Securanido est ouvert.",
                 "back": "Retour",
@@ -616,7 +619,10 @@
                 "factsLabel": "Qué es Securanido",
                 "fact1": "Funciona en tu propio Kubernetes, tu portátil o una red aislada.",
                 "fact2": "Apache-2.0, sin rastreo, sin cuenta &mdash; tus datos se quedan contigo.",
-                "fact3": "Varios agentes en paralelo, bajo el control de un único Guard que verifica cada acción.",
+                "fact3": "Varios agentes en paralelo, gobernados por un único Guard que la máquina hace cumplir.",
+                "fact4": "El día del lanzamiento se abre el código &mdash; y una página de pruebas donde cada afirmación enlaza con el comando registrado que la respalda.",
+                "numbersLabel": "La plataforma en cifras",
+                "numbersLine": "145+ crates de Rust &middot; 86 herramientas MCP nativas &middot; 38 pruebas en vivo &mdash; medido, no prometido.",
                 "liveKicker": "Ya disponible",
                 "liveLine": "El lanzamiento está en marcha. Securanido ya está abierto.",
                 "back": "Volver",
@@ -663,7 +669,10 @@
                 "factsLabel": "Cos’è Securanido",
                 "fact1": "Gira sul tuo Kubernetes, sul tuo portatile o su una rete isolata.",
                 "fact2": "Apache-2.0, nessun tracciamento, senza account &mdash; i tuoi dati restano con te.",
-                "fact3": "Molti agenti in parallelo, sotto il controllo di un solo Guard che verifica ogni azione.",
+                "fact3": "Molti agenti in parallelo, governati da un unico Guard fatto rispettare dalla macchina.",
+                "fact4": "Il giorno del lancio si apre il codice &mdash; e una pagina di prove in cui ogni affermazione rimanda al comando registrato che la sostiene.",
+                "numbersLabel": "La piattaforma in cifre",
+                "numbersLine": "145+ crate Rust &middot; 86 strumenti MCP nativi &middot; 38 prove dal vivo &mdash; misurato, non promesso.",
                 "liveKicker": "Ora online",
                 "liveLine": "Il rilascio è in corso. Securanido è aperto.",
                 "back": "Indietro",
@@ -710,7 +719,10 @@
                 "factsLabel": "O que é o Securanido",
                 "fact1": "Corre no teu próprio Kubernetes, no teu portátil ou numa rede isolada.",
                 "fact2": "Apache-2.0, sem rastreamento, sem conta &mdash; os teus dados ficam contigo.",
-                "fact3": "Vários agentes em paralelo, sob o controlo de um único Guard que verifica cada ação.",
+                "fact3": "Vários agentes em paralelo, sob um único Guard imposto pela máquina.",
+                "fact4": "No dia do lançamento abre-se o código &mdash; e uma página de provas onde cada afirmação liga ao comando registado que a sustenta.",
+                "numbersLabel": "A plataforma em números",
+                "numbersLine": "145+ crates Rust &middot; 86 ferramentas MCP nativas &middot; 38 provas ao vivo &mdash; medido, não prometido.",
                 "liveKicker": "Já disponível",
                 "liveLine": "O lançamento está a decorrer. O Securanido está aberto.",
                 "back": "Voltar",
@@ -757,7 +769,10 @@
                 "factsLabel": "Securanido nedir",
                 "fact1": "Kendi Kubernetes’inizde, dizüstü bilgisayarınızda veya yalıtılmış bir ağda çalışır.",
                 "fact2": "Apache-2.0, takip yok, hesap yok &mdash; verileriniz sizde kalır.",
-                "fact3": "Paralel çalışan çok sayıda ajan; her eylemi denetleyen tek bir Guard tarafından yönetilir.",
+                "fact3": "Paralel çalışan çok sayıda ajan; makinenin uyguladığı tek bir Guard tarafından yönetilir.",
+                "fact4": "Lansman günü kod açılıyor &mdash; ve her iddianın, onu destekleyen kayıtlı komuta bağlandığı bir kanıt sayfası.",
+                "numbersLabel": "Rakamlarla platform",
+                "numbersLine": "145+ Rust crate &middot; 86 yerleşik MCP aracı &middot; 38 canlı kanıt &mdash; ölçüldü, vaat edilmedi.",
                 "liveKicker": "Şimdi yayında",
                 "liveLine": "Sürüm başladı. Securanido artık herkese açık.",
                 "back": "Geri",
@@ -804,7 +819,10 @@
                 "factsLabel": "Czym jest Securanido",
                 "fact1": "Działa na Twoim własnym Kubernetes, laptopie lub w sieci odizolowanej.",
                 "fact2": "Apache-2.0, bez śledzenia, bez konta &mdash; Twoje dane zostają u Ciebie.",
-                "fact3": "Wiele agentów równolegle, nad którymi czuwa jeden Guard sprawdzający każde działanie.",
+                "fact3": "Wiele agentów równolegle, pod jednym Guardem egzekwowanym przez maszynę.",
+                "fact4": "W dniu premiery otwieramy kod &mdash; oraz stronę dowodów, na której każde twierdzenie prowadzi do zarejestrowanego polecenia, które je potwierdza.",
+                "numbersLabel": "Platforma w liczbach",
+                "numbersLine": "145+ crate'ów Rust &middot; 86 natywnych narzędzi MCP &middot; 38 dowodów na żywo &mdash; zmierzone, nie obiecane.",
                 "liveKicker": "Już dostępne",
                 "liveLine": "Wydanie trwa. Securanido jest otwarte.",
                 "back": "Wstecz",
@@ -851,7 +869,10 @@
                 "factsLabel": "Securanido とは",
                 "fact1": "自分の Kubernetes、ノートパソコン、あるいは外部から隔離されたネットワークで動きます。",
                 "fact2": "Apache-2.0、トラッキングなし、アカウント不要 &mdash; データは手元に残ります。",
-                "fact3": "多数のエージェントが並行して動き、すべての操作を検査する一つの Guard が統括します。",
+                "fact3": "多数のエージェントが並行して動き、マシンが強制する一つの Guard が統括します。",
+                "fact4": "公開日にはコードが開かれます &mdash; さらに、各主張がその裏付けとなる記録済みコマンドへリンクする証明ページも。",
+                "numbersLabel": "数字で見るプラットフォーム",
+                "numbersLine": "145+ の Rust クレート &middot; 86 のネイティブ MCP ツール &middot; 38 のライブ証明 &mdash; 約束ではなく、実測です。",
                 "liveKicker": "公開中",
                 "liveLine": "リリースが進行中です。Securanido が公開されました。",
                 "back": "戻る",
@@ -898,7 +919,10 @@
                 "factsLabel": "Securanido 是什么",
                 "fact1": "运行在你自有的 Kubernetes、笔记本电脑或隔离网络上。",
                 "fact2": "Apache-2.0、无追踪、无需账户——数据始终留在你手中。",
-                "fact3": "多个代理并行运行，由一个会核查每一个操作的 Guard 统管。",
+                "fact3": "多个代理并行运行，由机器强制执行的同一个 Guard 统管。",
+                "fact4": "发布当天代码开放 &mdash; 还有一个证明页：每一条声明都链接到支撑它的命令记录。",
+                "numbersLabel": "用数字看平台",
+                "numbersLine": "145+ 个 Rust crate &middot; 86 个原生 MCP 工具 &middot; 38 项实时证明 &mdash; 实测，而非承诺。",
                 "liveKicker": "现已上线",
                 "liveLine": "发布正在进行。Securanido 已经开放。",
                 "back": "返回",
@@ -957,21 +981,23 @@
         root.dir = RTL[lang] ? "rtl" : "ltr";
         root.setAttribute("data-lang", lang);
         try { localStorage.setItem("securanido.lang", lang); } catch (e) {}
-        document.title = d.docTitle;
+        document.title = d.docTitle || DICT.en.docTitle;
 
-        // text / html nodes
+        // text / html nodes — fall back to English for any key a locale lacks,
+        // so a translation gap never leaves mixed-language leftovers on screen.
         var nodes = document.querySelectorAll("[data-i18n]");
         for (var i = 0; i < nodes.length; i++) {
           var key = nodes[i].getAttribute("data-i18n-key") || nodes[i].getAttribute("data-i18n");
-          if (!(key in d)) continue;
-          var val = d[key];
+          var val = (key in d) ? d[key] : DICT.en[key];
+          if (val == null) continue;
           nodes[i].innerHTML = val; // author-controlled copy only
         }
         // aria-labels
         var al = document.querySelectorAll("[data-i18n-aria-label]");
         for (var j = 0; j < al.length; j++) {
           var ak = al[j].getAttribute("data-i18n-aria-label");
-          if (ak in d) al[j].setAttribute("aria-label", d[ak]);
+          var av = (ak in d) ? d[ak] : DICT.en[ak];
+          if (av != null) al[j].setAttribute("aria-label", av);
         }
         // sync the language <select>
         var sel = document.querySelector("[data-lang-select]");
