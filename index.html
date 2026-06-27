@@ -25,8 +25,8 @@
   })();
 </script>
 
-<title>Securanido — open-source, self-hosted AI agent platform · public release 28 June 2026</title>
-<meta name="description" content="Securanido is an open-source, self-hosted AI control plane: a fleet of autonomous coding agents running on your own hardware, EU-sovereign and local-first. Counting down to the public release on Sunday 28 June 2026, 14:00 CEST." />
+<title>Securanido — open-source, self-hosted AI agent platform · public release in preparation</title>
+<meta name="description" content="Securanido is an open-source, self-hosted AI control plane: a fleet of autonomous coding agents running on your own hardware, EU-sovereign and local-first. Public release in preparation." />
 <meta name="keywords" content="open-source AI platform, self-hosted AI agents, local-first, AI control plane, EU-sovereign, autonomous coding agents, Securanido" />
 <meta name="author" content="Florian Schulz" />
 
@@ -48,11 +48,11 @@
 <meta property="og:site_name" content="Securanido" />
 <meta property="og:url" content="https://securanido.com/" />
 <meta property="og:title" content="Securanido — open-source, self-hosted AI agent platform" />
-<meta property="og:description" content="A fleet of autonomous AI agents on your own hardware — open-source, local-first, EU-sovereign. Public release: Sunday 28 June 2026, 14:00 CEST." />
+<meta property="og:description" content="A fleet of autonomous AI agents on your own hardware — open-source, local-first, EU-sovereign. Public release in preparation." />
 <meta property="og:image" content="https://securanido.com/og-image.png" />
 <meta property="og:image:width" content="1200" />
 <meta property="og:image:height" content="630" />
-<meta property="og:image:alt" content="Securanido — open-source, self-hosted AI platform. Countdown to the public release on 28 June 2026." />
+<meta property="og:image:alt" content="Securanido — open-source, self-hosted AI platform. Public release in preparation." />
 <meta property="og:locale" content="en_GB" />
 <meta property="og:locale:alternate" content="de_DE" />
 <meta property="og:locale:alternate" content="fr_FR" />
@@ -67,9 +67,9 @@
 <!-- Twitter / X card -->
 <meta name="twitter:card" content="summary_large_image" />
 <meta name="twitter:title" content="Securanido — open-source, self-hosted AI agent platform" />
-<meta name="twitter:description" content="A fleet of autonomous AI agents on your own hardware — open-source, local-first, EU-sovereign. Public release: 28 June 2026, 14:00 CEST." />
+<meta name="twitter:description" content="A fleet of autonomous AI agents on your own hardware — open-source, local-first, EU-sovereign. Public release in preparation." />
 <meta name="twitter:image" content="https://securanido.com/og-image.png" />
-<meta name="twitter:image:alt" content="Securanido — open-source, self-hosted AI platform. Countdown to the public release." />
+<meta name="twitter:image:alt" content="Securanido — open-source, self-hosted AI platform. Public release in preparation." />
 
 <!-- Structured data: WebSite + SoftwareApplication (public-safe). -->
 <script type="application/ld+json">
@@ -91,7 +91,6 @@
       "operatingSystem": "Linux",
       "url": "https://securanido.com/",
       "description": "An open-source, self-hosted AI control plane: a fleet of autonomous coding agents running on your own hardware, with a guard that keeps them from overrunning your machine. Local-first and EU-sovereign.",
-      "datePublished": "2026-06-28",
       "isAccessibleForFree": true,
       "license": "https://opensource.org/license/apache-2-0",
       "author": {
@@ -376,19 +375,10 @@
       <p class="tagline" data-i18n="tagline">A self-hosted AI platform that runs where you live — not in someone else&rsquo;s cloud.</p>
       <p class="teaser" data-i18n="teaser">Open-source. A fleet of autonomous AI agents on hardware you own, kept in check by a guard that won&rsquo;t let them overrun your machine.</p>
 
-      <div class="clock" role="group" aria-labelledby="clock-label">
-        <span id="clock-label" class="sr-only" data-i18n="clockLabel">Time remaining until the public release</span>
-        <div class="cell lead"><span class="num" data-days aria-hidden="true">00</span><span class="lbl" data-i18n="days">Days</span></div>
-        <div class="cell"><span class="num" data-hours aria-hidden="true">00</span><span class="lbl" data-i18n="hours">Hours</span></div>
-        <div class="cell"><span class="num" data-mins aria-hidden="true">00</span><span class="lbl" data-i18n="minutes">Minutes</span></div>
-        <div class="cell"><span class="num tick" data-secs aria-hidden="true">00</span><span class="lbl" data-i18n="seconds">Seconds</span></div>
-        <!-- Screen-reader summary: updated at most once per minute, never per second, so AT is not spammed. -->
-        <p id="clock-summary" class="sr-only" aria-live="polite" aria-atomic="true"></p>
-      </div>
-
+      <!-- Launch countdown removed for now (release date paused). -->
       <p class="when">
         <span data-i18n="releaseLabel">Public release</span><span class="sep" aria-hidden="true">/</span>
-        <b data-i18n="releaseDate">Sunday, 28 June&nbsp;&middot;&nbsp;14:00 CEST</b>
+        <b>coming soon</b>
       </p>
 
       <ul class="facts" aria-label="What Securanido is" data-i18n-aria-label="factsLabel">
@@ -981,7 +971,8 @@
         root.dir = RTL[lang] ? "rtl" : "ltr";
         root.setAttribute("data-lang", lang);
         try { localStorage.setItem("securanido.lang", lang); } catch (e) {}
-        document.title = d.docTitle || DICT.en.docTitle;
+        // Launch date paused: show only the brand title, never the date suffix.
+        document.title = (d.docTitle || DICT.en.docTitle).split(" · ")[0];
 
         // text / html nodes — fall back to English for any key a locale lacks,
         // so a translation gap never leaves mixed-language leftovers on screen.
@@ -1005,52 +996,10 @@
         updateClockSummary(true);
       }
 
-      // ── Countdown ──
-      var TARGET = new Date("2026-06-28T14:00:00+02:00").getTime();
-      var el = {
-        d: document.querySelector("[data-days]"),
-        h: document.querySelector("[data-hours]"),
-        m: document.querySelector("[data-mins]"),
-        s: document.querySelector("[data-secs]")
-      };
-      var summaryEl = document.getElementById("clock-summary");
-      function pad(n) { return (n < 10 ? "0" : "") + n; }
-      var lastSummaryDays = null, isLive = false;
-
-      function srDaysText(d, days) {
-        var tpl = (days === 1) ? d.srDaysOne : d.srDaysMany;
-        return tpl.replace("{d}", days);
-      }
-      function updateClockSummary(force) {
-        var d = DICT[lang];
-        if (isLive) { if (summaryEl) summaryEl.textContent = d.srLive; lastSummaryDays = -1; return; }
-        var diff = TARGET - Date.now();
-        var days = Math.floor(diff / 86400000);
-        if (force || days !== lastSummaryDays) {
-          lastSummaryDays = days;
-          if (summaryEl) summaryEl.textContent = days >= 1 ? srDaysText(d, days) : d.srSoon;
-        }
-      }
-
-      function render() {
-        var diff = TARGET - Date.now();
-        if (diff <= 0) {
-          isLive = true;
-          root.setAttribute("data-state", "live");
-          var panel = document.querySelector(".live-panel");
-          if (panel) panel.setAttribute("aria-hidden", "false");
-          el.d.textContent = el.h.textContent = el.m.textContent = el.s.textContent = "00";
-          updateClockSummary(true);
-          return false;
-        }
-        var sec = Math.floor(diff / 1000);
-        el.d.textContent = pad(Math.floor(sec / 86400));
-        el.h.textContent = pad(Math.floor((sec % 86400) / 3600));
-        el.m.textContent = pad(Math.floor((sec % 3600) / 60));
-        el.s.textContent = pad(sec % 60);
-        updateClockSummary(false); // updates SR summary only when whole-days changes
-        return true;
-      }
+      // ── Countdown removed for now (launch date paused) ──
+      // applyLang() still calls updateClockSummary(); keep it as a no-op so
+      // language switching keeps working without the countdown widget.
+      function updateClockSummary() {}
 
       // ── Legal view routing + focus management ──
       function setView(view) {
@@ -1080,9 +1029,6 @@
 
       // ── Init ──
       applyLang(lang);
-      if (render()) {
-        var t = setInterval(function () { if (!render()) clearInterval(t); }, 1000);
-      }
       if (location.hash === "#impressum") setView("impressum");
       else if (location.hash === "#privacy") setView("privacy");
     })();
