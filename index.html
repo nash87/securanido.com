@@ -1,578 +1,1037 @@
-<!DOCTYPE html>
-<!--
-  securanido.com — pre-launch landing (static, self-contained, GDPR-clean).
-  No external requests: tokens inlined, icons inlined SVG, fonts use the system
-  stack (Geist named first; self-host as same-origin .woff2 with font-display:swap
-  before launch). robots noindex,nofollow while the platform is in preparation.
-  WCAG 2.1 AA: one h1, landmarks, visible focus ring (gold ~10.6:1),
-  body text >=4.5:1, prefers-reduced-motion guards, lang attrs.
--->
-<html lang="en" data-brand="securanido" data-mode="dark">
+<!doctype html>
+<html lang="en" data-state="counting">
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="robots" content="noindex, nofollow">
-  <title>securanido — one private home for your whole life</title>
-  <meta name="description" content="A private, local-first operating system for your whole life. Open source, self-hosted, EU-sovereign, Rust-native — a fleet of named AI agents on hardware you own. In preparation.">
-  <link rel="canonical" href="https://securanido.com/">
-  <meta name="theme-color" content="#0a0908">
-  <meta name="color-scheme" content="dark">
-  <style>
-  /* ───────────────────────── tokens (securanido · dark warm-gold) ───────────────────────── */
-  :root{
-    /* surfaces */
-    --sn-canvas:#0a0908; --sn-surface:#15110c; --sn-raised:#1d1811; --sn-elevated-2:#2a2318;
-    /* brand accent */
-    --sn-gold:#f5b042; --sn-gold-deep:#d8942f;
-    /* status */
-    --sn-success:#9bbf6e; --sn-error:#e8836a; --sn-warning:#d99a2e; --sn-info:#6baed6;
-    /* foreground tiers (warm cream) */
-    --sn-fg1:#f5e6c8; --sn-fg2:#c9b89a; --sn-fg3:#9a8a6e;
-    --sn-fg4:#5c4f3a;        /* DECORATIVE hairline tone only — fails as text */
-    --sn-fg4-text:#8c7e60;   /* AA-safe replacement for any readable micro-label (4.7:1 surface) */
-    /* hairlines / overlays */
-    --sn-hair:rgba(245,230,200,0.12);
-    --sn-hair-faint:rgba(245,230,200,0.06);
-    --sn-hair-strong:rgba(245,230,200,0.24);
-    --sn-selection:rgba(245,176,66,0.22);
-    /* six-agent marketing colours */
-    --ag-tony:#3b82f6; --ag-charlie:#10b981; --ag-george:#f59e0b;
-    --ag-lily:#ef4444; --ag-bill:#8b5cf6; --ag-jarvis:#06b6d4;
-    /* type — Geist self-host (OFL, not Google Fonts) or system fallback */
-    --sn-sans:'Geist','Geist Sans',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;
-    --sn-mono:'Geist Mono',ui-monospace,'SF Mono',Menlo,Consolas,monospace;
-    /* radii */
-    --rad-sm:6px; --rad-md:8px; --rad-lg:12px; --rad-full:9999px;
-    /* motion */
-    --sn-ease:cubic-bezier(0.22,1,0.36,1);
-    /* focus */
-    --focus-ring-color:var(--sn-gold); --focus-ring-width:2px; --focus-ring-offset:2px;
-    /* page padding */
-    --pad-x:clamp(20px,5vw,72px);
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+
+<!-- Pre-paint language init: set <html lang> + dir from storage or navigator before first paint (no FOUC, no layout shift). -->
+<script>
+  (function () {
+    var SUPPORTED = ["en", "de", "fr", "es", "it", "pt", "tr", "pl", "ja", "zh"];
+    var RTL = { ar: 1, fa: 1, he: 1, ur: 1 }; // none currently shipped, but the page stays RTL-ready
+    function pick() {
+      try {
+        var saved = localStorage.getItem("securanido.lang");
+        if (SUPPORTED.indexOf(saved) !== -1) return saved;
+      } catch (e) {}
+      // English is the deliberate default for the professional release;
+      // visitors switch explicitly and the choice is remembered locally.
+      return "en";
+    }
+    var lang = pick();
+    document.documentElement.lang = lang;
+    document.documentElement.setAttribute("data-lang", lang);
+    document.documentElement.dir = RTL[lang] ? "rtl" : "ltr";
+  })();
+</script>
+
+<title>Securanido — open-source, self-hosted AI agent platform · public release in preparation</title>
+<meta name="description" content="Securanido is an open-source, self-hosted AI control plane: a fleet of autonomous coding agents running on your own hardware, EU-sovereign and local-first. Public release in preparation." />
+<meta name="keywords" content="open-source AI platform, self-hosted AI agents, local-first, AI control plane, EU-sovereign, autonomous coding agents, Securanido" />
+<meta name="author" content="Florian Schulz" />
+
+<!-- Pre-launch: not indexed yet. LAUNCH FLIP: on the line below, change the content value from noindex,nofollow to index,follow -->
+<meta name="robots" content="noindex,nofollow" />
+
+<link rel="canonical" href="https://securanido.com/" />
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Crect width='32' height='32' rx='7' fill='%230a0908'/%3E%3Ctext x='16' y='23' font-family='Georgia,serif' font-size='22' font-weight='700' text-anchor='middle' fill='%23f5c84b'%3ES%3C/text%3E%3C/svg%3E" />
+<link rel="manifest" href="/site.webmanifest" />
+<meta name="color-scheme" content="dark" />
+<meta name="theme-color" content="#0a0908" />
+
+<!-- Preload self-hosted fonts (above-the-fold display + body). No external requests anywhere on the page (GDPR). -->
+<link rel="preload" href="/fraunces-roman-latin.woff2" as="font" type="font/woff2" crossorigin />
+<link rel="preload" href="/jetbrains-mono-latin.woff2" as="font" type="font/woff2" crossorigin />
+
+<!-- Open Graph -->
+<meta property="og:type" content="website" />
+<meta property="og:site_name" content="Securanido" />
+<meta property="og:url" content="https://securanido.com/" />
+<meta property="og:title" content="Securanido — open-source, self-hosted AI agent platform" />
+<meta property="og:description" content="A fleet of autonomous AI agents on your own hardware — open-source, local-first, EU-sovereign. Public release in preparation." />
+<meta property="og:image" content="https://securanido.com/og-image.png" />
+<meta property="og:image:width" content="1200" />
+<meta property="og:image:height" content="630" />
+<meta property="og:image:alt" content="Securanido — open-source, self-hosted AI platform. Public release in preparation." />
+<meta property="og:locale" content="en_GB" />
+<meta property="og:locale:alternate" content="de_DE" />
+<meta property="og:locale:alternate" content="fr_FR" />
+<meta property="og:locale:alternate" content="es_ES" />
+<meta property="og:locale:alternate" content="it_IT" />
+<meta property="og:locale:alternate" content="pt_PT" />
+<meta property="og:locale:alternate" content="tr_TR" />
+<meta property="og:locale:alternate" content="pl_PL" />
+<meta property="og:locale:alternate" content="ja_JP" />
+<meta property="og:locale:alternate" content="zh_CN" />
+
+<!-- Twitter / X card -->
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content="Securanido — open-source, self-hosted AI agent platform" />
+<meta name="twitter:description" content="A fleet of autonomous AI agents on your own hardware — open-source, local-first, EU-sovereign. Public release in preparation." />
+<meta name="twitter:image" content="https://securanido.com/og-image.png" />
+<meta name="twitter:image:alt" content="Securanido — open-source, self-hosted AI platform. Public release in preparation." />
+
+<!-- Structured data: WebSite + SoftwareApplication (public-safe). -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@graph": [
+    {
+      "@type": "WebSite",
+      "@id": "https://securanido.com/#website",
+      "url": "https://securanido.com/",
+      "name": "Securanido",
+      "inLanguage": ["en", "de", "fr", "es", "it", "pt", "tr", "pl", "ja", "zh"],
+      "description": "Open-source, self-hosted AI agent platform — local-first and EU-sovereign."
+    },
+    {
+      "@type": "SoftwareApplication",
+      "name": "Securanido",
+      "applicationCategory": "DeveloperApplication",
+      "operatingSystem": "Linux",
+      "url": "https://securanido.com/",
+      "description": "An open-source, self-hosted AI control plane: a fleet of autonomous coding agents running on your own hardware, with a guard that keeps them from overrunning your machine. Local-first and EU-sovereign.",
+      "isAccessibleForFree": true,
+      "license": "https://opensource.org/license/apache-2-0",
+      "author": {
+        "@type": "Person",
+        "name": "Florian Schulz",
+        "address": { "@type": "PostalAddress", "addressLocality": "Göttingen", "addressCountry": "DE" }
+      }
+    }
+  ]
+}
+</script>
+
+<style>
+  /* Self-hosted fonts — no external requests (GDPR: no third-party calls). */
+  @font-face {
+    font-family: "Fraunces"; font-style: normal; font-weight: 400 600;
+    font-display: swap; src: url("/fraunces-roman-latin.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "Fraunces"; font-style: italic; font-weight: 400;
+    font-display: swap; src: url("/fraunces-italic-latin.woff2") format("woff2");
+  }
+  @font-face {
+    font-family: "JetBrains Mono"; font-style: normal; font-weight: 400 500;
+    font-display: swap; src: url("/jetbrains-mono-latin.woff2") format("woff2");
   }
 
-  /* ───────────────────────── reset ───────────────────────── */
-  *,*::before,*::after{box-sizing:border-box}
-  html{scroll-behavior:smooth}
-  html,body{margin:0;padding:0}
-  body{
-    min-height:100vh;display:flex;flex-direction:column;
-    background:var(--sn-canvas);color:var(--sn-fg1);
-    font-family:var(--sn-sans);line-height:1.5;
-    -webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility;
-    overflow-x:hidden;
+  /* ── Palette mirrored from the canonical securanido design-system token set ──
+     (nido-tokens/tokens/securanido.json — nuanju 暖居 warm-gold, dark mode).
+     Values inlined intentionally so the page stays 100% self-contained.
+     Every text color below is verified ≥ 4.5:1 on --bg (WCAG 2.2 AA, small text). */
+  :root {
+    --bg: #0a0908;          /* token semantic.dark.bg-base */
+    --bg-2: #15110c;        /* token semantic.dark.bg-surface */
+    --ink: #f4efe6;         /* token semantic.dark.text-primary    17.4:1 */
+    --muted: #a39d90;       /* token semantic.dark.text-secondary   7.4:1 */
+    --dim: #8c836f;         /* warm muted                           5.3:1 */
+    --faint: #857e6d;       /* warm faint — bumped to pass AA small 4.9:1 */
+    --gold: #f5c84b;        /* token color.primary.300              12.6:1 */
+    --gold-deep: #d9943a;   /* token color.primary.500              7.8:1 */
+    --line: rgba(245, 200, 75, 0.16);
+    --serif: "Fraunces", Georgia, "Times New Roman", serif;
+    --mono: "JetBrains Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
   }
-  img,svg{display:block;max-width:100%}
-  svg{stroke-width:1.5}
-  a{color:inherit;text-decoration:none}
-  button{font:inherit;color:inherit;background:none;border:none;cursor:pointer}
-  h1,h2,h3,p{margin:0}
-  ::selection{background:var(--sn-selection);color:var(--sn-fg1)}
-
-  /* focus visible — solid gold ring ~10.6:1 vs canvas (SC 2.4.7 / 1.4.11) */
-  :focus{outline:none}
-  :focus-visible{outline:var(--focus-ring-width) solid var(--focus-ring-color);outline-offset:var(--focus-ring-offset);border-radius:3px}
-
-  .vh{position:absolute!important;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0}
-
-  /* skip link */
-  .skip{position:absolute;left:12px;top:-72px;z-index:100;background:var(--sn-gold);color:#0a0908;padding:11px 16px;border-radius:var(--rad-sm);font-family:var(--sn-mono);font-size:13px;font-weight:600;transition:top .2s var(--sn-ease)}
-  .skip:focus{top:12px}
-
-  /* shared layout */
-  .inner{max-width:1180px;margin:0 auto}
-  .inner-narrow{max-width:980px;margin:0 auto}
-  .inner-form{max-width:760px;margin:0 auto}
-  .eyebrow{font-family:var(--sn-mono);font-size:12px;letter-spacing:.16em;text-transform:uppercase;color:var(--sn-gold)}
-  .rule{flex:1;height:1px;background:var(--sn-hair-faint);min-width:24px}
-  .sec-head{display:flex;align-items:baseline;gap:12px;margin-bottom:24px}
-
-  /* ───────────────────────── header / nav ───────────────────────── */
-  header.site{position:sticky;top:0;z-index:30;display:flex;align-items:center;gap:14px;
-    padding:14px var(--pad-x);background:rgba(10,9,8,0.78);
-    backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-    border-bottom:1px solid var(--sn-hair-faint)}
-  .brand{display:flex;align-items:center;gap:10px;min-height:44px;padding-right:6px}
-  .brand-mark{width:26px;height:26px;border-radius:50%;border:1px solid var(--sn-gold);
-    display:grid;place-items:center;color:var(--sn-gold);font-family:var(--sn-mono);font-size:14px;font-weight:600}
-  .brand-word{font-size:16px;font-weight:600;letter-spacing:-.01em;color:var(--sn-fg1)}
-  nav.primary{display:flex;align-items:center;gap:2px;flex-wrap:wrap}
-  nav.primary a{font-family:var(--sn-mono);font-size:13px;letter-spacing:.01em;color:var(--sn-fg3);
-    padding:11px 10px;min-height:44px;display:inline-flex;align-items:center;transition:color .18s var(--sn-ease)}
-  nav.primary a:hover{color:var(--sn-gold)}
-  .spacer{flex:1}
-  .cta{display:inline-flex;align-items:center;justify-content:center;gap:8px;
-    font-family:var(--sn-mono);font-weight:600;white-space:nowrap;
-    background:var(--sn-gold);color:#0a0908;
-    transition:background .2s var(--sn-ease),box-shadow .2s var(--sn-ease),transform .2s var(--sn-ease)}
-  .cta:hover{background:#f7bd55;box-shadow:0 0 0 4px rgba(245,176,66,0.16)}
-  .cta:active{transform:translateY(1px)}
-  .cta-sm{height:44px;padding:0 18px;font-size:13px;border-radius:var(--rad-full)}
-  .cta-lg{height:48px;padding:0 22px;font-size:14px;border-radius:var(--rad-full)}
-  .cta-lg:hover{transform:translateY(-1px)}
-  .cta-square{height:48px;padding:0 22px;font-size:14px;border-radius:0}
-  .ghost{display:inline-flex;align-items:center;justify-content:center;height:48px;padding:0 20px;
-    font-family:var(--sn-mono);font-size:14px;color:var(--sn-fg2);border:1px solid var(--sn-hair);
-    border-radius:var(--rad-full);transition:border-color .2s var(--sn-ease),color .2s var(--sn-ease)}
-  .ghost:hover{border-color:var(--sn-gold);color:var(--sn-fg1)}
-
-  /* ───────────────────────── hero ───────────────────────── */
-  section{padding-inline:var(--pad-x)}
-  #top{padding-top:clamp(48px,8vh,104px);padding-bottom:clamp(40px,6vh,80px)}
-  .hero{display:grid;grid-template-columns:1.05fr 0.95fr;align-items:center;gap:clamp(28px,5vw,72px)}
-  .hero-text{display:flex;flex-direction:column;gap:22px}
-  .hero-eyebrow{font-family:var(--sn-mono);font-size:13px;letter-spacing:.16em;text-transform:uppercase;color:var(--sn-gold)}
-  h1{font-size:clamp(34px,5.4vw,60px);font-weight:600;letter-spacing:-.025em;line-height:1.03;color:var(--sn-fg1);text-wrap:balance}
-  .lede{font-size:clamp(16px,1.5vw,19px);line-height:1.55;color:var(--sn-fg2);max-width:30em;text-wrap:pretty}
-  .lede em{font-style:normal;color:var(--sn-fg1)}
-  .cta-row{display:flex;gap:12px;flex-wrap:wrap}
-  .trust{display:flex;gap:18px;flex-wrap:wrap}
-  .trust li{list-style:none;display:flex;align-items:center;gap:7px;
-    font-family:var(--sn-mono);font-size:12px;letter-spacing:.02em;color:var(--sn-fg3)}
-  .trust svg{width:14px;height:14px;color:var(--sn-gold);flex:none}
-  ul.reset{margin:0;padding:0}
-
-  /* ember orb */
-  .orb-wrap{position:relative;min-height:300px;display:flex;align-items:center;justify-content:center}
-  .orb-box{position:relative;width:clamp(220px,30vw,360px);aspect-ratio:1/1}
-  .halo{position:absolute;inset:-12%;border-radius:50%;
-    background:conic-gradient(from 0deg,
-      rgba(245,176,66,0) 0deg, rgba(245,176,66,0.10) 72deg, rgba(245,176,66,0) 144deg,
-      rgba(245,176,66,0.07) 230deg, rgba(245,176,66,0) 300deg, rgba(245,176,66,0) 360deg);
-    filter:blur(14px)}
-  .orb{position:absolute;inset:0;border-radius:50%;
+  * { box-sizing: border-box; }
+  html, body { margin: 0; height: 100%; }
+  body {
+    background: var(--bg);
+    color: var(--ink);
+    font-family: var(--serif);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    min-height: 100svh;
+    display: grid;
+    grid-template-rows: auto 1fr auto;
+    overflow-x: hidden;
+  }
+  /* Atmospheric warmth: a soft hearth-glow from the top, ember from the lower right. */
+  body::before {
+    content: ""; position: fixed; inset: 0; pointer-events: none; z-index: 0;
     background:
-      radial-gradient(circle at 36% 30%, #ffe9c2 0%, #f7bd55 20%, #ec9a37 46%, #b35e1f 72%, #5e2f10 92%),
-      radial-gradient(circle at 50% 118%, rgba(0,0,0,0.6), transparent 58%);
-    box-shadow:inset 0 0 60px 8px rgba(120,50,8,0.5)}
-  .orb::before{content:"";position:absolute;inset:0;border-radius:50%;
-    background:radial-gradient(circle at 33% 25%, rgba(255,255,255,0.82) 0%, rgba(255,255,255,0) 22%);
-    mix-blend-mode:screen}
-  .orb::after{content:"";position:absolute;inset:0;border-radius:50%;
-    background:radial-gradient(circle at 64% 74%, rgba(245,120,40,0.5), transparent 42%);
-    mix-blend-mode:soft-light}
-  .orb-caption{position:absolute;left:50%;bottom:-34px;transform:translateX(-50%);
-    font-family:var(--sn-mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;
-    color:var(--sn-fg4-text);white-space:nowrap}
-
-  /* ───────────────────────── what it is ───────────────────────── */
-  #what{padding-block:clamp(28px,4vh,56px);border-top:1px solid var(--sn-hair-faint)}
-  #what h2{font-size:clamp(24px,3vw,34px);font-weight:600;letter-spacing:-.02em;line-height:1.12;color:var(--sn-fg1);max-width:18em;text-wrap:balance;margin:6px 0 16px}
-  #what p{font-size:clamp(15px,1.4vw,17px);line-height:1.6;color:var(--sn-fg2);max-width:46em;text-wrap:pretty}
-  .domains{display:flex;flex-wrap:wrap;gap:8px;margin-top:22px}
-  .domains li{list-style:none;font-family:var(--sn-mono);font-size:12px;letter-spacing:.02em;color:var(--sn-fg2);
-    padding:7px 12px;border:1px solid var(--sn-hair-faint);border-radius:var(--rad-full);background:var(--sn-surface)}
-
-  /* ───────────────────────── fleet ───────────────────────── */
-  #fleet{padding-block:clamp(24px,4vh,56px)}
-  #fleet h2{font-size:clamp(22px,2.8vw,32px);font-weight:600;letter-spacing:-.02em;line-height:1.12;color:var(--sn-fg1);max-width:18em;text-wrap:balance;margin:8px 0 8px}
-  #fleet .lane-note{font-size:14px;line-height:1.55;color:var(--sn-fg2);max-width:42em;margin-bottom:24px}
-  .fleet-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:12px}
-  .agent{display:flex;align-items:center;gap:14px;padding:16px 18px;background:var(--sn-surface);
-    border:1px solid var(--sn-hair-faint);border-top:2px solid var(--accent);border-radius:var(--rad-md);
-    transition:border-color .25s var(--sn-ease),background .25s var(--sn-ease)}
-  .agent:hover{background:rgba(245,176,66,0.03)}
-  .agent .badge{width:40px;height:40px;border-radius:50%;display:grid;place-items:center;flex:none;
-    background:color-mix(in srgb, var(--accent) 16%, transparent);color:var(--accent);
-    font-family:var(--sn-mono);font-size:16px;font-weight:600}
-  .agent .nm{display:flex;align-items:center;gap:8px;font-size:16px;font-weight:600;color:var(--sn-fg1)}
-  .agent .dot{width:6px;height:6px;border-radius:50%;background:var(--accent)}
-  .agent .role{font-family:var(--sn-mono);font-size:12px;letter-spacing:.01em;color:var(--sn-fg3);margin-top:3px}
-
-  /* ───────────────────────── architecture ───────────────────────── */
-  #architecture{padding-block:clamp(24px,4vh,56px)}
-  #architecture h2{font-size:clamp(22px,2.8vw,32px);font-weight:600;letter-spacing:-.02em;line-height:1.12;color:var(--sn-fg1);max-width:18em;text-wrap:balance;margin:8px 0 24px}
-  .pillars{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}
-  .pillar{display:flex;flex-direction:column;gap:13px;padding:24px 22px;background:var(--sn-surface);
-    border:1px solid var(--sn-hair-faint);border-radius:var(--rad-md);
-    transition:border-color .25s var(--sn-ease),background .25s var(--sn-ease)}
-  .pillar:hover{border-color:rgba(245,176,66,0.32);background:rgba(245,176,66,0.03)}
-  .pillar .ico{width:38px;height:38px;border-radius:50%;border:1px solid var(--sn-hair);display:grid;place-items:center}
-  .pillar .ico svg{width:18px;height:18px;color:var(--sn-gold)}
-  .pillar h3{font-size:18px;font-weight:600;letter-spacing:-.01em;color:var(--sn-fg1)}
-  .pillar p{font-size:14.5px;line-height:1.55;color:var(--sn-fg2);text-wrap:pretty}
-  .pillar .tag{font-family:var(--sn-mono);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--sn-fg4-text)}
-
-  /* ───────────────────────── proof / technical claim ───────────────────────── */
-  #proof{padding-block:clamp(40px,7vh,88px)}
-  #proof .inner-narrow{display:flex;flex-direction:column;gap:24px}
-  #proof h2{font-size:clamp(24px,3.2vw,38px);font-weight:600;letter-spacing:-.02em;line-height:1.12;color:var(--sn-fg1);text-wrap:balance}
-  #proof h2 .hl{color:var(--sn-gold)}
-  .claim-frame{font-size:15px;line-height:1.55;color:var(--sn-fg2);max-width:44em}
-  .claims{display:flex;flex-direction:column}
-  .claim{display:grid;grid-template-columns:34px 1fr auto;align-items:start;gap:16px;
-    padding:18px 0;border-top:1px solid var(--sn-hair-faint)}
-  .claim .num{font-family:var(--sn-mono);font-size:13px;color:var(--sn-fg4-text);padding-top:3px}
-  .claim .ct h3{font-size:17px;font-weight:600;color:var(--sn-fg1);margin-bottom:5px}
-  .claim .ct p{font-size:14.5px;line-height:1.55;color:var(--sn-fg2)}
-  .claim .proof{font-family:var(--sn-mono);font-size:11px;text-transform:uppercase;letter-spacing:.04em;color:var(--sn-gold);padding-top:4px;white-space:nowrap}
-  .stats{display:flex;flex-wrap:wrap;gap:10px 28px;align-items:baseline;
-    padding-top:20px;border-top:1px solid var(--sn-hair-faint)}
-  .stats .stat{display:flex;align-items:baseline;gap:8px;font-family:var(--sn-mono);font-size:13px;color:var(--sn-fg2)}
-  .stats .stat b{font-size:18px;color:var(--sn-fg1);font-variant-numeric:tabular-nums lining-nums;font-weight:600}
-  .stats .measured{font-family:var(--sn-mono);font-size:12px;color:var(--sn-fg4-text);letter-spacing:.02em}
-  .alpha-note{font-family:var(--sn-mono);font-size:12px;color:var(--sn-fg4-text);letter-spacing:.02em}
-
-  /* ───────────────────────── access ───────────────────────── */
-  #access{padding-block:clamp(32px,5vh,64px)}
-  .access-card{display:flex;flex-direction:column;gap:18px;align-items:center;text-align:center;
-    padding:clamp(32px,5vw,52px);border:1px solid var(--sn-hair-faint);border-radius:var(--rad-lg);
-    background:radial-gradient(circle at 50% 0%, rgba(245,176,66,0.07), transparent 70%), var(--sn-surface)}
-  .access-card h2{font-size:clamp(22px,2.8vw,32px);font-weight:600;letter-spacing:-.02em;line-height:1.12;color:var(--sn-fg1);text-wrap:balance}
-  .beta-form{display:flex;align-items:stretch;justify-content:center;gap:8px;flex-wrap:wrap;width:100%;max-width:480px}
-  .beta-form input{flex:1;min-width:220px;height:48px;padding:0 16px;background:var(--sn-canvas);
-    color:var(--sn-fg1);border:1px solid var(--sn-hair);border-radius:0;
-    font-family:var(--sn-mono);font-size:14px}
-  .beta-form input::placeholder{color:var(--sn-fg3)}
-  .beta-form input.is-error{border-color:var(--sn-error)}
-  .beta-error{display:flex;align-items:center;gap:7px;font-family:var(--sn-mono);font-size:12px;color:var(--sn-error)}
-  .beta-error svg{width:14px;height:14px;flex:none}
-  .beta-success{display:flex;align-items:center;gap:9px;padding:12px 16px;border-radius:var(--rad-md);
-    border:1px solid color-mix(in srgb, var(--sn-success) 40%, transparent);
-    background:color-mix(in srgb, var(--sn-success) 10%, transparent);
-    font-family:var(--sn-mono);font-size:13.5px;color:var(--sn-fg1)}
-  .beta-success svg{width:16px;height:16px;color:var(--sn-success);flex:none}
-  .fine{font-family:var(--sn-mono);font-size:11.5px;line-height:1.5;color:var(--sn-fg4-text);max-width:34em;text-wrap:pretty}
-
-  /* ───────────────────────── footer ───────────────────────── */
-  footer.site{margin-top:auto;border-top:1px solid var(--sn-hair-faint);
-    padding:clamp(28px,4vh,48px) var(--pad-x) 40px}
-  .foot{display:flex;flex-direction:column;gap:24px}
-  .legal-callout{display:flex;align-items:flex-start;gap:13px;padding:16px 18px;
-    border-left:2px solid var(--sn-gold);background:rgba(245,176,66,0.04);border-radius:0 var(--rad-sm) var(--rad-sm) 0}
-  .legal-callout svg{width:16px;height:16px;color:var(--sn-gold);flex:none;margin-top:2px}
-  .legal-callout .lt{font-size:14.5px;font-weight:600;color:var(--sn-fg1);margin-bottom:4px}
-  .legal-callout .lb{font-size:13.5px;line-height:1.5;color:var(--sn-fg2)}
-  .legal-callout .lb code{font-family:var(--sn-mono);font-size:12px;color:var(--sn-fg4-text)}
-  nav.legal{display:flex;flex-wrap:wrap;gap:6px 18px}
-  nav.legal a{font-family:var(--sn-mono);font-size:12px;color:var(--sn-fg3);padding:8px 0;min-height:24px;display:inline-flex;align-items:center;transition:color .18s var(--sn-ease)}
-  nav.legal a:hover{color:var(--sn-gold)}
-  .legal-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:20px}
-  .legal-block{padding:20px;background:var(--sn-surface);border:1px solid var(--sn-hair-faint);border-radius:var(--rad-md)}
-  .legal-block h2{font-size:14px;font-weight:600;color:var(--sn-fg1);margin-bottom:4px}
-  .legal-block .basis{font-family:var(--sn-mono);font-size:11px;letter-spacing:.02em;color:var(--sn-fg4-text);text-transform:uppercase;margin-bottom:12px}
-  .legal-block p{font-size:13px;line-height:1.55;color:var(--sn-fg2);margin-bottom:10px}
-  .legal-block dt{font-family:var(--sn-mono);font-size:11px;text-transform:uppercase;letter-spacing:.03em;color:var(--sn-gold);margin-top:10px}
-  .legal-block dd{margin:2px 0 0;font-size:13px;color:var(--sn-fg2)}
-  .legal-block dd.ph{color:var(--sn-fg3);font-style:italic}
-  .legal-block a{color:var(--sn-fg1);text-decoration:underline;text-underline-offset:2px;text-decoration-color:var(--sn-hair-strong)}
-  .legal-block a:hover{text-decoration-color:var(--sn-gold)}
-  .foot-meta{display:flex;align-items:center;gap:14px;flex-wrap:wrap;padding-top:6px;border-top:1px solid var(--sn-hair-faint)}
-  .foot-meta .b{font-family:var(--sn-mono);font-size:12px;color:var(--sn-fg3)}
-  .foot-meta .sep{width:1px;height:12px;background:var(--sn-hair)}
-  .foot-meta .m{font-family:var(--sn-mono);font-size:12px;color:var(--sn-fg4-text)}
-  .foot-meta .grow{flex:1}
-
-  /* ───────────────────────── motion (only when motion is welcome) ───────────────────────── */
-  .rise{opacity:1}
-  @media (prefers-reduced-motion:no-preference){
-    .rise{opacity:0;animation:rise .7s var(--sn-ease) both}
-    .rise.d1{animation-delay:.06s}.rise.d2{animation-delay:.12s}
-    .rise.d3{animation-delay:.18s}.rise.d4{animation-delay:.24s}
-    @keyframes rise{from{opacity:0;transform:translateY(18px)}to{opacity:1;transform:none}}
-    .orb{animation:breathe 7s var(--sn-ease) infinite, orbglow 7s var(--sn-ease) infinite}
-    .halo{animation:drift 60s linear infinite}
-    @keyframes breathe{0%,100%{transform:scale(1)}50%{transform:scale(1.018)}}
-    @keyframes orbglow{
-      0%,100%{box-shadow:inset 0 0 60px 8px rgba(120,50,8,0.5), 0 0 40px 0 rgba(245,176,66,0.16)}
-      50%{box-shadow:inset 0 0 60px 8px rgba(120,50,8,0.5), 0 0 72px 6px rgba(245,176,66,0.30)}}
-    @keyframes drift{to{transform:rotate(360deg)}}
+      radial-gradient(60vw 48vh at 50% -8%, rgba(245, 200, 75, 0.10), transparent 70%),
+      radial-gradient(40vw 40vh at 92% 108%, rgba(217, 148, 58, 0.06), transparent 72%);
   }
-  /* hard stop for reduced-motion (belt-and-suspenders, SC 2.2.2 / 2.3.3) */
-  @media (prefers-reduced-motion:reduce){
-    *,*::before,*::after{animation-duration:.01ms!important;transition-duration:.01ms!important;animation-iteration-count:1!important;scroll-behavior:auto!important}
-    .rise{opacity:1!important;transform:none!important}
+  /* Fine grain so the dark canvas reads as paper, not flat black. */
+  body::after {
+    content: ""; position: fixed; inset: 0; opacity: 0.04; pointer-events: none; z-index: 0;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='2'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
   }
 
-  /* ───────────────────────── responsive ───────────────────────── */
-  @media (max-width:880px){
-    .hero{grid-template-columns:1fr;text-align:left}
-    .orb-wrap{order:-1;justify-content:flex-start;min-height:240px}
-    .orb-box{width:clamp(180px,52vw,260px)}
-    .claim{grid-template-columns:30px 1fr;gap:12px}
-    .claim .proof{grid-column:2;padding-top:6px}
+  .skip-link {
+    position: absolute; left: 12px; top: -48px; z-index: 20;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em;
+    background: var(--gold); color: #0a0908; padding: 8px 14px; border-radius: 4px;
+    text-decoration: none; transition: top 0.15s ease;
   }
-  </style>
+  .skip-link:focus-visible { top: 12px; }
+
+  /* ── Top bar: language switcher (labeled <select>, scales to N locales) ─ */
+  .topbar {
+    position: relative; z-index: 2;
+    width: min(960px, 90vw); margin: 0 auto;
+    padding: 22px 0 0; display: flex; justify-content: flex-end;
+  }
+  [dir="rtl"] .topbar { justify-content: flex-start; }
+  .lang-switch {
+    display: inline-flex; align-items: center; gap: 8px;
+    border: 1px solid var(--line); border-radius: 999px;
+    background: rgba(21, 17, 12, 0.55); padding: 5px 6px 5px 14px;
+  }
+  .lang-switch .lang-icon {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.18em; text-transform: uppercase;
+    color: var(--dim); line-height: 1; pointer-events: none;
+  }
+  .lang-switch select {
+    appearance: none; -webkit-appearance: none;
+    background: transparent; border: 0; cursor: pointer;
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.04em;
+    color: var(--ink); padding: 7px 26px 7px 8px; min-height: 32px; line-height: 1;
+    border-radius: 999px;
+    /* warm chevron, inlined so the page stays self-contained */
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='7' viewBox='0 0 10 7'%3E%3Cpath d='M1 1l4 4 4-4' fill='none' stroke='%23f5c84b' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 9px center;
+  }
+  [dir="rtl"] .lang-switch select { padding: 7px 8px 7px 26px; background-position: left 9px center; }
+  .lang-switch select option { background: var(--bg-2); color: var(--ink); }
+  .lang-switch select:hover { color: var(--gold); }
+  .lang-switch select:focus-visible { outline: 2px solid var(--gold); outline-offset: 2px; }
+
+  main {
+    position: relative; z-index: 1;
+    width: min(960px, 90vw); margin: 0 auto;
+    padding: clamp(40px, 7vh, 96px) 0 40px; align-self: center;
+  }
+
+  .eyebrow {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.42em;
+    text-transform: uppercase; color: var(--gold); margin: 0 0 26px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  .eyebrow::after { content: ""; height: 1px; flex: 1; background: linear-gradient(90deg, var(--line), transparent); }
+
+  .wordmark {
+    font-family: var(--serif); font-weight: 560;
+    font-size: clamp(46px, 9vw, 104px); line-height: 0.96; letter-spacing: -0.02em;
+    margin: 0; color: var(--ink);
+  }
+  .wordmark .nido { color: var(--gold); }
+  .wordmark .dot { color: var(--gold); }
+
+  .tagline {
+    font-family: var(--serif); font-style: italic; font-weight: 400;
+    font-size: clamp(18px, 2.6vw, 27px); line-height: 1.4; color: var(--muted);
+    margin: 22px 0 0; max-width: 30ch;
+  }
+  /* The honest, restrained tease — one quiet line under the headline. */
+  .teaser {
+    font-family: var(--mono); font-size: clamp(12px, 1.4vw, 13.5px); line-height: 1.7;
+    letter-spacing: 0.02em; color: var(--dim); margin: 18px 0 0; max-width: 56ch;
+  }
+  .teaser b { color: var(--muted); font-weight: 500; }
+
+  .clock { margin: clamp(36px, 6vh, 64px) 0 0; display: flex; gap: clamp(14px, 3.4vw, 40px); flex-wrap: wrap; }
+  .cell { min-width: 64px; }
+  .num {
+    font-family: var(--mono); font-weight: 500; font-size: clamp(40px, 8.2vw, 88px);
+    line-height: 1; font-variant-numeric: tabular-nums; letter-spacing: -0.02em;
+    color: var(--ink); display: block;
+  }
+  .cell.lead .num { color: var(--gold); }
+  .lbl {
+    font-family: var(--mono); font-size: 11px; letter-spacing: 0.28em;
+    text-transform: uppercase; color: var(--faint); margin-top: 12px; display: block;
+  }
+
+  .when {
+    font-family: var(--mono); font-size: clamp(12px, 1.5vw, 14px); letter-spacing: 0.06em;
+    color: var(--muted); margin: clamp(34px, 6vh, 56px) 0 0; padding-top: 22px;
+    border-top: 1px solid var(--line); display: flex; align-items: baseline; gap: 10px; flex-wrap: wrap;
+  }
+  .when b { color: var(--gold); font-weight: 500; }
+  .when .sep { color: var(--faint); }
+
+  /* ── "What it is": three quiet specifics. A restrained hairline-divided
+     list (no cards, no icons, no boxes) below the date line. The countdown
+     stays the hero; this only adds concrete substance under it. ── */
+  .numbers { margin: 1.4rem 0 0; font-family: var(--mono); font-size: 0.78rem; letter-spacing: 0.04em; color: var(--dim); }
+  .numbers .numbers-line { border-top: 1px solid var(--line); padding-top: 0.9rem; display: inline-block; }
+
+  .facts {
+    list-style: none; margin: clamp(20px, 3.4vh, 30px) 0 0; padding: 0;
+    max-width: 60ch;
+  }
+  .facts li {
+    font-family: var(--mono); font-size: clamp(12px, 1.4vw, 13.5px);
+    line-height: 1.65; letter-spacing: 0.01em; color: var(--dim);
+    padding: 11px 0 11px 20px; position: relative;
+    border-top: 1px solid var(--line);
+  }
+  .facts li:first-child { border-top: 0; }
+  /* a single subtle gold hairline marker — not a bullet, not an icon */
+  .facts li::before {
+    content: ""; position: absolute; left: 0; top: 1.05em;
+    width: 9px; height: 1px; background: var(--gold-deep);
+  }
+  [dir="rtl"] .facts li { padding: 11px 20px 11px 0; }
+  [dir="rtl"] .facts li::before { left: auto; right: 0; }
+  .facts li b { color: var(--muted); font-weight: 500; }
+  html[data-state="live"] .facts { display: none; }
+
+  .live-panel { display: none; }
+  html[data-state="live"] .clock, html[data-state="live"] .tagline, html[data-state="live"] .teaser { display: none; }
+  html[data-state="live"] .live-panel {
+    display: block; margin: clamp(28px, 5vh, 48px) 0 0;
+    animation: rise 900ms cubic-bezier(0.16, 1, 0.3, 1) both;
+  }
+  .live-kicker {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.4em; text-transform: uppercase;
+    color: var(--gold); margin: 0 0 16px;
+  }
+  .live-line {
+    font-family: var(--serif); font-style: italic; font-size: clamp(22px, 3.4vw, 38px);
+    line-height: 1.3; color: var(--ink); margin: 0; max-width: 26ch;
+  }
+
+  /* legal pages — hidden until opened from the footer */
+  .legal-page { display: none; max-width: 62ch; }
+  html[data-view="impressum"] #portfolio,
+  html[data-view="privacy"] #portfolio { display: none; }
+  html[data-view="impressum"] #impressum,
+  html[data-view="privacy"] #privacy { display: block; animation: rise 500ms ease both; }
+  .legal-page h2 { font-family: var(--serif); font-weight: 560; color: var(--ink); font-size: clamp(26px,4vw,40px); margin: 8px 0 18px; }
+  .legal-page h3 { font-family: var(--mono); font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--gold); margin: 22px 0 6px; }
+  .legal-page p { color: var(--muted); line-height: 1.7; margin: 4px 0; }
+  .legal-page a { color: var(--gold); }
+  .legal-page .back {
+    font-family: var(--mono); font-size: 12px; letter-spacing: 0.08em; color: var(--dim);
+    text-decoration: none; display: inline-flex; align-items: center; gap: 7px;
+    margin-bottom: 18px; padding: 4px 0; min-height: 32px;
+  }
+  .legal-page .back:hover { color: var(--gold); }
+  .legal-page .legal-foot { font-size: 12px; color: var(--dim); margin-top: 14px; }
+
+  /* shared accessible focus ring */
+  a:focus-visible, button:focus-visible { outline: 2px solid var(--gold); outline-offset: 3px; border-radius: 2px; }
+
+  footer {
+    position: relative; z-index: 1; width: min(960px, 90vw); margin: 0 auto;
+    padding: 26px 0 30px; font-family: var(--mono); font-size: 11px; letter-spacing: 0.08em;
+    color: var(--dim); display: flex; justify-content: space-between; gap: 14px; flex-wrap: wrap;
+  }
+  footer a { color: var(--muted); text-decoration: none; padding: 3px 0; }
+  footer a:hover { color: var(--gold); }
+  footer .glyph { color: var(--gold-deep); }
+  footer button.linklike {
+    appearance: none; background: transparent; border: 0; cursor: pointer; padding: 3px 0;
+    font: inherit; letter-spacing: inherit; color: var(--muted);
+  }
+  footer button.linklike:hover { color: var(--gold); }
+
+  @keyframes rise { from { opacity: 0; transform: translateY(14px); } to { opacity: 1; transform: none; } }
+  .tick { animation: tick 1s steps(1) infinite; }
+  @keyframes tick { 50% { opacity: 0.55; } }
+  @media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after { animation: none !important; transition: none !important; }
+    html { scroll-behavior: auto; }
+  }
+
+  /* visually-hidden, still read by AT */
+  .sr-only {
+    position: absolute !important; width: 1px; height: 1px; padding: 0; margin: -1px;
+    overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
+  }
+</style>
 </head>
 <body>
-  <a class="skip" href="#main">Skip to content</a>
+  <a class="skip-link" href="#main" data-i18n="skip">Skip to content</a>
 
-  <!-- ───────── header / banner ───────── -->
-  <header class="site">
-    <a class="brand" href="#top" aria-label="securanido — home">
-      <span class="brand-mark" aria-hidden="true">s</span>
-      <span class="brand-word">securanido</span>
-    </a>
-    <nav class="primary" aria-label="Primary">
-      <a href="#what">what it is</a>
-      <a href="#fleet">the fleet</a>
-      <a href="#architecture">architecture</a>
-      <a href="#proof">manifesto</a>
-    </nav>
-    <span class="spacer"></span>
-    <a class="cta cta-sm" href="#access">request access</a>
-  </header>
+  <div class="topbar">
+    <div class="lang-switch">
+      <span class="lang-icon" aria-hidden="true">文A</span>
+      <label class="sr-only" for="lang-select" data-i18n="langLabel">Language</label>
+      <select id="lang-select" data-lang-select>
+        <option value="en" lang="en">English</option>
+        <option value="de" lang="de">Deutsch</option>
+        <option value="fr" lang="fr">Français</option>
+        <option value="es" lang="es">Español</option>
+        <option value="it" lang="it">Italiano</option>
+        <option value="pt" lang="pt">Português</option>
+        <option value="tr" lang="tr">Türkçe</option>
+        <option value="pl" lang="pl">Polski</option>
+        <option value="ja" lang="ja">日本語</option>
+        <option value="zh" lang="zh">中文</option>
+      </select>
+    </div>
+  </div>
 
-  <main id="main">
+  <main id="main" tabindex="-1">
+    <div id="portfolio">
+      <p class="eyebrow"><span aria-hidden="true">暖居 · Nuanju · </span><span data-i18n="eyebrow">Public release</span></p>
+      <h1 class="wordmark">Secura<span class="nido">nido</span><span class="dot">.</span></h1>
+      <p class="tagline" data-i18n="tagline">A self-hosted AI platform that runs where you live — not in someone else&rsquo;s cloud.</p>
+      <p class="teaser" data-i18n="teaser">Open-source. A fleet of autonomous AI agents on hardware you own, kept in check by a guard that won&rsquo;t let them overrun your machine.</p>
 
-    <!-- ───────── hero ───────── -->
-    <section id="top" aria-labelledby="hero-title">
-      <div class="hero inner">
-        <div class="hero-text">
-          <p class="hero-eyebrow rise"><span lang="zh-Hans">暖居</span> · nuǎn jū · warm dwelling</p>
-          <h1 id="hero-title" class="rise d1">One private home for your whole life.</h1>
-          <p class="lede rise d2">Personal and business, desktop, web and phone — one coherent OS, with a fleet of named AI agents, running on infrastructure <em>you own</em>. Encrypted before anything leaves the device.</p>
-          <div class="cta-row rise d3">
-            <a class="cta cta-lg" href="#access">request access
-              <svg viewBox="0 0 24 24" width="15" height="15" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M5 12h14"/><path d="m12 5 7 7-7 7"/></svg>
-            </a>
-            <a class="ghost" href="#proof">read the manifesto</a>
-          </div>
-          <ul class="trust reset rise d4">
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect width="18" height="11" x="3" y="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>encrypted, keys you hold</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg>on-device AI by default</li>
-            <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><rect width="20" height="8" x="2" y="2" rx="2" ry="2"/><rect width="20" height="8" x="2" y="14" rx="2" ry="2"/><line x1="6" x2="6.01" y1="6" y2="6"/><line x1="6" x2="6.01" y1="18" y2="18"/></svg>self-hosted, data you own</li>
-          </ul>
-        </div>
-        <div class="orb-wrap" aria-hidden="true">
-          <div class="orb-box">
-            <div class="halo"></div>
-            <div class="orb"></div>
-            <span class="orb-caption">the warm dwelling</span>
-          </div>
-        </div>
-      </div>
+      <!-- Launch countdown removed for now (release date paused). -->
+      <p class="when">
+        <span data-i18n="releaseLabel">Public release</span><span class="sep" aria-hidden="true">/</span>
+        <b>coming soon</b>
+      </p>
+
+      <ul class="facts" aria-label="What Securanido is" data-i18n-aria-label="factsLabel">
+        <li data-i18n="fact1">Runs on your own Kubernetes, laptop, or air-gapped network.</li>
+        <li data-i18n="fact2">Apache-2.0, no tracking, no account &mdash; your data stays with you.</li>
+        <li data-i18n="fact3">Many agents in parallel, governed by one machine-enforced guard.</li>
+        <li data-i18n="fact4">Launch day opens the code &mdash; and a proof page where every claim links to the recorded command that backs it.</li>
+      </ul>
+
+      <p class="numbers" aria-label="Platform figures" data-i18n-aria-label="numbersLabel">
+        <span class="numbers-line" data-i18n="numbersLine">145+ Rust crates &middot; 86 native MCP tools &middot; 38 live proofs &mdash; measured, not promised.</span>
+      </p>
+
+      <section class="live-panel" aria-hidden="true">
+        <p class="live-kicker" data-i18n="liveKicker">Now live</p>
+        <p class="live-line" data-i18n="liveLine">The release is underway. Securanido is open.</p>
+      </section>
+    </div>
+
+    <section id="impressum" class="legal-page" aria-labelledby="impressum-h">
+      <a href="#main" class="back" data-back><span aria-hidden="true">&larr;</span> <span data-i18n="back">Back</span></a>
+      <h2 id="impressum-h" data-i18n="impressumTitle">Legal Notice</h2>
+      <h3 data-i18n="impressumS5">Information pursuant to § 5 DDG</h3>
+      <p>Florian Schulz<br />Backhausstr. 9<br />37081 Göttingen<br /><span data-i18n="country">Germany</span></p>
+      <h3 data-i18n="contact">Contact</h3>
+      <p><span data-i18n="emailLabel">E-mail</span>: fschulz0787@gmail.com</p>
+      <h3 data-i18n="impressumS18">Responsible for content pursuant to § 18 para. 2 MStV</h3>
+      <p>Florian Schulz</p>
+      <p class="legal-foot"><span data-i18n="fullLegal">Full legal notice &amp; privacy policy</span>: <a href="https://nash87.github.io/legal/" rel="noopener">nash87.github.io/legal</a></p>
     </section>
 
-    <!-- ───────── what it is ───────── -->
-    <section id="what" aria-labelledby="what-title">
-      <div class="inner">
-        <div class="sec-head"><span class="eyebrow">what it is</span><span class="rule"></span></div>
-        <h2 id="what-title">A private operating system for your whole life.</h2>
-        <p>securanido brings your personal and business life — calendar, contacts, journal, photos, documents — into one coherent system that runs on hardware you own. Open source under Apache-2.0, self-hosted, EU-sovereign, and Rust-native. A fleet of named AI agents does the work, locally by default; you keep the keys, and nothing is encrypted on a server you can&rsquo;t see.</p>
-        <ul class="domains reset" aria-label="What the OS covers">
-          <li>calendar</li><li>contacts</li><li>journal</li><li>photos</li><li>documents</li><li>business</li>
-        </ul>
-      </div>
+    <section id="privacy" class="legal-page" aria-labelledby="privacy-h">
+      <a href="#main" class="back" data-back><span aria-hidden="true">&larr;</span> <span data-i18n="back">Back</span></a>
+      <h2 id="privacy-h" data-i18n="privacyTitle">Privacy Policy</h2>
+      <h3 data-i18n="privacyS1">1. Data Controller</h3>
+      <p>Florian Schulz, Göttingen. <span data-i18n="emailLabel">E-mail</span>: fschulz0787@gmail.com</p>
+      <h3 data-i18n="privacyS2">2. Hosting</h3>
+      <p data-i18n="privacyHosting">This site is hosted on GitHub Pages (GitHub Inc., USA) and delivered through the Cloudflare content delivery network (Cloudflare, Inc., USA). Both process visitor IP addresses in their server logs to serve the site; we keep no logs of our own.</p>
+      <h3 data-i18n="privacyS3">3. Cookies &amp; Storage</h3>
+      <p data-i18n="privacyCookies">No cookies. Your language choice is stored locally on your device only (localStorage). No tracking, no analytics, no advertising. The only third-party script is a small e-mail protection helper Cloudflare may insert to shield our contact address from spam harvesters. No external fonts — fonts are served from this site. The localStorage entry is strictly necessary to deliver the language you selected; no consent is required (§ 25 (2) TTDSG).</p>
+      <h3 data-i18n="privacyS4">4. Your Rights (GDPR Art. 15–21)</h3>
+      <p data-i18n="privacyRights">Right to access, rectification, erasure, restriction, portability, and objection. Contact: fschulz0787@gmail.com</p>
+      <h3 data-i18n="privacyS5">5. External Services</h3>
+      <p data-i18n="privacyExternal">GitHub (hosting) and Cloudflare (content delivery) — each has its own privacy policy.</p>
     </section>
-
-    <!-- ───────── the fleet ───────── -->
-    <section id="fleet" aria-labelledby="fleet-title">
-      <div class="inner">
-        <div class="sec-head"><span class="eyebrow">the fleet</span><span class="rule"></span></div>
-        <h2 id="fleet-title">Six named agents run your house — each owns a craft.</h2>
-        <p class="lane-note">Each agent owns one craft and announces itself by name — the same six, every install. No invented roster, no fabricated live status.</p>
-        <ul class="fleet-grid reset">
-          <li class="agent" style="--accent:var(--ag-tony)">
-            <span class="badge" aria-hidden="true">T</span>
-            <span><span class="nm">tony<span class="dot" aria-hidden="true"></span></span><span class="role">rag · embed · docs</span></span>
-          </li>
-          <li class="agent" style="--accent:var(--ag-charlie)">
-            <span class="badge" aria-hidden="true">C</span>
-            <span><span class="nm">charlie<span class="dot" aria-hidden="true"></span></span><span class="role">deploy · ci · gitops</span></span>
-          </li>
-          <li class="agent" style="--accent:var(--ag-george)">
-            <span class="badge" aria-hidden="true">G</span>
-            <span><span class="nm">george<span class="dot" aria-hidden="true"></span></span><span class="role">k8s · backup · sysadmin</span></span>
-          </li>
-          <li class="agent" style="--accent:var(--ag-lily)">
-            <span class="badge" aria-hidden="true">L</span>
-            <span><span class="nm">lily<span class="dot" aria-hidden="true"></span></span><span class="role">alerts · triage · obs</span></span>
-          </li>
-          <li class="agent" style="--accent:var(--ag-bill)">
-            <span class="badge" aria-hidden="true">B</span>
-            <span><span class="nm">bill<span class="dot" aria-hidden="true"></span></span><span class="role">review · gate · approve</span></span>
-          </li>
-          <li class="agent" style="--accent:var(--ag-jarvis)">
-            <span class="badge" aria-hidden="true">J</span>
-            <span><span class="nm">jarvis<span class="dot" aria-hidden="true"></span></span><span class="role">llm · models · prompts</span></span>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- ───────── architecture ───────── -->
-    <section id="architecture" aria-labelledby="arch-title">
-      <div class="inner">
-        <div class="sec-head"><span class="eyebrow">the architecture</span><span class="rule"></span></div>
-        <h2 id="arch-title">Built like a home you own.</h2>
-        <ul class="pillars reset">
-          <li class="pillar">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M2.586 17.414A2 2 0 0 0 2 18.828V21a1 1 0 0 0 1 1h3a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h1a1 1 0 0 0 1-1v-1a1 1 0 0 1 1-1h.172a2 2 0 0 0 1.414-.586l.814-.814a6.5 6.5 0 1 0-4-4z"/><circle cx="16.5" cy="7.5" r=".5" fill="currentColor"/></svg></span>
-            <h3>Encrypted before it leaves</h3>
-            <p>Envelope encryption on the device. The server holds an opaque blob — never your plaintext, never your keys. You stay the only party who can read your data.</p>
-            <span class="tag">keys you hold</span>
-          </li>
-          <li class="pillar">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><rect width="16" height="16" x="4" y="4" rx="2"/><rect width="6" height="6" x="9" y="9" rx="1"/><path d="M15 2v2"/><path d="M15 20v2"/><path d="M2 15h2"/><path d="M2 9h2"/><path d="M20 15h2"/><path d="M20 9h2"/><path d="M9 2v2"/><path d="M9 20v2"/></svg></span>
-            <h3>Your AI runs at home</h3>
-            <p>A personal prompt with your data never silently reaches a cloud model. Local-by-default routing is a hard rule; the cloud is used only on explicit escalation, with your own key.</p>
-            <span class="tag">local-first</span>
-          </li>
-          <li class="pillar">
-            <span class="ico" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round"><path d="M21 8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16Z"/><path d="m3.3 7 8.7 5 8.7-5"/><path d="M12 22V12"/></svg></span>
-            <h3>Rust-native, self-hosted</h3>
-            <p>Every capability is a Rust crate that runs both as a local tool and as a self-hosted service on infrastructure you control. One program, two runtimes — no second implementation to drift, no data leaving your boundary.</p>
-            <span class="tag">sovereign</span>
-          </li>
-        </ul>
-      </div>
-    </section>
-
-    <!-- ───────── proof / technical claim ───────── -->
-    <section id="proof" aria-labelledby="proof-title">
-      <div class="inner-narrow">
-        <h2 id="proof-title">&ldquo;securanido&rdquo; is a <span class="hl">technical claim</span>, not a marketing word.</h2>
-        <p class="claim-frame">These are the commitments the architecture is built around — stated plainly, in alpha, with no certification claimed. The data-minimal posture is visible in the public source, not just asserted.</p>
-        <div class="claims">
-          <div class="claim">
-            <span class="num">01</span>
-            <span class="ct"><h3>End-to-end, before any server contact</h3><p>Encryption happens on the client. Sync and backup stay operationally blind to your content.</p></span>
-            <span class="proof">client-side</span>
-          </div>
-          <div class="claim">
-            <span class="num">02</span>
-            <span class="ct"><h3>Hardware-bound keys</h3><p>The architecture seals your master key to your own device — it never leaves the hardware, and there is no escrow copy held by us, because we are never in the path.</p></span>
-            <span class="proof">keys you hold</span>
-          </div>
-          <div class="claim">
-            <span class="num">03</span>
-            <span class="ct"><h3>Sensor-access transparency</h3><p>The direction: every camera, mic, location and contacts access logged to an append-only report you can audit by service and time.</p></span>
-            <span class="proof">by design</span>
-          </div>
-          <div class="claim">
-            <span class="num">04</span>
-            <span class="ct"><h3>Data portability as a right</h3><p>One export carries everything — calendar, contacts, journal, photos — in a structured, machine-readable format, importable anywhere. Portability is a right, not a feature we grant.</p></span>
-            <span class="proof">GDPR Art.20</span>
-          </div>
-        </div>
-        <div class="stats" aria-label="Measured, not promised">
-          <span class="stat"><b>145+</b> Rust crates</span>
-          <span class="stat"><b>38</b> reproducible proofs</span>
-          <span class="measured">measured, not promised</span>
-        </div>
-        <p class="alpha-note">version 0.1.0-alpha.1 · stage: alpha · expect breaking changes · no claim of certification or regulatory conformity</p>
-      </div>
-    </section>
-
-    <!-- ───────── access / private beta ───────── -->
-    <section id="access" aria-labelledby="access-title">
-      <div class="inner-form">
-        <div class="access-card">
-          <span class="eyebrow">private beta</span>
-          <h2 id="access-title">Ask for a key. We onboard slowly, on purpose.</h2>
-          <form id="beta-form" class="beta-form" novalidate>
-            <label for="beta-email" class="vh">email address</label>
-            <input id="beta-email" name="email" type="email" inputmode="email" autocomplete="email"
-                   placeholder="you@your-domain" aria-describedby="beta-hint beta-error" required>
-            <button type="submit" class="cta cta-square">request key</button>
-          </form>
-          <p id="beta-error" class="beta-error" hidden role="alert">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><circle cx="12" cy="12" r="10"/><line x1="12" x2="12" y1="8" y2="12"/><line x1="12" x2="12.01" y1="16" y2="16"/></svg>
-            that doesn&rsquo;t look like an email — try again
-          </p>
-          <div id="beta-success" class="beta-success" hidden role="status" tabindex="-1">
-            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="M20 6 9 17l-5-5"/></svg>
-            you&rsquo;re on the list — we&rsquo;ll write when the law clears.
-          </div>
-          <p id="beta-hint" class="fine">no tracking pixels, no third-party analytics on this page · your address is held to send exactly one invitation.</p>
-          <noscript><p class="fine">Enable JavaScript to send the request, or reach us via the contact details in the Impressum below.</p></noscript>
-        </div>
-      </div>
-    </section>
-
   </main>
 
-  <!-- ───────── footer / contentinfo ───────── -->
-  <footer class="site">
-    <div class="foot inner">
-      <div class="legal-callout">
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false"><path d="m16 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="m2 16 3-8 3 8c-.87.65-1.92 1-3 1s-2.13-.35-3-1Z"/><path d="M7 21h10"/><path d="M12 3v18"/><path d="M3 7h2c2 0 5-1 7-2 2 1 5 2 7 2h2"/></svg>
-        <div>
-          <p class="lt">Launching when the law clears, not before.</p>
-          <p class="lb">A public release waits on a German employment-IP legal opinion (<span lang="de">§ 69b UrhG</span>). We&rsquo;d rather ship late and clean than fast and compromised. <code lang="de">/* leg los, sorgfältig */</code></p>
-        </div>
-      </div>
-
-      <nav class="legal" aria-label="Legal"><a href="#impressum">Impressum</a><a href="#datenschutz">Datenschutz</a></nav>
-
-      <div class="legal-grid">
-        <section class="legal-block" id="impressum" lang="de" aria-labelledby="impressum-h">
-          <h2 id="impressum-h">Impressum</h2>
-          <p class="basis">Angaben gemäß § 5 DDG · § 18 Abs. 2 MStV</p>
-          <p>Verantwortlicher Diensteanbieter im Sinne des § 5 DDG (vormals § 5 TMG) und inhaltlich verantwortlich gemäß § 18 Abs. 2 MStV. Der Name ist eingetragen; die ladungsfähige Anschrift ist vor der Freigabe einzutragen — was offen ist, bleibt erkennbar offen.</p>
-          <dl>
-            <dt>Diensteanbieter</dt>
-            <dd>Florian Schulz</dd>
-            <dt>Ort</dt>
-            <dd>Göttingen, Deutschland</dd>
-            <dt>Anschrift</dt>
-            <dd class="ph">[Straße, Hausnummer, PLZ] — vor der Freigabe einzutragen.</dd>
-            <dt>Rechtsform</dt>
-            <dd>Einzelperson, sofern keine Gesellschaft eingetragen ist.</dd>
-          </dl>
-          <p>Die hier beschriebene Software securanido befindet sich in einer Alpha-Phase und wird ohne Gewährleistung bereitgestellt; maßgeblich ist die Lizenz (Apache-2.0) des öffentlichen Quellcodes. <span lang="en">EU online dispute resolution:</span> <a href="https://ec.europa.eu/consumers/odr/" rel="noopener noreferrer" target="_blank">ec.europa.eu/consumers/odr</a>. Diese Struktur bildet die Pflichtangaben ab, ist aber keine Bestätigung der Rechtskonformität und ersetzt keine anwaltliche Prüfung.</p>
-        </section>
-
-        <section class="legal-block" id="datenschutz" lang="de" aria-labelledby="datenschutz-h">
-          <h2 id="datenschutz-h">Datenschutz</h2>
-          <p class="basis">Datenschutzhinweise nach Art. 13 DSGVO</p>
-          <p>Bewusst datenarm: keine Cookies, keine Analyse-Skripte, kein Tracking, keine Werbenetzwerke, keine Drittanbieter-Schriften — die Schriften werden selbst gehostet. Zugriffsprotokolle (z. B. IP-Adresse, Zeitpunkt, abgerufene Ressource) werden allein zum sicheren Betrieb verarbeitet (Art. 6 Abs. 1 lit. f DSGVO).</p>
-          <dl>
-            <dt>Verantwortlicher</dt>
-            <dd>Florian Schulz, Göttingen</dd>
-            <dt>Anschrift</dt>
-            <dd class="ph">[Anschrift] — vor der Freigabe einzutragen.</dd>
-            <dt>Kontakt / Datenrechte</dt>
-            <dd><a href="mailto:privacy@securanido.com">privacy@securanido.com</a></dd>
-          </dl>
-          <p>Ihre Plattformdaten laufen auf Ihrem eigenen, selbstgehosteten Cluster — Sie sind verantwortlich, die Daten verlassen Ihre Grenze nicht, und wir sehen sie nie. Es findet keine automatisierte Entscheidungsfindung oder Profiling im Sinne von Art. 22 DSGVO statt. <span lang="en">Stage: alpha</span> — diese Hinweise sind eine ehrliche Bestandsaufnahme, keine Zusicherung der DSGVO-Konformität.</p>
-        </section>
-      </div>
-
-      <div class="foot-meta">
-        <span class="b">securanido · <span lang="zh-Hans">暖居</span> nuǎn jū</span>
-        <span class="sep" aria-hidden="true"></span>
-        <span class="b">Florian Schulz</span>
-        <span class="grow"></span>
-        <span class="m">Apache-2.0 · self-hosted · local-first</span>
-      </div>
-    </div>
+  <footer>
+    <span data-i18n="footerTag">Securanido <span class="glyph">&middot;</span> local-first AI platform <span class="glyph">&middot;</span> Made in Germany</span>
+    <span>
+      <button type="button" class="linklike" data-view-btn="impressum" data-i18n="impressumLink">Impressum</button>
+      <span class="glyph" aria-hidden="true">&middot;</span>
+      <button type="button" class="linklike" data-view-btn="privacy" data-i18n="privacyLink">Datenschutz</button>
+    </span>
   </footer>
 
   <script>
-  (function(){
-    var f=document.getElementById('beta-form');
-    if(!f)return;
-    var input=document.getElementById('beta-email'),
-        err=document.getElementById('beta-error'),
-        ok=document.getElementById('beta-success'),
-        re=/^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-    f.addEventListener('submit',function(e){
-      e.preventDefault();
-      var v=(input.value||'').trim();
-      if(!re.test(v)){
-        err.hidden=false;
-        input.classList.add('is-error');
-        input.setAttribute('aria-invalid','true');
-        input.focus();
-        return;
+    "use strict";
+    (function () {
+      /* ── i18n dictionary — single source of truth for every user-visible string.
+         Locale set + de-slopped key terms mirror the platform's vetted dictionary.
+         Every value is author-controlled static copy — no user input is ever interpolated. ── */
+      var DICT = {
+        "en": {
+                "skip": "Skip to content",
+                "langNav": "Language",
+                "langLabel": "Language",
+                "eyebrow": "Public release",
+                "tagline": "A self-hosted AI platform that runs where you live — not in someone else’s cloud.",
+                "teaser": "Open-source. A fleet of autonomous AI agents on hardware you own, kept in check by a guard that won’t let them overrun your machine.",
+                "clockLabel": "Time remaining until the public release",
+                "days": "Days",
+                "hours": "Hours",
+                "minutes": "Minutes",
+                "seconds": "Seconds",
+                "releaseLabel": "Public release",
+                "releaseDate": "Sunday, 28 June&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "What Securanido is",
+                "fact1": "Runs on your own Kubernetes, laptop, or air-gapped network.",
+                "fact2": "Apache-2.0, no tracking, no account &mdash; your data stays with you.",
+                "fact3": "Many agents in parallel, governed by one machine-enforced guard.",
+                "fact4": "Launch day opens the code &mdash; and a proof page where every claim links to the recorded command that backs it.",
+                "numbersLabel": "Platform figures",
+                "numbersLine": "145+ Rust crates &middot; 86 native MCP tools &middot; 38 live proofs &mdash; measured, not promised.",
+                "liveKicker": "Now live",
+                "liveLine": "The release is underway. Securanido is open.",
+                "back": "Back",
+                "impressumTitle": "Legal Notice",
+                "impressumS5": "Information pursuant to § 5 DDG",
+                "country": "Germany",
+                "contact": "Contact",
+                "emailLabel": "E-mail",
+                "impressumS18": "Responsible for content pursuant to § 18 para. 2 MStV",
+                "fullLegal": "Full legal notice &amp; privacy policy",
+                "privacyTitle": "Privacy Policy",
+                "privacyS1": "1. Data Controller",
+                "privacyS2": "2. Hosting",
+                "privacyHosting": "This site is hosted on GitHub Pages (GitHub Inc., USA) and delivered through the Cloudflare content delivery network (Cloudflare, Inc., USA). Both process visitor IP addresses in their server logs to serve the site; we keep no logs of our own.",
+                "privacyS3": "3. Cookies &amp; Storage",
+                "privacyCookies": "No cookies. Your language choice is stored locally on your device only (localStorage). No tracking, no analytics, no advertising. The only third-party script is a small e-mail protection helper Cloudflare may insert to shield our contact address from spam harvesters. No external fonts — fonts are served from this site. The localStorage entry is strictly necessary to deliver the language you selected; no consent is required (§ 25 (2) TTDSG).",
+                "privacyS4": "4. Your Rights (GDPR Art. 15–21)",
+                "privacyRights": "Right to access, rectification, erasure, restriction, portability, and objection. Contact: fschulz0787@gmail.com",
+                "privacyS5": "5. External Services",
+                "privacyExternal": "GitHub (hosting) and Cloudflare (content delivery) — each has its own privacy policy.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> local-first AI platform <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Legal Notice",
+                "privacyLink": "Privacy",
+                "docTitle": "Securanido — open-source, self-hosted AI agent platform · public release 28 June 2026",
+                "srDaysOne": "{d} day until the public release on 28 June.",
+                "srDaysMany": "{d} days until the public release on 28 June.",
+                "srSoon": "Less than a day until the public release on 28 June.",
+                "srLive": "The public release is live. Securanido is open."
+        },
+        "de": {
+                "skip": "Zum Inhalt springen",
+                "langNav": "Sprache",
+                "langLabel": "Sprache",
+                "eyebrow": "Öffentlicher Release",
+                "tagline": "Eine selbstgehostete KI-Plattform, die bei dir läuft — nicht in einer fremden Cloud.",
+                "teaser": "Open Source. Eine Flotte autonomer KI-Agenten auf deiner eigenen Hardware — in Schach gehalten von einem Guard, der verhindert, dass sie deine Maschine überlasten.",
+                "clockLabel": "Verbleibende Zeit bis zum öffentlichen Release",
+                "days": "Tage",
+                "hours": "Stunden",
+                "minutes": "Minuten",
+                "seconds": "Sekunden",
+                "releaseLabel": "Öffentlicher Release",
+                "releaseDate": "Sonntag, 28. Juni&nbsp;&middot;&nbsp;14:00 MESZ",
+                "factsLabel": "Was Securanido ist",
+                "fact1": "Läuft auf deinem eigenen Kubernetes, Laptop oder abgeschotteten Netz.",
+                "fact2": "Apache-2.0, kein Tracking, kein Konto &mdash; deine Daten bleiben bei dir.",
+                "fact3": "Viele Agenten parallel, geregelt von einem Guard, den die Maschine durchsetzt.",
+                "fact4": "Zum Start wird der Code ge\u00f6ffnet &mdash; dazu eine Beweis-Seite, auf der jede Aussage auf den festgehaltenen Befehl verlinkt, der sie belegt.",
+                "numbersLabel": "Plattform in Zahlen",
+                "numbersLine": "145+ Rust-Crates &middot; 86 native MCP-Tools &middot; 38 Live-Beweise &mdash; gemessen, nicht versprochen.",
+                "liveKicker": "Jetzt live",
+                "liveLine": "Der Release läuft. Securanido ist jetzt offen für alle.",
+                "back": "Zurück",
+                "impressumTitle": "Impressum",
+                "impressumS5": "Angaben gemäß § 5 DDG",
+                "country": "Deutschland",
+                "contact": "Kontakt",
+                "emailLabel": "E-Mail",
+                "impressumS18": "Verantwortlich für den Inhalt nach § 18 Abs. 2 MStV",
+                "fullLegal": "Vollständiges Impressum &amp; Datenschutz",
+                "privacyTitle": "Datenschutzerklärung",
+                "privacyS1": "1. Verantwortlicher",
+                "privacyS2": "2. Hosting",
+                "privacyHosting": "Diese Seite wird auf GitHub Pages gehostet (GitHub Inc., USA) und über das Content-Delivery-Netzwerk von Cloudflare ausgeliefert (Cloudflare, Inc., USA). Beide verarbeiten beim Abruf IP-Adressen in ihren Server-Logs; eigene Logs führen wir nicht.",
+                "privacyS3": "3. Cookies &amp; Speicher",
+                "privacyCookies": "Keine Cookies. Deine Sprachwahl wird ausschließlich lokal auf deinem Gerät gespeichert (localStorage). Kein Tracking, keine Analyse, keine Werbung. Das einzige Drittanbieter-Skript ist ein kleiner Schutz, den Cloudflare einfügen kann, damit unsere Kontaktadresse nicht von Spam-Sammlern abgegriffen wird. Keine externen Fonts — Schriften werden von dieser Seite ausgeliefert. Der localStorage-Eintrag ist zur Bereitstellung der gewählten Sprache unbedingt erforderlich; eine Einwilligung ist nicht erforderlich (§ 25 Abs. 2 TTDSG).",
+                "privacyS4": "4. Deine Rechte (DSGVO Art. 15–21)",
+                "privacyRights": "Recht auf Auskunft, Berichtigung, Löschung, Einschränkung, Datenübertragbarkeit und Widerspruch. Kontakt: fschulz0787@gmail.com",
+                "privacyS5": "5. Externe Dienste",
+                "privacyExternal": "GitHub (Hosting) und Cloudflare (Auslieferung) — beide haben eigene Datenschutzerklärungen.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> Local-First-KI-Plattform <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Impressum",
+                "privacyLink": "Datenschutz",
+                "docTitle": "Securanido — quelloffene, selbstgehostete KI-Agenten-Plattform · Release 28. Juni 2026",
+                "srDaysOne": "{d} Tag bis zum öffentlichen Release am 28. Juni.",
+                "srDaysMany": "{d} Tage bis zum öffentlichen Release am 28. Juni.",
+                "srSoon": "Weniger als ein Tag bis zum öffentlichen Release am 28. Juni.",
+                "srLive": "Der öffentliche Release ist live. Securanido ist jetzt offen für alle."
+        },
+        "fr": {
+                "skip": "Aller au contenu",
+                "langNav": "Langue",
+                "langLabel": "Langue",
+                "eyebrow": "Sortie publique",
+                "tagline": "Une plateforme d’IA auto-hébergée qui tourne chez vous — pas dans le cloud d’un autre.",
+                "teaser": "Logiciel libre. Une flotte d’agents d’IA autonomes sur votre propre matériel, tenue en bride par un Guard qui les empêche de saturer votre machine.",
+                "clockLabel": "Temps restant avant la sortie publique",
+                "days": "Jours",
+                "hours": "Heures",
+                "minutes": "Minutes",
+                "seconds": "Secondes",
+                "releaseLabel": "Sortie publique",
+                "releaseDate": "dimanche 28 juin&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Ce qu’est Securanido",
+                "fact1": "Tourne sur votre propre Kubernetes, votre ordinateur portable ou un réseau isolé.",
+                "fact2": "Apache-2.0, aucun suivi, sans compte &mdash; vos données restent chez vous.",
+                "fact3": "Plusieurs agents en parallèle, gouvernés par un seul Guard que la machine fait respecter.",
+                "fact4": "Le jour du lancement, le code s’ouvre &mdash; avec une page de preuves où chaque affirmation renvoie à la commande enregistrée qui l’étaye.",
+                "numbersLabel": "La plateforme en chiffres",
+                "numbersLine": "145+ crates Rust &middot; 86 outils MCP natifs &middot; 38 preuves en direct &mdash; mesuré, pas promis.",
+                "liveKicker": "En ligne",
+                "liveLine": "La sortie est lancée. Securanido est ouvert.",
+                "back": "Retour",
+                "impressumTitle": "Mentions légales",
+                "impressumS5": "Informations selon l’article 5 DDG",
+                "country": "Allemagne",
+                "contact": "Contact",
+                "emailLabel": "E-mail",
+                "impressumS18": "Responsable du contenu selon l’art. 18 al. 2 MStV",
+                "fullLegal": "Mentions légales &amp; politique de confidentialité complètes",
+                "privacyTitle": "Politique de confidentialité",
+                "privacyS1": "1. Responsable du traitement",
+                "privacyS2": "2. Hébergement",
+                "privacyHosting": "Ce site est hébergé sur GitHub Pages (GitHub Inc., États-Unis) et distribué via le réseau de diffusion de contenu Cloudflare (Cloudflare, Inc., États-Unis). Tous deux traitent les adresses IP des visiteurs dans leurs journaux serveur pour servir le site ; nous ne tenons aucun journal de notre côté.",
+                "privacyS3": "3. Cookies &amp; stockage",
+                "privacyCookies": "Aucun cookie. Votre choix de langue est conservé uniquement en local sur votre appareil (localStorage). Aucun suivi, aucune analyse, aucune publicité. Le seul script tiers est une petite protection que Cloudflare peut insérer pour préserver notre adresse de contact des collecteurs de spam. Aucune police externe — les polices sont servies depuis ce site. Cet enregistrement localStorage est strictement nécessaire pour fournir la langue que vous avez choisie ; aucun consentement n’est requis (art. 25 § 2 TTDSG).",
+                "privacyS4": "4. Vos droits (RGPD art. 15–21)",
+                "privacyRights": "Droit d’accès, de rectification, d’effacement, de limitation, de portabilité et d’opposition. Contact : fschulz0787@gmail.com",
+                "privacyS5": "5. Services externes",
+                "privacyExternal": "GitHub (hébergement) et Cloudflare (diffusion de contenu) — chacun dispose de sa propre politique de confidentialité.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> plateforme d’IA local-first <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Mentions légales",
+                "privacyLink": "Confidentialité",
+                "docTitle": "Securanido — plateforme d’agents d’IA libre et auto-hébergée · sortie publique le 28 juin 2026",
+                "srDaysOne": "{d} jour avant la sortie publique du 28 juin.",
+                "srDaysMany": "{d} jours avant la sortie publique du 28 juin.",
+                "srSoon": "Moins d’un jour avant la sortie publique du 28 juin.",
+                "srLive": "La sortie publique est en ligne. Securanido est ouvert."
+        },
+        "es": {
+                "skip": "Saltar al contenido",
+                "langNav": "Idioma",
+                "langLabel": "Idioma",
+                "eyebrow": "Lanzamiento público",
+                "tagline": "Una plataforma de IA autoalojada que se ejecuta donde tú estás — no en la nube de otro.",
+                "teaser": "Software libre. Una flota de agentes de IA autónomos sobre tu propio hardware, contenida por un Guard que no deja que saturen tu máquina.",
+                "clockLabel": "Tiempo restante hasta el lanzamiento público",
+                "days": "Días",
+                "hours": "Horas",
+                "minutes": "Minutos",
+                "seconds": "Segundos",
+                "releaseLabel": "Lanzamiento público",
+                "releaseDate": "domingo, 28 de junio&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Qué es Securanido",
+                "fact1": "Funciona en tu propio Kubernetes, tu portátil o una red aislada.",
+                "fact2": "Apache-2.0, sin rastreo, sin cuenta &mdash; tus datos se quedan contigo.",
+                "fact3": "Varios agentes en paralelo, gobernados por un único Guard que la máquina hace cumplir.",
+                "fact4": "El día del lanzamiento se abre el código &mdash; y una página de pruebas donde cada afirmación enlaza con el comando registrado que la respalda.",
+                "numbersLabel": "La plataforma en cifras",
+                "numbersLine": "145+ crates de Rust &middot; 86 herramientas MCP nativas &middot; 38 pruebas en vivo &mdash; medido, no prometido.",
+                "liveKicker": "Ya disponible",
+                "liveLine": "El lanzamiento está en marcha. Securanido ya está abierto.",
+                "back": "Volver",
+                "impressumTitle": "Aviso legal",
+                "impressumS5": "Datos según el art. 5 DDG",
+                "country": "Alemania",
+                "contact": "Contacto",
+                "emailLabel": "Correo electrónico",
+                "impressumS18": "Responsable del contenido según el art. 18 ap. 2 MStV",
+                "fullLegal": "Aviso legal &amp; política de privacidad completos",
+                "privacyTitle": "Política de privacidad",
+                "privacyS1": "1. Responsable del tratamiento",
+                "privacyS2": "2. Alojamiento",
+                "privacyHosting": "Este sitio está alojado en GitHub Pages (GitHub Inc., EE. UU.) y se entrega a través de la red de distribución de contenidos de Cloudflare (Cloudflare, Inc., EE. UU.). Ambos procesan direcciones IP de los visitantes en sus registros de servidor para servir el sitio; nosotros no llevamos registros propios.",
+                "privacyS3": "3. Cookies y almacenamiento",
+                "privacyCookies": "Sin cookies. Tu elección de idioma se guarda únicamente en local en tu dispositivo (localStorage). Sin rastreo, sin analítica, sin publicidad. El único script de terceros es una pequeña protección que Cloudflare puede insertar para resguardar nuestra dirección de contacto de los recolectores de spam. Sin fuentes externas — las fuentes se sirven desde este sitio. Esta entrada de localStorage es estrictamente necesaria para ofrecer el idioma que has elegido; no se requiere consentimiento (art. 25 ap. 2 TTDSG).",
+                "privacyS4": "4. Tus derechos (RGPD art. 15–21)",
+                "privacyRights": "Derecho de acceso, rectificación, supresión, limitación, portabilidad y oposición. Contacto: fschulz0787@gmail.com",
+                "privacyS5": "5. Servicios externos",
+                "privacyExternal": "GitHub (alojamiento) y Cloudflare (entrega de contenidos) — cada uno tiene su propia política de privacidad.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> plataforma de IA local-first <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Aviso legal",
+                "privacyLink": "Privacidad",
+                "docTitle": "Securanido — plataforma de agentes de IA libre y autoalojada · lanzamiento público 28 de junio de 2026",
+                "srDaysOne": "{d} día hasta el lanzamiento público del 28 de junio.",
+                "srDaysMany": "{d} días hasta el lanzamiento público del 28 de junio.",
+                "srSoon": "Menos de un día hasta el lanzamiento público del 28 de junio.",
+                "srLive": "El lanzamiento público está disponible. Securanido ya está abierto."
+        },
+        "it": {
+                "skip": "Vai al contenuto",
+                "langNav": "Lingua",
+                "langLabel": "Lingua",
+                "eyebrow": "Rilascio pubblico",
+                "tagline": "Una piattaforma di IA self-hosted che gira dove vivi tu — non nel cloud di qualcun altro.",
+                "teaser": "Software libero. Una flotta di agenti di IA autonomi sul tuo hardware, tenuta a freno da un Guard che impedisce loro di sovraccaricare la macchina.",
+                "clockLabel": "Tempo rimanente al rilascio pubblico",
+                "days": "Giorni",
+                "hours": "Ore",
+                "minutes": "Minuti",
+                "seconds": "Secondi",
+                "releaseLabel": "Rilascio pubblico",
+                "releaseDate": "domenica 28 giugno&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Cos’è Securanido",
+                "fact1": "Gira sul tuo Kubernetes, sul tuo portatile o su una rete isolata.",
+                "fact2": "Apache-2.0, nessun tracciamento, senza account &mdash; i tuoi dati restano con te.",
+                "fact3": "Molti agenti in parallelo, governati da un unico Guard fatto rispettare dalla macchina.",
+                "fact4": "Il giorno del lancio si apre il codice &mdash; e una pagina di prove in cui ogni affermazione rimanda al comando registrato che la sostiene.",
+                "numbersLabel": "La piattaforma in cifre",
+                "numbersLine": "145+ crate Rust &middot; 86 strumenti MCP nativi &middot; 38 prove dal vivo &mdash; misurato, non promesso.",
+                "liveKicker": "Ora online",
+                "liveLine": "Il rilascio è in corso. Securanido è aperto.",
+                "back": "Indietro",
+                "impressumTitle": "Note legali",
+                "impressumS5": "Informazioni ai sensi del § 5 DDG",
+                "country": "Germania",
+                "contact": "Contatto",
+                "emailLabel": "E-mail",
+                "impressumS18": "Responsabile dei contenuti ai sensi del § 18 c. 2 MStV",
+                "fullLegal": "Note legali &amp; informativa sulla privacy complete",
+                "privacyTitle": "Informativa sulla privacy",
+                "privacyS1": "1. Titolare del trattamento",
+                "privacyS2": "2. Hosting",
+                "privacyHosting": "Questo sito è ospitato su GitHub Pages (GitHub Inc., USA) e distribuito tramite la rete di distribuzione dei contenuti di Cloudflare (Cloudflare, Inc., USA). Entrambi trattano gli indirizzi IP dei visitatori nei propri log del server per servire il sito; noi non teniamo log propri.",
+                "privacyS3": "3. Cookie e archiviazione",
+                "privacyCookies": "Nessun cookie. La tua scelta di lingua viene salvata solo in locale sul tuo dispositivo (localStorage). Nessun tracciamento, nessuna analisi, nessuna pubblicità. L’unico script di terze parti è una piccola protezione che Cloudflare può inserire per difendere il nostro indirizzo di contatto dai raccoglitori di spam. Nessun font esterno — i font sono serviti da questo sito. Questa voce localStorage è strettamente necessaria per fornire la lingua che hai scelto; non è richiesto alcun consenso (§ 25 c. 2 TTDSG).",
+                "privacyS4": "4. I tuoi diritti (GDPR art. 15–21)",
+                "privacyRights": "Diritto di accesso, rettifica, cancellazione, limitazione, portabilità e opposizione. Contatto: fschulz0787@gmail.com",
+                "privacyS5": "5. Servizi esterni",
+                "privacyExternal": "GitHub (hosting) e Cloudflare (distribuzione dei contenuti) — ciascuno ha una propria informativa sulla privacy.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> piattaforma di IA local-first <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Note legali",
+                "privacyLink": "Privacy",
+                "docTitle": "Securanido — piattaforma di agenti di IA libera e self-hosted · rilascio pubblico 28 giugno 2026",
+                "srDaysOne": "{d} giorno al rilascio pubblico del 28 giugno.",
+                "srDaysMany": "{d} giorni al rilascio pubblico del 28 giugno.",
+                "srSoon": "Meno di un giorno al rilascio pubblico del 28 giugno.",
+                "srLive": "Il rilascio pubblico è online. Securanido è aperto."
+        },
+        "pt": {
+                "skip": "Ir para o conteúdo",
+                "langNav": "Idioma",
+                "langLabel": "Idioma",
+                "eyebrow": "Lançamento público",
+                "tagline": "Uma plataforma de IA auto-hospedada que corre onde tu estás — não na nuvem de outra pessoa.",
+                "teaser": "Software livre. Uma frota de agentes de IA autónomos no teu próprio hardware, mantida sob rédea por um Guard que não os deixa sobrecarregar a máquina.",
+                "clockLabel": "Tempo restante até ao lançamento público",
+                "days": "Dias",
+                "hours": "Horas",
+                "minutes": "Minutos",
+                "seconds": "Segundos",
+                "releaseLabel": "Lançamento público",
+                "releaseDate": "domingo, 28 de junho&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "O que é o Securanido",
+                "fact1": "Corre no teu próprio Kubernetes, no teu portátil ou numa rede isolada.",
+                "fact2": "Apache-2.0, sem rastreamento, sem conta &mdash; os teus dados ficam contigo.",
+                "fact3": "Vários agentes em paralelo, sob um único Guard imposto pela máquina.",
+                "fact4": "No dia do lançamento abre-se o código &mdash; e uma página de provas onde cada afirmação liga ao comando registado que a sustenta.",
+                "numbersLabel": "A plataforma em números",
+                "numbersLine": "145+ crates Rust &middot; 86 ferramentas MCP nativas &middot; 38 provas ao vivo &mdash; medido, não prometido.",
+                "liveKicker": "Já disponível",
+                "liveLine": "O lançamento está a decorrer. O Securanido está aberto.",
+                "back": "Voltar",
+                "impressumTitle": "Informação legal",
+                "impressumS5": "Informações nos termos do § 5 DDG",
+                "country": "Alemanha",
+                "contact": "Contacto",
+                "emailLabel": "E-mail",
+                "impressumS18": "Responsável pelo conteúdo nos termos do § 18 n.º 2 MStV",
+                "fullLegal": "Informação legal &amp; política de privacidade completas",
+                "privacyTitle": "Política de privacidade",
+                "privacyS1": "1. Responsável pelo tratamento",
+                "privacyS2": "2. Alojamento",
+                "privacyHosting": "Este site está alojado no GitHub Pages (GitHub Inc., EUA) e é entregue através da rede de distribuição de conteúdos da Cloudflare (Cloudflare, Inc., EUA). Ambos processam endereços IP dos visitantes nos seus registos de servidor para servir o site; nós não mantemos registos próprios.",
+                "privacyS3": "3. Cookies e armazenamento",
+                "privacyCookies": "Sem cookies. A tua escolha de idioma é guardada apenas localmente no teu dispositivo (localStorage). Sem rastreio, sem análise, sem publicidade. O único script de terceiros é uma pequena proteção que a Cloudflare pode inserir para resguardar o nosso endereço de contacto dos coletores de spam. Sem tipos de letra externos — os tipos de letra são servidos a partir deste site. Este registo no localStorage é estritamente necessário para fornecer o idioma que escolheste; não é exigido consentimento (§ 25 n.º 2 TTDSG).",
+                "privacyS4": "4. Os teus direitos (RGPD art. 15.º–21.º)",
+                "privacyRights": "Direito de acesso, retificação, apagamento, limitação, portabilidade e oposição. Contacto: fschulz0787@gmail.com",
+                "privacyS5": "5. Serviços externos",
+                "privacyExternal": "GitHub (alojamento) e Cloudflare (entrega de conteúdos) — cada um tem a sua própria política de privacidade.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> plataforma de IA local-first <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Informação legal",
+                "privacyLink": "Privacidade",
+                "docTitle": "Securanido — plataforma de agentes de IA livre e auto-hospedada · lançamento público 28 de junho de 2026",
+                "srDaysOne": "{d} dia até ao lançamento público de 28 de junho.",
+                "srDaysMany": "{d} dias até ao lançamento público de 28 de junho.",
+                "srSoon": "Menos de um dia até ao lançamento público de 28 de junho.",
+                "srLive": "O lançamento público está disponível. O Securanido está aberto."
+        },
+        "tr": {
+                "skip": "İçeriğe geç",
+                "langNav": "Dil",
+                "langLabel": "Dil",
+                "eyebrow": "Genel sürüm",
+                "tagline": "Yanı başınızda çalışan, kendi sunucunuzda barındırdığınız bir yapay zekâ platformu — başkasının bulutunda değil.",
+                "teaser": "Özgür yazılım. Kendi donanımınızda çalışan, özerk yapay zekâ ajanlarından oluşan bir filo; sisteminizi boğmalarına izin vermeyen bir Guard tarafından dizginlenir.",
+                "clockLabel": "Genel sürüme kalan süre",
+                "days": "Gün",
+                "hours": "Saat",
+                "minutes": "Dakika",
+                "seconds": "Saniye",
+                "releaseLabel": "Genel sürüm",
+                "releaseDate": "28 Haziran Pazar&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Securanido nedir",
+                "fact1": "Kendi Kubernetes’inizde, dizüstü bilgisayarınızda veya yalıtılmış bir ağda çalışır.",
+                "fact2": "Apache-2.0, takip yok, hesap yok &mdash; verileriniz sizde kalır.",
+                "fact3": "Paralel çalışan çok sayıda ajan; makinenin uyguladığı tek bir Guard tarafından yönetilir.",
+                "fact4": "Lansman günü kod açılıyor &mdash; ve her iddianın, onu destekleyen kayıtlı komuta bağlandığı bir kanıt sayfası.",
+                "numbersLabel": "Rakamlarla platform",
+                "numbersLine": "145+ Rust crate &middot; 86 yerleşik MCP aracı &middot; 38 canlı kanıt &mdash; ölçüldü, vaat edilmedi.",
+                "liveKicker": "Şimdi yayında",
+                "liveLine": "Sürüm başladı. Securanido artık herkese açık.",
+                "back": "Geri",
+                "impressumTitle": "Künye",
+                "impressumS5": "§ 5 DDG uyarınca bilgiler",
+                "country": "Almanya",
+                "contact": "İletişim",
+                "emailLabel": "E-posta",
+                "impressumS18": "§ 18 fıkra 2 MStV uyarınca içerikten sorumlu",
+                "fullLegal": "Tam künye &amp; gizlilik politikası",
+                "privacyTitle": "Gizlilik politikası",
+                "privacyS1": "1. Veri sorumlusu",
+                "privacyS2": "2. Barındırma",
+                "privacyHosting": "Bu site GitHub Pages üzerinde barındırılır (GitHub Inc., ABD) ve Cloudflare içerik dağıtım ağı üzerinden sunulur (Cloudflare, Inc., ABD). Her ikisi de siteyi sunmak için ziyaretçi IP adreslerini kendi sunucu günlüklerinde işler; biz kendi günlüğümüzü tutmayız.",
+                "privacyS3": "3. Çerezler ve depolama",
+                "privacyCookies": "Çerez yok. Dil tercihiniz yalnızca cihazınızda yerel olarak saklanır (localStorage). İzleme yok, analiz yok, reklam yok. Tek üçüncü taraf betiği, iletişim adresimizi spam toplayıcılarından korumak için Cloudflare’in ekleyebileceği küçük bir koruma betiğidir. Harici yazı tipi yok — yazı tipleri bu siteden sunulur. Bu localStorage kaydı, seçtiğiniz dili sunmak için kesinlikle gereklidir; onay gerekmez (§ 25 fıkra 2 TTDSG).",
+                "privacyS4": "4. Haklarınız (GDPR md. 15–21)",
+                "privacyRights": "Erişim, düzeltme, silme, kısıtlama, taşınabilirlik ve itiraz hakkı. İletişim: fschulz0787@gmail.com",
+                "privacyS5": "5. Harici hizmetler",
+                "privacyExternal": "GitHub (barındırma) ve Cloudflare (içerik dağıtımı) — her birinin kendi gizlilik politikası vardır.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> yerel öncelikli yapay zekâ platformu <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Künye",
+                "privacyLink": "Gizlilik",
+                "docTitle": "Securanido — özgür ve kendi sunucunuzda barındırılan yapay zekâ ajan platformu · genel sürüm 28 Haziran 2026",
+                "srDaysOne": "Genel sürüme {d} gün kaldı (28 Haziran).",
+                "srDaysMany": "Genel sürüme {d} gün kaldı (28 Haziran).",
+                "srSoon": "Genel sürüme bir günden az kaldı (28 Haziran).",
+                "srLive": "Genel sürüm yayında. Securanido artık herkese açık."
+        },
+        "pl": {
+                "skip": "Przejdź do treści",
+                "langNav": "Język",
+                "langLabel": "Język",
+                "eyebrow": "Publiczne wydanie",
+                "tagline": "Samodzielnie hostowana platforma AI, która działa u Ciebie — nie w cudzej chmurze.",
+                "teaser": "Wolne oprogramowanie. Flota autonomicznych agentów AI na Twoim własnym sprzęcie, trzymana w ryzach przez Guard, który nie pozwala im przeciążyć maszyny.",
+                "clockLabel": "Czas pozostały do publicznego wydania",
+                "days": "Dni",
+                "hours": "Godziny",
+                "minutes": "Minuty",
+                "seconds": "Sekundy",
+                "releaseLabel": "Publiczne wydanie",
+                "releaseDate": "niedziela, 28 czerwca&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Czym jest Securanido",
+                "fact1": "Działa na Twoim własnym Kubernetes, laptopie lub w sieci odizolowanej.",
+                "fact2": "Apache-2.0, bez śledzenia, bez konta &mdash; Twoje dane zostają u Ciebie.",
+                "fact3": "Wiele agentów równolegle, pod jednym Guardem egzekwowanym przez maszynę.",
+                "fact4": "W dniu premiery otwieramy kod &mdash; oraz stronę dowodów, na której każde twierdzenie prowadzi do zarejestrowanego polecenia, które je potwierdza.",
+                "numbersLabel": "Platforma w liczbach",
+                "numbersLine": "145+ crate'ów Rust &middot; 86 natywnych narzędzi MCP &middot; 38 dowodów na żywo &mdash; zmierzone, nie obiecane.",
+                "liveKicker": "Już dostępne",
+                "liveLine": "Wydanie trwa. Securanido jest otwarte.",
+                "back": "Wstecz",
+                "impressumTitle": "Nota prawna",
+                "impressumS5": "Informacje zgodnie z § 5 DDG",
+                "country": "Niemcy",
+                "contact": "Kontakt",
+                "emailLabel": "E-mail",
+                "impressumS18": "Odpowiedzialny za treść zgodnie z § 18 ust. 2 MStV",
+                "fullLegal": "Pełna nota prawna &amp; polityka prywatności",
+                "privacyTitle": "Polityka prywatności",
+                "privacyS1": "1. Administrator danych",
+                "privacyS2": "2. Hosting",
+                "privacyHosting": "Ta strona jest hostowana na GitHub Pages (GitHub Inc., USA) i dostarczana przez sieć dystrybucji treści Cloudflare (Cloudflare, Inc., USA). Oba podmioty przetwarzają adresy IP odwiedzających w swoich logach serwera, aby udostępnić stronę; my nie prowadzimy własnych logów.",
+                "privacyS3": "3. Pliki cookie i pamięć",
+                "privacyCookies": "Bez plików cookie. Twój wybór języka jest zapisywany wyłącznie lokalnie na Twoim urządzeniu (localStorage). Bez śledzenia, bez analityki, bez reklam. Jedynym skryptem strony trzeciej jest niewielkie zabezpieczenie, które Cloudflare może wstawić, aby chronić nasz adres kontaktowy przed zbieraczami spamu. Bez zewnętrznych czcionek — czcionki są serwowane z tej strony. Ten wpis w localStorage jest ściśle niezbędny do udostępnienia wybranego języka; zgoda nie jest wymagana (§ 25 ust. 2 TTDSG).",
+                "privacyS4": "4. Twoje prawa (RODO art. 15–21)",
+                "privacyRights": "Prawo dostępu, sprostowania, usunięcia, ograniczenia, przenoszenia i sprzeciwu. Kontakt: fschulz0787@gmail.com",
+                "privacyS5": "5. Usługi zewnętrzne",
+                "privacyExternal": "GitHub (hosting) i Cloudflare (dostarczanie treści) — każdy z nich ma własną politykę prywatności.",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> platforma AI local-first <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "Nota prawna",
+                "privacyLink": "Prywatność",
+                "docTitle": "Securanido — wolna, samodzielnie hostowana platforma agentów AI · publiczne wydanie 28 czerwca 2026",
+                "srDaysOne": "{d} dzień do publicznego wydania 28 czerwca.",
+                "srDaysMany": "{d} dni do publicznego wydania 28 czerwca.",
+                "srSoon": "Mniej niż dzień do publicznego wydania 28 czerwca.",
+                "srLive": "Publiczne wydanie jest dostępne. Securanido jest otwarte."
+        },
+        "ja": {
+                "skip": "コンテンツへ移動",
+                "langNav": "言語",
+                "langLabel": "言語",
+                "eyebrow": "一般公開",
+                "tagline": "あなたの手元で動く、セルフホスト型のAIプラットフォーム。誰かのクラウドの中ではありません。",
+                "teaser": "オープンソース。自律型AIエージェントの群れを、あなた自身のハードウェア上で。マシンを使い尽くさないよう、Guard が手綱を握ります。",
+                "clockLabel": "一般公開までの残り時間",
+                "days": "日",
+                "hours": "時間",
+                "minutes": "分",
+                "seconds": "秒",
+                "releaseLabel": "一般公開",
+                "releaseDate": "6月28日（日）&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Securanido とは",
+                "fact1": "自分の Kubernetes、ノートパソコン、あるいは外部から隔離されたネットワークで動きます。",
+                "fact2": "Apache-2.0、トラッキングなし、アカウント不要 &mdash; データは手元に残ります。",
+                "fact3": "多数のエージェントが並行して動き、マシンが強制する一つの Guard が統括します。",
+                "fact4": "公開日にはコードが開かれます &mdash; さらに、各主張がその裏付けとなる記録済みコマンドへリンクする証明ページも。",
+                "numbersLabel": "数字で見るプラットフォーム",
+                "numbersLine": "145+ の Rust クレート &middot; 86 のネイティブ MCP ツール &middot; 38 のライブ証明 &mdash; 約束ではなく、実測です。",
+                "liveKicker": "公開中",
+                "liveLine": "リリースが進行中です。Securanido が公開されました。",
+                "back": "戻る",
+                "impressumTitle": "法的表記",
+                "impressumS5": "DDG 第5条に基づく情報",
+                "country": "ドイツ",
+                "contact": "連絡先",
+                "emailLabel": "メール",
+                "impressumS18": "MStV 第18条第2項に基づくコンテンツ責任者",
+                "fullLegal": "法的表記 &amp; プライバシーポリシー（全文）",
+                "privacyTitle": "プライバシーポリシー",
+                "privacyS1": "1. データ管理者",
+                "privacyS2": "2. ホスティング",
+                "privacyHosting": "本サイトは GitHub Pages（GitHub Inc.、米国）でホストされ、Cloudflare のコンテンツ配信ネットワーク（Cloudflare, Inc.、米国）を通じて配信されています。両社はサイト配信のため、訪問者のIPアドレスをそれぞれのサーバーログで処理します。当方独自のログは取得していません。",
+                "privacyS3": "3. Cookie とストレージ",
+                "privacyCookies": "Cookie は使用しません。言語の選択はお使いの端末のローカル（localStorage）にのみ保存されます。トラッキングなし、解析なし、広告なし。唯一のサードパーティスクリプトは、当方の連絡先アドレスをスパム収集から守るために Cloudflare が挿入することのある小さな保護スクリプトです。外部フォントなし — フォントは本サイトから配信されます。この localStorage への保存は、選択された言語を提供するために厳密に必要なものであり、同意は不要です（TTDSG 第25条第2項）。",
+                "privacyS4": "4. あなたの権利（GDPR 第15〜21条）",
+                "privacyRights": "アクセス、訂正、消去、制限、ポータビリティ、異議の権利。連絡先: fschulz0787@gmail.com",
+                "privacyS5": "5. 外部サービス",
+                "privacyExternal": "GitHub（ホスティング）と Cloudflare（コンテンツ配信）— それぞれ独自のプライバシーポリシーがあります。",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> ローカルファーストのAIプラットフォーム <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "法的表記",
+                "privacyLink": "プライバシー",
+                "docTitle": "Securanido — オープンソースでセルフホストのAIエージェント基盤 · 一般公開 2026年6月28日",
+                "srDaysOne": "一般公開（6月28日）まであと {d} 日。",
+                "srDaysMany": "一般公開（6月28日）まであと {d} 日。",
+                "srSoon": "一般公開（6月28日）まであと1日を切りました。",
+                "srLive": "一般公開が始まりました。Securanido が公開されました。"
+        },
+        "zh": {
+                "skip": "跳至内容",
+                "langNav": "语言",
+                "langLabel": "语言",
+                "eyebrow": "正式发布",
+                "tagline": "一个自托管的 AI 平台，运行在你身边——而不是别人的云端。",
+                "teaser": "开源。一支自主 AI 代理组成的舰队，运行在你自有的硬件上；由 Guard 牢牢掌控，绝不让它们拖垮你的机器。",
+                "clockLabel": "距正式发布的剩余时间",
+                "days": "天",
+                "hours": "时",
+                "minutes": "分",
+                "seconds": "秒",
+                "releaseLabel": "正式发布",
+                "releaseDate": "6月28日 星期日&nbsp;&middot;&nbsp;14:00 CEST",
+                "factsLabel": "Securanido 是什么",
+                "fact1": "运行在你自有的 Kubernetes、笔记本电脑或隔离网络上。",
+                "fact2": "Apache-2.0、无追踪、无需账户——数据始终留在你手中。",
+                "fact3": "多个代理并行运行，由机器强制执行的同一个 Guard 统管。",
+                "fact4": "发布当天代码开放 &mdash; 还有一个证明页：每一条声明都链接到支撑它的命令记录。",
+                "numbersLabel": "用数字看平台",
+                "numbersLine": "145+ 个 Rust crate &middot; 86 个原生 MCP 工具 &middot; 38 项实时证明 &mdash; 实测，而非承诺。",
+                "liveKicker": "现已上线",
+                "liveLine": "发布正在进行。Securanido 已经开放。",
+                "back": "返回",
+                "impressumTitle": "法律声明",
+                "impressumS5": "依据 DDG 第 5 条的信息",
+                "country": "德国",
+                "contact": "联系方式",
+                "emailLabel": "电子邮件",
+                "impressumS18": "依据 MStV 第 18 条第 2 款的内容负责人",
+                "fullLegal": "完整法律声明与隐私政策",
+                "privacyTitle": "隐私政策",
+                "privacyS1": "1. 数据控制者",
+                "privacyS2": "2. 托管",
+                "privacyHosting": "本站托管于 GitHub Pages（GitHub Inc.，美国），并通过 Cloudflare 内容分发网络（Cloudflare, Inc.，美国）交付。两者为提供本站服务会在各自的服务器日志中处理访问者 IP 地址；我们自己不保留任何日志。",
+                "privacyS3": "3. Cookie 与存储",
+                "privacyCookies": "无 Cookie。你的语言选择仅保存在你设备的本地（localStorage）。无跟踪、无分析、无广告。唯一的第三方脚本，是 Cloudflare 可能注入的一段小型保护脚本，用于防止我们的联系地址被垃圾邮件采集器抓取。无外部字体——字体由本站提供。此项 localStorage 存储是为提供你所选语言所必需的，无需征得同意（TTDSG 第 25 条第 2 款）。",
+                "privacyS4": "4. 你的权利（GDPR 第 15–21 条）",
+                "privacyRights": "查阅、更正、删除、限制、可携带和反对的权利。联系方式：fschulz0787@gmail.com",
+                "privacyS5": "5. 外部服务",
+                "privacyExternal": "GitHub（托管）与 Cloudflare（内容分发）——各自拥有自己的隐私政策。",
+                "footerTag": "Securanido <span class=\"glyph\">&middot;</span> 本地优先的 AI 平台 <span class=\"glyph\">&middot;</span> Made in Germany",
+                "impressumLink": "法律声明",
+                "privacyLink": "隐私",
+                "docTitle": "Securanido — 开源、自托管的 AI 代理平台 · 正式发布 2026 年 6 月 28 日",
+                "srDaysOne": "距 6 月 28 日正式发布还有 {d} 天。",
+                "srDaysMany": "距 6 月 28 日正式发布还有 {d} 天。",
+                "srSoon": "距 6 月 28 日正式发布不到一天。",
+                "srLive": "正式发布已上线。Securanido 已经开放。"
+        }
+};
+
+      var SUPPORTED = ["en", "de", "fr", "es", "it", "pt", "tr", "pl", "ja", "zh"];
+      var RTL = { ar: 1, fa: 1, he: 1, ur: 1 }; // none currently shipped; page stays RTL-ready
+      var root = document.documentElement;
+
+      function readLang() {
+        try {
+          var s = localStorage.getItem("securanido.lang");
+          if (SUPPORTED.indexOf(s) !== -1) return s;
+        } catch (e) {}
+        var nav = (navigator.language || "en").toLowerCase();
+        var base = nav.split("-")[0];
+        if (SUPPORTED.indexOf(nav) !== -1) return nav;
+        if (SUPPORTED.indexOf(base) !== -1) return base;
+        return "en";
       }
-      err.hidden=true;
-      input.classList.remove('is-error');
-      input.removeAttribute('aria-invalid');
-      f.hidden=true;
-      ok.hidden=false;
-      ok.focus();
-    });
-    input.addEventListener('input',function(){
-      if(input.classList.contains('is-error')){
-        err.hidden=true;
-        input.classList.remove('is-error');
-        input.removeAttribute('aria-invalid');
+      var lang = root.getAttribute("data-lang");
+      if (SUPPORTED.indexOf(lang) === -1) lang = readLang();
+
+      // HTML-safe entity strings (releaseDate, footerTag, fullLegal, teaser) flow through innerHTML;
+      // every value in DICT is author-controlled static copy — no user input is ever interpolated.
+      function applyLang(l) {
+        lang = (SUPPORTED.indexOf(l) !== -1) ? l : "en";
+        var d = DICT[lang];
+        root.lang = lang;
+        root.dir = RTL[lang] ? "rtl" : "ltr";
+        root.setAttribute("data-lang", lang);
+        try { localStorage.setItem("securanido.lang", lang); } catch (e) {}
+        // Launch date paused: show only the brand title, never the date suffix.
+        document.title = (d.docTitle || DICT.en.docTitle).split(" · ")[0];
+
+        // text / html nodes — fall back to English for any key a locale lacks,
+        // so a translation gap never leaves mixed-language leftovers on screen.
+        var nodes = document.querySelectorAll("[data-i18n]");
+        for (var i = 0; i < nodes.length; i++) {
+          var key = nodes[i].getAttribute("data-i18n-key") || nodes[i].getAttribute("data-i18n");
+          var val = (key in d) ? d[key] : DICT.en[key];
+          if (val == null) continue;
+          nodes[i].innerHTML = val; // author-controlled copy only
+        }
+        // aria-labels
+        var al = document.querySelectorAll("[data-i18n-aria-label]");
+        for (var j = 0; j < al.length; j++) {
+          var ak = al[j].getAttribute("data-i18n-aria-label");
+          var av = (ak in d) ? d[ak] : DICT.en[ak];
+          if (av != null) al[j].setAttribute("aria-label", av);
+        }
+        // sync the language <select>
+        var sel = document.querySelector("[data-lang-select]");
+        if (sel && sel.value !== lang) sel.value = lang;
+        updateClockSummary(true);
       }
-    });
-  })();
+
+      // ── Countdown removed for now (launch date paused) ──
+      // applyLang() still calls updateClockSummary(); keep it as a no-op so
+      // language switching keeps working without the countdown widget.
+      function updateClockSummary() {}
+
+      // ── Legal view routing + focus management ──
+      function setView(view) {
+        if (view) root.setAttribute("data-view", view); else root.removeAttribute("data-view");
+        window.scrollTo(0, 0);
+        if (view) {
+          var sec = document.getElementById(view);
+          var h = sec && sec.querySelector("h2");
+          if (h) { h.setAttribute("tabindex", "-1"); h.focus(); }
+          history.replaceState(null, "", "#" + view);
+        } else {
+          var main = document.getElementById("main");
+          if (main) main.focus();
+          history.replaceState(null, "", "/");
+        }
+      }
+
+      // ── Wire up events ──
+      var sel = document.querySelector("[data-lang-select]");
+      if (sel) sel.addEventListener("change", function () { applyLang(sel.value); });
+      document.querySelectorAll("[data-view-btn]").forEach(function (b) {
+        b.addEventListener("click", function () { setView(b.getAttribute("data-view-btn")); });
+      });
+      document.querySelectorAll("[data-back]").forEach(function (b) {
+        b.addEventListener("click", function (e) { e.preventDefault(); setView(null); });
+      });
+
+      // ── Init ──
+      applyLang(lang);
+      if (location.hash === "#impressum") setView("impressum");
+      else if (location.hash === "#privacy") setView("privacy");
+    })();
   </script>
 </body>
 </html>
