@@ -1,0 +1,32 @@
+name: Public Release Gate
+
+# Gates the DEPLOYING branch: GitHub Pages serves master directly, so every
+# PR and every push to master must pass the static public-release gate
+# (leak scan of served files, anti-slop wording, noindex posture, pinned
+# countdown target, i18n parity) before content goes live.
+on:
+  pull_request:
+  push:
+    branches: [master]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  release-gate:
+    name: static public-release gate
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@1af3b93b6815bc44a9784bd300feb67ff0d1eeb3 # v6.0.0
+      - name: Check Python runtime
+        run: python3 --version
+      - name: Compile release gate
+        run: python3 -m py_compile scripts/check-public-release-ready.py
+      - name: Release gate contract tests
+        run: python3 tests/check_public_release_ready_test.py
+      - name: Preparation gate (served content must be public-safe)
+        run: python3 scripts/check-public-release-ready.py --mode prep
+      - name: Prove release remains blocked
+        run: python3 scripts/check-public-release-ready.py --mode release --expect-blocked
